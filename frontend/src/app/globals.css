@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/*.slick-next:before, .slick-prev:before {*/
+/*  color: #fff !important;*/
+/*  font-size: 20px !important;*/
+/*  line-height: 1 !important;*/
+/*  opacity: .75 !important;*/
+/*}*/

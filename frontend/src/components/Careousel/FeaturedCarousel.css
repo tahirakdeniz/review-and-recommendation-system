@@ -1,0 +1,52 @@
+/* FeaturedCarousel.css */
+.featured-carousel-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+}
+
+.featured-slide img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.thumbnail-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 10px 0;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.thumbnail {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.thumbnail img {
+    border-radius: 4px;
+}
+
+.thumbnail.selected {
+    opacity: 1;
+}
+
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+}
+
+.prev-button {
+    left: 10px;
+}
+
+.next-button {
+    right: 10px;
+}
+
+/* Add media queries and additional styling as needed for responsiveness and aesthetics */
