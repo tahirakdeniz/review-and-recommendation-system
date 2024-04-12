@@ -274,4 +274,32 @@ public class UserService {
 
         return UserSettingsDto.convert(repository.save(user));
     }
+
+    protected User findByUsername(String username) {
+        return repository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    protected String updatePassword(User user, String password) {
+        User newUser = new User(
+                user.getId(),
+                user.getUsername(),
+                passwordEncoder.encode(password),
+                user.getEmail(),
+                user.getDescription(),
+                user.isEnabled(),
+                user.isCredentialsNonExpired(),
+                user.isAccountNonLocked(),
+                user.isAccountNonExpired(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getProfilePicture(),
+                user.getRole(),
+                user.getDateOfBirth(),
+                user.getMerchant(),
+                user.getCart()
+        );
+        repository.save(newUser);
+        return "password updated successfully";
+    }
 }
