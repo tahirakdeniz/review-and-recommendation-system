@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Objects;
+import java.util.zip.DataFormatException;
 
 @Service
 public class ProductService {
@@ -48,5 +49,23 @@ public class ProductService {
         repository.delete(product);
 
         return "Product deleted successfully";
+    }
+
+    public ProductDto getProduct(Long productId) {
+        return ProductDto.convert(repository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found")));
+    }
+
+
+    public byte[] downloadProductPicture(Long productId) {
+        Product product = repository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        try {
+            return ImageUtil.decompressImage(product.getPicture());
+        } catch (DataFormatException | IOException e) {
+            throw new RuntimeException("change this....");
+        }
+
     }
 }
