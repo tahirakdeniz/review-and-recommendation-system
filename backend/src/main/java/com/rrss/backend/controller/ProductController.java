@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 
 import static org.springframework.util.MimeTypeUtils.IMAGE_PNG_VALUE;
 
@@ -49,5 +50,15 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf(IMAGE_PNG_VALUE))
                 .body(imageData);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProductDto>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
+
+    @GetMapping("/category/{category-name}")
+    public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable(name = "category-name") String categoryName) {
+        return ResponseEntity.ok(productService.getProductsByCategory(categoryName));
     }
 }

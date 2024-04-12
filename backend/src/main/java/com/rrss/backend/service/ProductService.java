@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 import java.util.Objects;
 import java.util.zip.DataFormatException;
 
@@ -67,5 +68,21 @@ public class ProductService {
             throw new RuntimeException("change this....");
         }
 
+    }
+
+    public List<ProductDto> getAllProducts() {
+        return repository
+                .findAll()
+                .stream()
+                .map(ProductDto::convert)
+                .toList();
+    }
+
+    public List<ProductDto> getProductsByCategory(String categoryName) {
+        return repository
+                .findByProductCategoryName(categoryName)
+                .stream()
+                .map(ProductDto::convert)
+                .toList();
     }
 }
