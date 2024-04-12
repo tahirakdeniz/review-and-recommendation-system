@@ -37,10 +37,9 @@ public class UserService {
     private final CartService cartService;
     private final MerchantService merchantService;
     private final UserUtil userUtil;
-    private final ImageUtil imageUtil;
 
 
-    public UserService(UserRepository repository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, RoleService roleService, ConfirmationService confirmationService, MerchantRequestService merchantRequestService, CartService cartService, MerchantService merchantService, UserUtil userUtil, ImageUtil imageUtil) {
+    public UserService(UserRepository repository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, RoleService roleService, ConfirmationService confirmationService, MerchantRequestService merchantRequestService, CartService cartService, MerchantService merchantService, UserUtil userUtil) {
         this.repository = repository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
@@ -52,7 +51,6 @@ public class UserService {
         this.cartService = cartService;
         this.merchantService = merchantService;
         this.userUtil = userUtil;
-        this.imageUtil = imageUtil;
     }
 
     public LoginResponse createUser(RegistrationRequest registrationRequest) {

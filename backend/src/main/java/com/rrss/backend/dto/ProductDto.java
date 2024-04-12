@@ -2,13 +2,15 @@ package com.rrss.backend.dto;
 
 import com.rrss.backend.model.Product;
 
+import java.math.BigDecimal;
+
 public record ProductDto(
         Long id,
         String name,
         String description,
         String userId,
         String productCategoryName,
-        Double price
+        BigDecimal price
 ) {
     public static ProductDto convert(Product from) {
         return new ProductDto(

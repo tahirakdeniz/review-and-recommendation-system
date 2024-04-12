@@ -32,4 +32,6 @@ public class ProductController {
     public ResponseEntity<String> deleteProduct(Principal currentUser, @PathVariable Long productId) {
         return new ResponseEntity<>(productService.deleteProduct(currentUser, productId), HttpStatus.NO_CONTENT);
     }
+
+
 }
