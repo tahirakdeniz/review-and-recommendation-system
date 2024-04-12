@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lectorie
+    username: ulasunal
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create-drop
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ismailulasunal@gmail.com #burayı değiştir.
+    password: sbmv dahd nqcn hfex
+
+application:
+  security:
+    jwt:
+      secret-key: D8AA359A5430D9A922770B8832AF8524744AC26B8A58130605F5968894F2E734
+      expiration: 604800000 # 1 min   60000
+      refresh-token:
+        expiration: 604800000 # 7
+
+
+constants:
+  otp-token-duration: 2
+
