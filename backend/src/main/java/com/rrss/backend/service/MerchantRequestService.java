@@ -1,5 +1,6 @@
 package com.rrss.backend.service;
 
+import com.rrss.backend.dto.MerchantRequestDto;
 import com.rrss.backend.enums.MerchantRequestStatus;
 import com.rrss.backend.model.MerchantRequest;
 import com.rrss.backend.model.User;
@@ -8,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -53,4 +55,27 @@ public class MerchantRequestService {
     protected void createRequest(User user) {
         repository.save(new MerchantRequest(user));
     }
+
+    public List<MerchantRequestDto> getPendingRequests() {
+        return repository.findAllByStatusOrderByRequestDateAsc(MerchantRequestStatus.PENDING)
+                .stream()
+                .map(MerchantRequestDto::convert)
+                .toList();
+    }
+
+    public List<MerchantRequestDto> getApprovedRequests() {
+        return repository.findAllByStatusOrderByAnsweredDateDesc(MerchantRequestStatus.APPROVED)
+                .stream()
+                .map(MerchantRequestDto::convert)
+                .toList();
+    }
+
+    public List<MerchantRequestDto> getRejectedRequests() {
+        return repository.findAllByStatusOrderByAnsweredDateDesc(MerchantRequestStatus.REJECTED)
+                .stream()
+                .map(MerchantRequestDto::convert)
+                .toList();
+    }
+
+
 }

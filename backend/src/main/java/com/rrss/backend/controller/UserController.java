@@ -51,7 +51,7 @@ public class UserController {
 
     @PutMapping("/picture")
     public ResponseEntity<byte[]> uploadProfilePicture(@RequestParam("image") MultipartFile file, Principal currentUser) throws IOException {
-        byte[] imageData = userService.downloadProfilePicture(currentUser);
+        byte[] imageData = userService.uploadProfilePicture(file, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.valueOf(IMAGE_PNG_VALUE))
                 .body(imageData);
