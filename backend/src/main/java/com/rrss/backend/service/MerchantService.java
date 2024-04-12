@@ -19,21 +19,13 @@ import java.util.zip.DataFormatException;
 public class MerchantService {
 
     private final MerchantRepository repository;
-    private final UserUtil userUtil;
-    private final ProductService productService;
 
-    public MerchantService(MerchantRepository repository, UserUtil userUtil, ProductService productService) {
+    public MerchantService(MerchantRepository repository) {
         this.repository = repository;
-        this.userUtil = userUtil;
-        this.productService = productService;
     }
 
     protected Merchant createMerchant(User user) {
         return repository.save(new Merchant(user));
     }
 
-    public ProductDto addProduct(Principal currentUser, AddProductRequest addProductRequest, MultipartFile file) throws IOException {
-        Merchant merchant = userUtil.extractUser(currentUser).getMerchant();
-        return productService.addProduct(merchant, addProductRequest, file);
-    }
 }

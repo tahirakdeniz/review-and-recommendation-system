@@ -27,7 +27,4 @@ public class MerchantController {
         this.merchantService = merchantService;
     }
 
-    public ResponseEntity<ProductDto> addProduct(Principal currentUser, @RequestBody AddProductRequest addProductRequest, @RequestParam("image") MultipartFile file) throws IOException {
-        return new ResponseEntity<>(merchantService.addProduct(currentUser, addProductRequest, file), HttpStatus.CREATED);
-    }
 }

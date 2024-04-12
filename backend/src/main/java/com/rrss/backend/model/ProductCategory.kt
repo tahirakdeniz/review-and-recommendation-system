@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "product_categories")
-data class ProductCategory(
+data class ProductCategory @JvmOverloads constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long? = null,
