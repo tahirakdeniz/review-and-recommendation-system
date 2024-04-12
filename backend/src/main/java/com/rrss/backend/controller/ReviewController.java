@@ -1,14 +1,12 @@
 package com.rrss.backend.controller;
 
-import com.rrss.backend.dto.ReviewFormDto;
-import com.rrss.backend.dto.ReviewFormRequest;
+import com.rrss.backend.dto.*;
+import com.rrss.backend.model.ProductCategory;
 import com.rrss.backend.service.ReviewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/reviews")
@@ -21,8 +19,25 @@ public class ReviewController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ReviewFormDto> createReviewForm(@RequestBody ReviewFormRequest reviewFormRequest) {
         return new ResponseEntity<>(reviewService.createReviewForm(reviewFormRequest), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ReviewFieldDto> addReviewField(@PathVariable Long id, @RequestBody ReviewFieldRequest reviewFieldRequest) {
+        return ResponseEntity.ok(reviewService.addReviewField(id, reviewFieldRequest));
+    }
+
+    @GetMapping()
+    public ResponseEntity<ReviewFormDto> getReviewForm(@RequestParam String productCategoryName) {
+        return ResponseEntity.ok(reviewService.getReviewForm(productCategoryName));
+    }
+
+
+
+
+
 
 }

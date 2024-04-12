@@ -12,7 +12,7 @@ data class ReviewForm @JvmOverloads constructor(
 
     val name: String,
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "product_type_id", nullable = false)
     val productType: ProductCategory,
     //TODO ONE TO MANY OR ONE TO ONE
