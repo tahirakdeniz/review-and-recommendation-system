@@ -37,4 +37,6 @@ public class MerchantRequestController {
     public ResponseEntity<List<MerchantRequestDto>> getRejectedRequests() {
         return ResponseEntity.ok(merchantRequestService.getRejectedRequests());
     }
+
+
 }

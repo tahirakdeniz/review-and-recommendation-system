@@ -4,15 +4,13 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "review_forms")
-data class ReviewForm(
+data class ReviewForm @JvmOverloads constructor(
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long? = null,
 
     val name: String,
-
-    val description: String,
 
     @ManyToOne
     @JoinColumn(name = "product_type_id", nullable = false)

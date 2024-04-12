@@ -12,6 +12,6 @@ data class ReviewField(
 
     val Label: String,
 
-    val minScore: Int,
-    val maxScore: Int,
+    val minScore: Int = 1,
+    val maxScore: Int = 10,
 )
