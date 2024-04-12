@@ -29,4 +29,20 @@ public class EmailUtil {
 
         javaMailSender.send(mimeMessage);
     }
+
+    public void sendForgotPasswordEmail(String email, String otp) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        mimeMessageHelper.setTo(email);
+        mimeMessageHelper.setSubject("Forgot Password OTP");
+        mimeMessageHelper.setText("""
+        <div>
+            Your OTP code is: <strong>%s</strong>
+            wrote this otp with new password to reset your password.
+        </div>      \s
+        """.formatted(otp), true);
+
+        javaMailSender.send(mimeMessage);
+    }
+
 }
