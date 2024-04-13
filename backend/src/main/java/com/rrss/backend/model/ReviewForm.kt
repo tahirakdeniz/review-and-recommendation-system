@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "review_forms")
-data class ReviewForm(
+data class ReviewForm @JvmOverloads constructor(
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -12,9 +12,7 @@ data class ReviewForm(
 
     val name: String,
 
-    val description: String,
-
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "product_type_id", nullable = false)
     val productType: ProductCategory,
     //TODO ONE TO MANY OR ONE TO ONE

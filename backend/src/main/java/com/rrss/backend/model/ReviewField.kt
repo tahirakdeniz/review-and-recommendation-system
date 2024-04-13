@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "review_fields")
-data class ReviewField(
+data class ReviewField @JvmOverloads constructor(
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -12,6 +12,6 @@ data class ReviewField(
 
     val Label: String,
 
-    val minScore: Int,
-    val maxScore: Int,
+    val minScore: Int = 1,
+    val maxScore: Int = 10,
 )
