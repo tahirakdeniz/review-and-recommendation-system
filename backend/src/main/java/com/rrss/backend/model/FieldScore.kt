@@ -7,7 +7,7 @@ import java.io.Serializable
 @Table(name = "field_scores")
 data class FieldScore(
     @EmbeddedId
-    val id: FieldScoreId,
+    val id: FieldScoreId? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("reviewId")

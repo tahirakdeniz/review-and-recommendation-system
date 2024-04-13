@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "reviews")
-data class Review(
+data class Review @JvmOverloads constructor(
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
