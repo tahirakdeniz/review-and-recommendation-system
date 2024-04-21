@@ -13,7 +13,7 @@ export function ProjectLayout(props: { children: React.ReactNode }) {
                         <Navbar/>
                     </div>
                 </Layout.Header>
-                <Layout.Content className={'px-12 mt'}>
+                <Layout.Content className={'px-12 mt-4'}>
                     <div className={'container mx-auto'}>
                         {props.children}
                     </div>
