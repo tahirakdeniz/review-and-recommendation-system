@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react';
-import { Input, Menu, Avatar, Space } from 'antd';
-import {UserOutlined, ShoppingCartOutlined, FormOutlined, ShopOutlined, SettingOutlined} from '@ant-design/icons';
+import { Input, Menu, Avatar, Space, Tooltip, Button, Flex } from 'antd';
+import {UserOutlined, ShoppingCartOutlined, FormOutlined, HeartOutlined, ShopOutlined, SettingOutlined} from '@ant-design/icons';
 import Link from 'next/link';
 import { usePathname } from "next/navigation";
 
@@ -17,12 +17,12 @@ const Navbar = () => {
     const pathname = usePathname();
 
     return (
-        <div className={'bg-inherit flex'}>
+        <div className={'bg-inherit flex gap-4 justify-between'}>
             <div>
                 <Link href="/">Logo</Link> {/* Removed inline styling for Link */}
             </div>
-            <div>
-                <Input.Search placeholder="Search..." />
+            <div className={'h-17 grid content-center'}>
+                <Input.Search placeholder="Search..."/>
             </div>
             <div>
                 <Menu mode="horizontal" selectedKeys={[pathname]} className={'bg-inherit'}>
@@ -31,6 +31,9 @@ const Navbar = () => {
                     </Menu.Item>
                     <Menu.Item key="/shop" icon={<ShopOutlined />}>
                         <Link href="/shop">Shop</Link>
+                    </Menu.Item>
+                    <Menu.Item key="/scshop" icon={<ShopOutlined />}>
+                        <Link href="/scshop">SC Shop</Link>
                     </Menu.Item>
                     <Menu.Item key="/account" icon={<UserOutlined />}>
                         <Link href="/account">Profile</Link>
@@ -43,9 +46,19 @@ const Navbar = () => {
                     </Menu.Item>
                 </Menu>
             </div>
-            <div style={{ flex: '0 1 auto' }}>
-                <Avatar src={user.avatar || defaultAvatar} />
+            <div className={'flex-auto'}>
+                <Avatar size={32} icon={<UserOutlined />} /* src={user.avatar || defaultAvatar} */ />
                 <span style={{ marginLeft: '8px' }}>{user.name}</span>
+            </div>
+            <div className={'h-17 grid content-center'}>
+                <Flex wrap="wrap" gap="middle">
+                    <Tooltip title="Wishlist">
+                        <Button shape="circle" icon={<HeartOutlined/>} size={'large'} />
+                    </Tooltip>
+                    <Tooltip title="Shopping Cart">
+                        <Button shape="circle" icon={<ShoppingCartOutlined/>} size={'large'} />
+                    </Tooltip>
+                </Flex>
             </div>
         </div>
     );
