@@ -1,4 +1,7 @@
 export const theme = {
-    token: {
-    }
+    components: {
+        Menu: {
+            //horizontalItemSelectedColor: '#ff0000',
+        },
+    },
 }

@@ -1,8 +1,9 @@
-'use client';
+'use client'
 import { useEffect, useState } from 'react';
-import { Menu, Avatar, Space } from 'antd';
+import { Input, Menu, Avatar, Space, Tooltip, Button, Flex } from 'antd';
+import {UserOutlined, ShoppingCartOutlined, FormOutlined, HeartOutlined, ShopOutlined, SettingOutlined} from '@ant-design/icons';
 import Link from 'next/link';
-import {usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const defaultAvatar = '/path/to/default/avatar.jpg'; // Path to your default avatar image
 
@@ -13,36 +14,51 @@ const user = {
 };
 
 const Navbar = () => {
-    const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
     const pathname = usePathname();
 
     return (
-        <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                <Menu mode="horizontal" selectedKeys={[pathname]} style={{ flex: 1 }} theme='dark'>
-                    <Menu.Item key="/">
-                        <Link href="/">Home</Link>
+        <div className={'bg-inherit flex gap-4 justify-between'}>
+            <div>
+                <Link href="/">Logo</Link> {/* Removed inline styling for Link */}
+            </div>
+            <div className={'h-17 grid content-center'}>
+                <Input.Search placeholder="Search..."/>
+            </div>
+            <div>
+                <Menu mode="horizontal" selectedKeys={[pathname]} className={'bg-inherit'}>
+                    <Menu.Item key="/community" icon={<FormOutlined />}>
+                        <Link href="/community">Forum</Link>
                     </Menu.Item>
-                    <Menu.Item key="/products">
-                        <Link href="/products">Products</Link>
+                    <Menu.Item key="/shop" icon={<ShopOutlined />}>
+                        <Link href="/shop">Shop</Link>
                     </Menu.Item>
-                    <Menu.Item key="/community">
-                        <Link href="/community">Community Forums</Link>
+                    <Menu.Item key="/scshop" icon={<ShopOutlined />}>
+                        <Link href="/scshop">SC Shop</Link>
                     </Menu.Item>
-                    <Menu.Item key="/account">
-                        <Link href="/account">User Account</Link>
+                    <Menu.Item key="/account" icon={<UserOutlined />}>
+                        <Link href="/account">Profile</Link>
                     </Menu.Item>
-                    <Menu.Item key="/adminstration">
-                        <Link href="/adminstration">Adminstration</Link>
+                    <Menu.Item key="/merchant" icon={<ShoppingCartOutlined />}>
+                        <Link href="/merchant">My Products</Link>
                     </Menu.Item>
-                    <Menu.Item key="/merchant">
-                        <Link href="/merchant">Merchant</Link>
+                    <Menu.Item key="/administration" icon={<SettingOutlined />}>
+                        <Link href="/administration">Administrator</Link>
                     </Menu.Item>
                 </Menu>
-                {/*<div onClick={() => (window.location.href = '/account')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginLeft: '16px' }}>*/}
-                {/*    <Avatar src={user.avatar || defaultAvatar} />*/}
-                {/*    <span style={{ marginLeft: '8px' }}>{user.name}</span>*/}
-                {/*</div>*/}
+            </div>
+            <div className={'flex-auto'}>
+                <Avatar size={32} icon={<UserOutlined />} /* src={user.avatar || defaultAvatar} */ />
+                <span style={{ marginLeft: '8px' }}>{user.name}</span>
+            </div>
+            <div className={'h-17 grid content-center'}>
+                <Flex wrap="wrap" gap="middle">
+                    <Tooltip title="Wishlist">
+                        <Button shape="circle" icon={<HeartOutlined/>} size={'large'} />
+                    </Tooltip>
+                    <Tooltip title="Shopping Cart">
+                        <Button shape="circle" icon={<ShoppingCartOutlined/>} size={'large'} />
+                    </Tooltip>
+                </Flex>
             </div>
         </div>
     );
