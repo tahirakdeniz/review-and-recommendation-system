@@ -3,15 +3,14 @@ import {Card, Layout} from "antd";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import {StyleProvider} from '@ant-design/cssinjs';
+import {bgBlack} from "next/dist/lib/picocolors";
 
 export function ProjectLayout(props: { children: React.ReactNode }) {
     return (
         // <StyleProvider hashPriority={"high"}>
             <Layout  className={'h-screen'}>
-                <Layout.Header>
-                    <div className={'container mx-auto'}>
-                        <Navbar/>
-                    </div>
+                <Layout.Header className={'bg-white'}>
+                    <Navbar/>
                 </Layout.Header>
                 <Layout.Content className={'px-12 mt-4'}>
                     <div className={'container mx-auto'}>
