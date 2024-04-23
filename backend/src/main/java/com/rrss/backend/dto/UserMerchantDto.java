@@ -7,6 +7,8 @@ public record UserMerchantDto(
         //List<MerchantReviewReplyDto> reviewReplyDtos,
 ) {
     public static UserMerchantDto convert(Merchant from) {
+        if (from == null)
+            return null;
         return new UserMerchantDto(
                 from.getId()
                 //from.getReviewReplies().stream().map(MerchantReviewReplyDto::convert).collect(Collectors.toList())

@@ -44,6 +44,12 @@ public class UserController {
         userService.refreshToken(request,response);
     }
 
+    @GetMapping
+    public ResponseEntity<UserDto> getUserSettings(Principal currentUser) {
+        return ResponseEntity.ok(userService.getUserSettings(currentUser));
+
+    }
+
     @PutMapping
     public ResponseEntity<UserSettingsDto> changeSettings(Principal currentUser, @RequestBody @Valid ChangeUserSettingsRequest changeUserSettingsRequest) {
         return ResponseEntity.ok(userService.changeSettings(currentUser, changeUserSettingsRequest));
