@@ -29,3 +29,6 @@ application:
 constants:
   otp-token-duration: 2
 
+
+server:
+  port: 8080
