@@ -27,7 +27,7 @@ application:
 
 
 constants:
-  otp-token- duration: 2
+  otp-token-duration: 2
 
 
 server:
