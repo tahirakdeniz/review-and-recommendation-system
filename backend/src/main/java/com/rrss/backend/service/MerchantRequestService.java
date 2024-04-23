@@ -23,7 +23,6 @@ public class MerchantRequestService {
     }
 
 
-    @PreAuthorize("hasAuthority('APPROVE_MERCHANT_REQUEST')")
     public String answerRequest(String username, String message, boolean isApproved) {
 
         MerchantRequest request = repository
