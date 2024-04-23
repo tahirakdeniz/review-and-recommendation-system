@@ -5,6 +5,7 @@ import com.rrss.backend.dto.*;
 import com.rrss.backend.enums.TokenType;
 import com.rrss.backend.exception.custom.UsernameIsNotUniqueException;
 import com.rrss.backend.model.*;
+import com.rrss.backend.repository.MerchantRequestRepository;
 import com.rrss.backend.repository.UserRepository;
 import com.rrss.backend.util.ImageUtil;
 import com.rrss.backend.util.UserUtil;
@@ -33,13 +34,13 @@ public class UserService {
     private final TokenService tokenService;
     private final RoleService roleService;
     private final ConfirmationService confirmationService;
-    private final MerchantRequestService merchantRequestService;
+    private final MerchantRequestRepository merchantRequestRepository;
     private final CartService cartService;
     private final MerchantService merchantService;
     private final UserUtil userUtil;
 
 
-    public UserService(UserRepository repository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, RoleService roleService, ConfirmationService confirmationService, MerchantRequestService merchantRequestService, CartService cartService, MerchantService merchantService, UserUtil userUtil) {
+    public UserService(UserRepository repository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, RoleService roleService, ConfirmationService confirmationService, MerchantRequestService merchantRequestService, MerchantRequestRepository merchantRequestRepository, CartService cartService, MerchantService merchantService, UserUtil userUtil) {
         this.repository = repository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
@@ -47,7 +48,7 @@ public class UserService {
         this.tokenService = tokenService;
         this.roleService = roleService;
         this.confirmationService = confirmationService;
-        this.merchantRequestService = merchantRequestService;
+        this.merchantRequestRepository = merchantRequestRepository;
         this.cartService = cartService;
         this.merchantService = merchantService;
         this.userUtil = userUtil;
@@ -75,10 +76,9 @@ public class UserService {
         );
 
         if (registrationRequest.role().equals("MERCHANT")) {
-            merchantRequestService.createRequest(user);
+            merchantRequestRepository.save(new MerchantRequest(user));
         }
-
-
+        
         var savedUser = repository.save(user);
 
         var jwtToken = jwtService.generateToken(user);

@@ -52,10 +52,6 @@ public class MerchantRequestService {
     }
 
 
-    protected void createRequest(User user) {
-        repository.save(new MerchantRequest(user));
-    }
-
     public List<MerchantRequestDto> getPendingRequests() {
         return repository.findAllByStatusOrderByRequestDateAsc(MerchantRequestStatus.PENDING)
                 .stream()
