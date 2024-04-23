@@ -40,7 +40,7 @@ public class UserService {
     private final UserUtil userUtil;
 
 
-    public UserService(UserRepository repository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, RoleService roleService, ConfirmationService confirmationService, MerchantRequestService merchantRequestService, MerchantRequestRepository merchantRequestRepository, CartService cartService, MerchantService merchantService, UserUtil userUtil) {
+    public UserService(UserRepository repository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, RoleService roleService, ConfirmationService confirmationService, MerchantRequestRepository merchantRequestRepository, CartService cartService, MerchantService merchantService, UserUtil userUtil) {
         this.repository = repository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
