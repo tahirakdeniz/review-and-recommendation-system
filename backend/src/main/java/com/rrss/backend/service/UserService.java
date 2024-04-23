@@ -247,7 +247,7 @@ public class UserService {
                 user.getCart()
         );
 
-        repository.save(user);
+        repository.save(newUser);
     }
 
     @Transactional

@@ -4,6 +4,7 @@ import com.rrss.backend.dto.AddProductRequest;
 import com.rrss.backend.dto.ProductDto;
 import com.rrss.backend.model.Merchant;
 import com.rrss.backend.model.Product;
+import com.rrss.backend.model.User;
 import com.rrss.backend.repository.ProductRepository;
 import com.rrss.backend.util.ImageUtil;
 import com.rrss.backend.util.UserUtil;
@@ -31,10 +32,12 @@ public class ProductService {
 
     public ProductDto addProduct(Principal currentUser, AddProductRequest addProductRequest, MultipartFile file) throws IOException {
 
+        User user = userUtil.extractUser(currentUser);
+
         Product product = new Product(
                 addProductRequest.name(),
                 addProductRequest.description(),
-                Objects.requireNonNull(userUtil.extractUser(currentUser).getMerchant()),
+                user.getMerchant(),
                 productCategoryService.findByName(addProductRequest.productCategoryName()),
                 addProductRequest.price(),
                 ImageUtil.compressImage(file.getBytes())
