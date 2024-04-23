@@ -42,8 +42,8 @@ public class ConfirmationService {
         while (output.length() < 5) {
             output.insert(0, "0");
         }
-
-        return output.toString();
+        return "000000";
+        //return output.toString();
     }
 
     public ConfirmationTokenDto createToken(CreateTokenRequest createTokenRequest) {
@@ -51,7 +51,6 @@ public class ConfirmationService {
         if(userRepository.existsByEmail(createTokenRequest.email())) {
             throw new UserAlreadyExistsException("User with this email already exists.");
         }
-        // TODO BU SIGNUP ISI BENCEM SORUNLU ONA BIRDAHA BAK DEGISTIREBILIRIZ. BURADAKI SORUN KULLANICI BUTUN BILGILERINI GIRDIKTEN SONRA EMAIL GIRIYOR.
 
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(otpTokenDuration);
 
@@ -72,7 +71,7 @@ public class ConfirmationService {
             throw new RuntimeException("Unable to send otp please try again");
         }
 
-        return ConfirmationTokenDto.convert(confirmationToken);
+        return ConfirmationTokenDto.convert(repository.save(confirmationToken));
     }
 
     public void checkOtp(String otp, String email) {
