@@ -1,6 +1,7 @@
 package com.rrss.backend.service;
 
 import com.rrss.backend.dto.ProductCategoryDto;
+import com.rrss.backend.dto.ProductCategoryRequest;
 import com.rrss.backend.model.ProductCategory;
 import com.rrss.backend.repository.ProductCategoryRepository;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class ProductCategoryService {
                 .toList();
     }
 
-    public ProductCategoryDto addProductCategory(ProductCategoryDto productCategoryRequest) {
+    public ProductCategoryDto addProductCategory(ProductCategoryRequest productCategoryRequest) {
         return ProductCategoryDto.convert(
                 repository.save(
                         new ProductCategory(

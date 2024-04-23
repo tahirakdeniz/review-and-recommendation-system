@@ -38,7 +38,7 @@ public class EmailUtil {
         mimeMessageHelper.setText("""
         <div>
             Your OTP code is: <strong>%s</strong>
-            wrote this otp with new password to reset your password.
+            write this otp with new password to reset your password.
         </div>      \s
         """.formatted(otp), true);
 
