@@ -9,6 +9,6 @@ data class Cart(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @OneToMany(mappedBy = "cart", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cart", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     val items: List<CartItem> = mutableListOf()
 )

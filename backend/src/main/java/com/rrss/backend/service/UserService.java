@@ -189,7 +189,9 @@ public class UserService {
                 user.getPurchases()
         );
 
-        byte[] userImage = user.getProfilePicture();
+        repository.save(newUser);
+
+        byte[] userImage = newUser.getProfilePicture();
 
         if (userImage == null) return null;
         try {
@@ -309,5 +311,11 @@ public class UserService {
         );
         repository.save(newUser);
         return "password updated successfully";
+    }
+
+    public UserDto getUserSettings(Principal currentUser) {
+        User user = userUtil.extractUser(currentUser);
+
+        return UserDto.convert(user);
     }
 }

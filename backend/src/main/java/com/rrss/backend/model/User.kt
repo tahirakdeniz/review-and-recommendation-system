@@ -59,7 +59,7 @@ data class User @JvmOverloads constructor(
     @Column(nullable = false)
     var socialCredit: BigDecimal = BigDecimal.ZERO,
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var purchases: List<Purchase> = mutableListOf()
 
 
