@@ -24,11 +24,9 @@ import static org.springframework.util.MimeTypeUtils.IMAGE_PNG_VALUE;
 @Validated
 public class UserController {
     private final UserService userService;
-    private final UserUtil userUtil;
 
-    public UserController(UserService userService, UserUtil userUtil) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userUtil = userUtil;
     }
 
     @PostMapping("/register")
@@ -53,7 +51,7 @@ public class UserController {
 
     @PutMapping("/picture")
     public ResponseEntity<byte[]> uploadProfilePicture(@RequestParam("image") MultipartFile file, Principal currentUser) throws IOException {
-        byte[] imageData = userService.downloadProfilePicture(currentUser);
+        byte[] imageData = userService.uploadProfilePicture(file, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.valueOf(IMAGE_PNG_VALUE))
                 .body(imageData);
@@ -66,5 +64,4 @@ public class UserController {
                 .contentType(MediaType.valueOf(IMAGE_PNG_VALUE))
                 .body(imageData);
     }
-
 }

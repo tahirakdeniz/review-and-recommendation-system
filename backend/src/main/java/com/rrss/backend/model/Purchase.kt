@@ -8,10 +8,10 @@ import java.time.LocalDateTime
 //SATIN ALMA GECMISI YAPACAKSAK LAZIM EGER YAPMAYACAKSAK GEREK YOK
 @Entity
 @Table(name = "purchases")
-data class Purchase(
+data class Purchase @JvmOverloads constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    val id: Long? = 0,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -19,7 +19,7 @@ data class Purchase(
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "purchase_id")
-    val items: List<PurchaseItem> = mutableListOf(),
+    val items: List<PurchaseItem>,
 
     @Column(nullable = false)
     val totalCost: BigDecimal = BigDecimal.ZERO,

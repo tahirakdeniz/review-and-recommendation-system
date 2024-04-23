@@ -2,6 +2,7 @@ package com.rrss.backend.model
 
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
+import java.math.BigDecimal
 import java.sql.Types
 
 @Entity
@@ -23,7 +24,7 @@ data class Product @JvmOverloads constructor(
     @JoinColumn(name = "product_type_id", nullable = false)
     val productCategory: ProductCategory,
 
-    val price: Double,
+    val price: BigDecimal,
 
     @Lob
     @JdbcTypeCode(Types.LONGVARBINARY)

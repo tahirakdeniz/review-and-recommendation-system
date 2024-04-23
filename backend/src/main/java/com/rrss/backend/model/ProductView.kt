@@ -22,3 +22,4 @@ data class ProductView(
     val viewDate: LocalDateTime = LocalDateTime.now()
 )
 
+

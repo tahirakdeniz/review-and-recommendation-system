@@ -2,8 +2,8 @@ spring:
   application:
     name: backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/lectorie
-    username: ulasunal
+    url: jdbc:postgresql://localhost:5432/rrss
+    username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
   jpa:
