@@ -46,7 +46,7 @@ data class User @JvmOverloads constructor(
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true)
     val merchant: Merchant? = null,
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     val reviews: List<Review> = mutableListOf(),
 
     @Column(nullable = false)

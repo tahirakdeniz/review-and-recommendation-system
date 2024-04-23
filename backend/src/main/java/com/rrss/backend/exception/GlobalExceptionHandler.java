@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
-        @ExceptionHandler(UserAlreadyExistsException.class)
+    @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(UserAlreadyExistsException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
@@ -133,14 +133,14 @@ public class GlobalExceptionHandler {
 
     // General Exception Handlers
     //@ExceptionHandler(Exception.class)
-    public final ResponseEntity<Map<String, List<ErrorResponse>>> handleGeneralExceptions(Exception ex) {
-        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    //public final ResponseEntity<Map<String, List<ErrorResponse>>> handleGeneralExceptions(Exception ex) {
+    //    return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    //}
 
-    @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity<Map<String, List<ErrorResponse>>> handleRuntimeExceptions(RuntimeException ex) {
-        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    //@ExceptionHandler(RuntimeException.class)
+    //public final ResponseEntity<Map<String, List<ErrorResponse>>> handleRuntimeExceptions(RuntimeException ex) {
+    //    return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    //}
 
 
     private Map<String, List<ErrorResponse>> getErrorsMap(List<ErrorResponse> errors) {
