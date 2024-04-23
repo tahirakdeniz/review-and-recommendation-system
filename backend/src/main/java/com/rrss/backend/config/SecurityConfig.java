@@ -41,7 +41,8 @@ public class SecurityConfig {
                                         "/api/v1/users/register",
                                         "/api/v1/users/login",
                                         "/api/v1/users/refresh-token",
-                                        "/api/v1/email-tokens/create"
+                                        "/api/v1/email-tokens/create",
+                                        "/api/v1/password-reset/**"
                                 )
                                 .permitAll()
                                 .anyRequest()

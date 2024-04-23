@@ -1,7 +1,6 @@
 package com.rrss.backend.service;
 
-import com.rrss.backend.dto.ResetPasswordReqeuest;
-import com.rrss.backend.model.ConfirmationToken;
+import com.rrss.backend.dto.ResetPasswordRequest;
 import com.rrss.backend.model.PasswordResetToken;
 import com.rrss.backend.model.User;
 import com.rrss.backend.repository.PasswordResetTokenRepository;
@@ -52,13 +51,15 @@ public class PasswordResetService {
             throw new RuntimeException("Unable to send otp please try again");
         }
 
+        repository.save(passwordResetToken);
+
         return "password reset token created successfully";
 
     }
 
-    public String resetPassword(ResetPasswordReqeuest resetPasswordReqeuest) {
+    public String resetPassword(ResetPasswordRequest resetPasswordRequest) {
 
-        User user = userService.findByUsername(resetPasswordReqeuest.username());
+        User user = userService.findByUsername(resetPasswordRequest.username());
 
         PasswordResetToken passwordResetToken = repository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Password reset token not found"));
@@ -68,11 +69,11 @@ public class PasswordResetService {
             throw new RuntimeException("Password reset token expired");
         }
 
-        if(!passwordResetToken.getOtp().equals(resetPasswordReqeuest.otp())) {
+        if(!passwordResetToken.getOtp().equals(resetPasswordRequest.otp())) {
             throw new RuntimeException("Invalid otp");
         }
 
-        return userService.updatePassword(user, resetPasswordReqeuest.password());
+        return userService.updatePassword(user, resetPasswordRequest.password());
 
     }
 
