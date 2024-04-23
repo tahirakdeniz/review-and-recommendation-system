@@ -19,15 +19,17 @@ public class Runner implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final CartRepository cartRepository;
     private final MerchantRequestRepository merchantRequestRepository;
+    private final ProductCategoryRepository productCategoryRepository;
 
 
-    public Runner(RoleRepository roleRepository, AuthorityRepository authorityRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, MerchantRequestRepository merchantRequestRepository) {
+    public Runner(RoleRepository roleRepository, AuthorityRepository authorityRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, MerchantRequestRepository merchantRequestRepository, ProductCategoryRepository productCategoryRepository) {
         this.roleRepository = roleRepository;
         this.authorityRepository = authorityRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.cartRepository = cartRepository;
         this.merchantRequestRepository = merchantRequestRepository;
+        this.productCategoryRepository = productCategoryRepository;
     }
 
     @Override
@@ -35,6 +37,12 @@ public class Runner implements CommandLineRunner {
         createUser();
         createMerchantWithRequest();
         createAdmin();
+        saveProductCategories();
+    }
+
+    private void saveProductCategories() {
+        productCategoryRepository.save(new ProductCategory("coffee bean", "just a coffee beans"));
+        productCategoryRepository.save(new ProductCategory("tee", "只是一杯茶，我爱约翰-塞纳"));
     }
 
     private void createUser() {
@@ -81,9 +89,11 @@ public class Runner implements CommandLineRunner {
     private void createAdmin() {
         Authority authorityApprove = authorityRepository.save(new Authority("APPROVE_MERCHANT_REQUEST"));
         Authority authoritySee = authorityRepository.save(new Authority("SEE_MERCHANT_REQUEST"));
+        Authority authorityAddProduct = authorityRepository.save(new Authority("ADD_PRODUCT"));
         Role roleAdmin = roleRepository.save(new Role("ADMIN"));
         roleAdmin.getAuthorities().add(authorityApprove);
         roleAdmin.getAuthorities().add(authoritySee);
+        roleAdmin.getAuthorities().add(authorityAddProduct);
         roleRepository.save(roleAdmin);
 
         Cart cartAdmin = cartRepository.save(new Cart());
