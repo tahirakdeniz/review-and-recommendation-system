@@ -189,7 +189,9 @@ public class UserService {
                 user.getPurchases()
         );
 
-        byte[] userImage = user.getProfilePicture();
+        repository.save(newUser);
+
+        byte[] userImage = newUser.getProfilePicture();
 
         if (userImage == null) return null;
         try {
