@@ -6,14 +6,12 @@ interface CartItemProps {
     image: string;
     rating: number;
     price: number;
+    count: number;
 }
 
-export default function CartItem({name, image, rating, price}: CartItemProps) {
-    // Dummy data for the product card
-
-
+export default function CartItem({name, image, rating, price, count}: CartItemProps) {
     return (
-        <Badge count={1}>
+        <Badge count={count}>
             <Card
                 type="inner"
                 hoverable

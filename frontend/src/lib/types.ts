@@ -18,3 +18,32 @@ export interface Product {
     image: string;
     description: string;
 }
+
+export interface IUserRegistrationData {
+    username: string;
+    password: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    date_of_birth: string;
+    role: string;
+    otp: string;
+}
+
+export interface SignupState {
+    userRegistrationData: IUserRegistrationData;
+    loading: boolean;
+    error: string | null;
+    step: 0 | 1 | 2;
+}
+
+export interface Signup1FormData {
+}
+
+export interface Signup2FormData {
+}
+
+export interface Signup3FormData {
+}
+
+
