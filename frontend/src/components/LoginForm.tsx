@@ -1,13 +1,16 @@
 'use client';
-import { Form, Input, Button, Checkbox } from 'antd';
+import { Form, Input, Button, Checkbox, Typography, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import Image from "next/image";
 import Coffee from "@/assets/images/coffee1.svg";
-import { Typography } from 'antd';
+import {useSelector} from 'react-redux';
+import { loginUser, clearError } from '@/lib/redux/features/login/loginSlice';
+import {RootState, useDispatch} from '@/lib/redux/store';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
-const { Title , Text} = Typography;
-interface LoginFormProps {
-}
+const { Title, Text } = Typography;
+
 
 const LoginFormHeader: React.FC = () => {
     return (
@@ -21,12 +24,30 @@ const LoginFormHeader: React.FC = () => {
     );
 };
 
-const LoginForm: React.FC<LoginFormProps> = () => {
-    const onLogin: () => void = () => {
-        console.log('Login')
-    }
-    const onFinish = (values: any) => {
-        onLogin();
+const LoginForm: React.FC = () => {
+    const dispatch = useDispatch();
+    const { loading, error, accessToken } = useSelector((state: RootState) => state.login);
+   // const router = useRouter();
+
+    useEffect(() => {
+        if (error) {
+            message.error({
+                type: 'error',
+                content: `${error}`,
+                duration: 3,
+            });
+            dispatch(clearError());
+        }
+    }, [error, dispatch]);
+
+    // useEffect(() => {
+    //     if (accessToken) {
+    //         router.push('/home');
+    //     }
+    // }, [accessToken, router]);
+
+    const onFinish = (values: { username: string; password: string }) => {
+        dispatch(loginUser(values));
     };
 
     return (
@@ -36,23 +57,24 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                 <Form
                     name="normal_login"
                     className="login-form"
-                    initialValues={{remember: true}}
+                    initialValues={{ remember: true }}
                     onFinish={onFinish}
                 >
                     <Form.Item
                         name="username"
-                        rules={[{required: true, message: 'Please input your Username!'}]}
+                        rules={[{ required: true, message: 'Please input your Username!' }]}
                     >
-                        <Input prefix={<UserOutlined className="site-form-item-icon"/>} placeholder="Username"/>
+                        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" disabled={loading} />
                     </Form.Item>
                     <Form.Item
                         name="password"
-                        rules={[{required: true, message: 'Please input your Password!'}]}
+                        rules={[{ required: true, message: 'Please input your Password!' }]}
                     >
                         <Input
-                            prefix={<LockOutlined className="site-form-item-icon"/>}
+                            prefix={<LockOutlined className="site-form-item-icon" />}
                             type="password"
                             placeholder="Password"
+                            disabled={loading}
                         />
                     </Form.Item>
                     <Form.Item>
@@ -61,7 +83,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                         </a>
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" className="login-form-button" block>
+                        <Button type="primary" htmlType="submit" className="login-form-button" block disabled={loading}>
                             Log in
                         </Button>
                         Or <a href="/signup">register now!</a>
@@ -70,6 +92,6 @@ const LoginForm: React.FC<LoginFormProps> = () => {
             </div>
         </div>
     );
-}
+};
 
 export default LoginForm;
