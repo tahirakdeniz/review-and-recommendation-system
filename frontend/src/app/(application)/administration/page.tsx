@@ -1,12 +1,21 @@
+'use client'
 import React from 'react';
 
 export default function Administration() {
-    // Placeholder data for the table
+
     const merchantCandidates = [
-        // Add your merchant candidate data here
         { companyName: 'Example Company', ownerName: 'John Doe', applicationDate: '2023-01-01', status: 'Pending' },
-        // More entries...
     ];
+
+    const role = localStorage.getItem("role");
+
+    if(role != "ADMINISTRATION"){ {/*TODO CHECK FOR ROLE*/}
+        return (
+            <div>
+                Not Allowed
+            </div>
+        )
+    }
 
     return (
         <div className="p-6">

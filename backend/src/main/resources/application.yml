@@ -14,8 +14,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: estherong.tr@gmail.com #burayı değiştir.
-    password: mfmw fxuv goym eoem
+    username: ismailulasunal@gmail.com # estherong.tr@gmail.com #burayı değiştir.
+    password: sbmv dahd nqcn hfex # mfmw fxuv goym eoem
 
 application:
   security:
@@ -31,4 +31,4 @@ constants:
 
 
 server:
-  port: 8080
+  port: 8081

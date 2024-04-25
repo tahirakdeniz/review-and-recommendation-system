@@ -34,7 +34,12 @@ export interface SignupState {
     userRegistrationData: IUserRegistrationData;
     loading: boolean;
     error: string | null;
+    success: boolean;
     step: 0 | 1 | 2;
+}
+
+export interface ErrorResponse {
+    errors: {message: string}[]
 }
 
 export interface Signup1FormData {

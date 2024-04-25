@@ -1,6 +1,7 @@
 package com.rrss.backend.controller;
 import com.rrss.backend.dto.AddProductRequest;
 import com.rrss.backend.dto.ProductDto;
+import com.rrss.backend.dto.UpdateProductRequest;
 import com.rrss.backend.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,14 +27,21 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('MERCHANT')")
-    public ResponseEntity<ProductDto> addProduct(Principal currentUser, @RequestBody AddProductRequest addProductRequest, @RequestParam("image") MultipartFile file) throws IOException {
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
+    public ResponseEntity<ProductDto> addProduct(Principal currentUser, @RequestPart AddProductRequest addProductRequest, @RequestParam("image") MultipartFile file) throws IOException {
         return new ResponseEntity<>(productService.addProduct(currentUser, addProductRequest, file), HttpStatus.CREATED);
     }
 
+    @PutMapping("/{productId}")
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
+    public ResponseEntity<ProductDto> updateProduct(Principal currentUser, @PathVariable Long productId, @RequestBody UpdateProductRequest updateProductRequest) {
+        return new ResponseEntity<>(productService.updateProduct(currentUser, productId, updateProductRequest), HttpStatus.NO_CONTENT);
+    }
+
+
     @DeleteMapping("/{productId}")
-    @PreAuthorize("hasRole('MERCHANT')")
-    public ResponseEntity<String> deleteProduct(Principal currentUser, @PathVariable Long productId) {
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
+    public ResponseEntity<ProductDto> deleteProduct(Principal currentUser, @PathVariable Long productId) {
         return new ResponseEntity<>(productService.deleteProduct(currentUser, productId), HttpStatus.NO_CONTENT);
     }
 

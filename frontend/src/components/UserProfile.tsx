@@ -66,7 +66,6 @@ const UserProfilePage: React.FC = () => {
     const handleCancel = () => {
         setIsModalVisible(false);
     };
-
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
             <Card style={{ maxWidth: 1500, width: '100%' }}>

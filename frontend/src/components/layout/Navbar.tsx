@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { Input, Menu, Avatar, Space, Tooltip, Button, Flex } from 'antd';
 import {UserOutlined, ShoppingCartOutlined, FormOutlined, HeartOutlined, ShopOutlined, SettingOutlined} from '@ant-design/icons';
 import Link from 'next/link';
-import { usePathname } from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
+import {PoweroffOutlined} from "@ant-design/icons";
 
 const defaultAvatar = '/path/to/default/avatar.jpg'; // Path to your default avatar image
 
@@ -14,8 +15,15 @@ const user = {
 };
 
 const Navbar = () => {
+    const accessToken = localStorage.getItem('accessToken');
+    const role = localStorage.getItem('role');
     const pathname = usePathname();
 
+    const logOut = () => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('role');
+        window.location.reload();
+    }
     return (
         <div className={'bg-inherit flex gap-4 justify-between'}>
             <div>
@@ -38,26 +46,37 @@ const Navbar = () => {
                     <Menu.Item key="/account" icon={<UserOutlined />}>
                         <Link href="/account">Profile</Link>
                     </Menu.Item>
-                    <Menu.Item key="/merchant" icon={<ShoppingCartOutlined />}>
+                    {role == 'MERCHANT' && <Menu.Item key="/merchant" icon={<ShoppingCartOutlined/>}>
                         <Link href="/merchant">My Products</Link>
-                    </Menu.Item>
-                    <Menu.Item key="/administration" icon={<SettingOutlined />}>
+                    </Menu.Item>}
+                    {role == 'ADMINISTRATION' && <Menu.Item key="/administration" icon={<SettingOutlined/>}> {/*TODO check role for administraion*/}
                         <Link href="/administration">Administrator</Link>
-                    </Menu.Item>
+                    </Menu.Item>}
                 </Menu>
             </div>
-            <div className={'flex-auto'}>
-                <Avatar size={32} icon={<UserOutlined />} /* src={user.avatar || defaultAvatar} */ />
-                <span style={{ marginLeft: '8px' }}>{user.name}</span>
-            </div>
+            {accessToken ?
+                (<div className={'flex-auto'}>
+                    <Avatar size={32} icon={<UserOutlined/>} /* src={user.avatar || defaultAvatar} */ />
+                    <span style={{marginLeft: '8px'}}>{user.name}</span>
+                </div>)
+                :
+                (<div className={'flex-auto'}>
+                    <Link href={'/signup'}>Sign up</Link> or <Link href={'/login'}>Log in</Link>
+                </div>)
+            }
+
             <div className={'h-17 grid content-center'}>
                 <Flex wrap="wrap" gap="middle">
+                    {accessToken && (<Tooltip title="Log Out">
+                        <Button shape="circle" icon={<PoweroffOutlined />} size={'large'} onClick={() => logOut()}/>
+                    </Tooltip>)}
                     <Tooltip title="Wishlist">
                         <Button shape="circle" icon={<HeartOutlined/>} size={'large'} />
                     </Tooltip>
                     <Tooltip title="Shopping Cart">
                         <Button shape="circle" icon={<ShoppingCartOutlined/>} size={'large'} />
                     </Tooltip>
+
                 </Flex>
             </div>
         </div>

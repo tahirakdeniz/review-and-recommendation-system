@@ -24,7 +24,7 @@ export default function Signup1() {
             {field: 'username', value: username},
             {field: 'password', value: password},
             {field: 'email', value: email},
-            {field: 'role', value: isMerchant ? 'merchant' : 'user'} // TODO check for the role syntax for merchant
+            {field: 'role', value: isMerchant ? 'MERCHANT' : 'USER'}
         ]));
         dispatch(setStep(1));
     };
@@ -35,7 +35,6 @@ export default function Signup1() {
             <Form
                 name="signup"
                 className="signup-form"
-                initialValues={{ remember: true }}
                 onFinish={onFinish}
             >
                 <Form.Item
@@ -46,7 +45,17 @@ export default function Signup1() {
                 </Form.Item>
                 <Form.Item
                     name="password"
-                    rules={[{ required: true, message: 'Please input your Password!' }]}
+                    rules={[
+                        { required: true, message: 'Please input your Password!' },
+                        () => ({
+                            validator(_, value) {
+                                if (value.length >= 8) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('The password that you entered has should be more than 8 characters!'));
+                            },
+                        }),
+                    ]}
                 >
                     <Input
                         prefix={<LockOutlined className="site-form-item-icon"/>}
