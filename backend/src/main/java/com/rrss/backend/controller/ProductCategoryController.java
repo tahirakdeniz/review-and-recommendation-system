@@ -1,6 +1,7 @@
 package com.rrss.backend.controller;
 
 import com.rrss.backend.dto.ProductCategoryDto;
+import com.rrss.backend.dto.ProductCategoryRequest;
 import com.rrss.backend.service.ProductCategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,8 +25,8 @@ public class ProductCategoryController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductCategoryDto> addProductCategory(@RequestBody ProductCategoryDto productCategoryRequest) {
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT_CATEGORY')")
+    public ResponseEntity<ProductCategoryDto> addProductCategory(@RequestBody ProductCategoryRequest productCategoryRequest) {
         return ResponseEntity.ok(productCategoryService.addProductCategory(productCategoryRequest));
     }
 }

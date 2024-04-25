@@ -14,8 +14,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ismailulasunal@gmail.com #burayı değiştir.
-    password: sbmv dahd nqcn hfex
+    username: ismailulasunal@gmail.com # estherong.tr@gmail.com #burayı değiştir.
+    password: sbmv dahd nqcn hfex # mfmw fxuv goym eoem
 
 application:
   security:
@@ -29,3 +29,6 @@ application:
 constants:
   otp-token-duration: 2
 
+
+server:
+  port: 8081

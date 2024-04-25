@@ -1,6 +1,6 @@
 package com.rrss.backend.controller;
 
-import com.rrss.backend.dto.ResetPasswordReqeuest;
+import com.rrss.backend.dto.ResetPasswordRequest;
 import com.rrss.backend.service.PasswordResetService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class PasswordResetController {
     }
 
     @PutMapping
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordReqeuest resetPasswordReqeuest) {
-        return ResponseEntity.ok(passwordResetService.resetPassword(resetPasswordReqeuest));
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+        return ResponseEntity.ok(passwordResetService.resetPassword(resetPasswordRequest));
     }
 }

@@ -1,14 +1,32 @@
 'use client';
-import React from "react";
+
+import React, {useEffect} from "react";
 import SignupFormHeader from "@/components/SignupFormHeader";
-import { Form, Input, Button } from "antd";
+import {Form, Input, Button, Checkbox} from "antd";
 import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
 import SignupStepper from "@/components/SignupStepper";
+import {useDispatch, useSelector} from "react-redux";
+import {setFields, setStep} from "@/lib/redux/features/signup/signupSlice";
+import {useRouter} from "next/navigation";
+import {RootState} from "@/lib/redux/store";
 
 export default function Signup1() {
-    const onFinish = (values: any) => {
-        console.log('Signup', values);
-        // Add your signup logic here
+    const dispatch = useDispatch();
+    const router = useRouter()
+    const step = useSelector((state: RootState) => state.signup.step);
+
+    useEffect(() => {
+        if (step !== 0) router.push(`/signup/${step + 1}`); // Redirect to the correct step if the user has already completed this step
+    }, [router, step]);
+
+    const onFinish = ({username, password, email, isMerchant}: any) => {
+        dispatch(setFields([
+            {field: 'username', value: username},
+            {field: 'password', value: password},
+            {field: 'email', value: email},
+            {field: 'role', value: isMerchant ? 'MERCHANT' : 'USER'}
+        ]));
+        dispatch(setStep(1));
     };
 
     return (
@@ -17,7 +35,6 @@ export default function Signup1() {
             <Form
                 name="signup"
                 className="signup-form"
-                initialValues={{ remember: true }}
                 onFinish={onFinish}
             >
                 <Form.Item
@@ -28,7 +45,17 @@ export default function Signup1() {
                 </Form.Item>
                 <Form.Item
                     name="password"
-                    rules={[{ required: true, message: 'Please input your Password!' }]}
+                    rules={[
+                        { required: true, message: 'Please input your Password!' },
+                        () => ({
+                            validator(_, value) {
+                                if (value.length >= 8) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('The password that you entered has should be more than 8 characters!'));
+                            },
+                        }),
+                    ]}
                 >
                     <Input
                         prefix={<LockOutlined className="site-form-item-icon"/>}
@@ -66,6 +93,11 @@ export default function Signup1() {
                     ]}
                 >
                     <Input prefix={<MailOutlined className="site-form-item-icon"/>} placeholder="Email"/>
+                </Form.Item>
+                <Form.Item
+                    name='isMerchant'
+                >
+                    <Checkbox> I want to be merchant</Checkbox>
                 </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit" className="signup-form-button" block>

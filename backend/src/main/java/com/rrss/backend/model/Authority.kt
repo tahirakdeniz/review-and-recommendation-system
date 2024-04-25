@@ -10,11 +10,11 @@ import org.springframework.security.core.GrantedAuthority
 
 @Entity
 @Table(name = "authorities")
-data class Authority (
+data class Authority @JvmOverloads constructor(
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long,
+    val id: Long? = null,
 
     val name: String
 

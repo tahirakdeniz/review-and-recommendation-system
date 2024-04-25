@@ -11,6 +11,7 @@ import com.rrss.backend.util.ImageUtil;
 import com.rrss.backend.util.UserUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.zip.DataFormatException;
 
 
@@ -40,7 +43,7 @@ public class UserService {
     private final UserUtil userUtil;
 
 
-    public UserService(UserRepository repository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, RoleService roleService, ConfirmationService confirmationService, MerchantRequestService merchantRequestService, MerchantRequestRepository merchantRequestRepository, CartService cartService, MerchantService merchantService, UserUtil userUtil) {
+    public UserService(UserRepository repository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, RoleService roleService, ConfirmationService confirmationService, MerchantRequestRepository merchantRequestRepository, CartService cartService, MerchantService merchantService, UserUtil userUtil) {
         this.repository = repository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
@@ -66,7 +69,7 @@ public class UserService {
 
         User user = new User(
                 registrationRequest.username(),
-                registrationRequest.password(),
+                passwordEncoder.encode(registrationRequest.password()),
                 registrationRequest.email(),
                 registrationRequest.firstName(),
                 registrationRequest.lastName(),
@@ -78,7 +81,7 @@ public class UserService {
         if (registrationRequest.role().equals("MERCHANT")) {
             merchantRequestRepository.save(new MerchantRequest(user));
         }
-        
+
         var savedUser = repository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
@@ -93,7 +96,7 @@ public class UserService {
 
         User user = repository.findByUsername(loginRequest.username())
                 .filter(u -> passwordEncoder.matches(loginRequest.password(), u.getPassword()))
-                .orElseThrow(() -> new RuntimeException("invalid email or password"));
+                .orElseThrow(() -> new RuntimeException("invalid username or password"));
 
 
         authenticationManager.authenticate(
@@ -186,7 +189,9 @@ public class UserService {
                 user.getPurchases()
         );
 
-        byte[] userImage = user.getProfilePicture();
+        repository.save(newUser);
+
+        byte[] userImage = newUser.getProfilePicture();
 
         if (userImage == null) return null;
         try {
@@ -242,16 +247,18 @@ public class UserService {
                 user.getCart()
         );
 
-        repository.save(user);
+        repository.save(newUser);
     }
 
+    @Transactional
     public UserSettingsDto changeSettings(Principal currentUser, ChangeUserSettingsRequest request) {
         User user = userUtil.extractUser(currentUser);
 
-        if (repository.findByUsername(request.username()).isPresent())
+        Optional<User> lookedUser = repository.findByUsername(request.username());
+        if (lookedUser.isPresent() && !lookedUser.get().getUsername().equals(user.getUsername()))
             throw new UsernameIsNotUniqueException("Username is not unique");
 
-        new User(
+        User newUser = new User(
                 user.getId(),
                 request.username(),
                 user.getPassword(),
@@ -267,10 +274,15 @@ public class UserService {
                 user.getRole(),
                 request.dateOfBirth(),
                 user.getMerchant(),
-                user.getCart()
+                user.getReviews(),
+                user.getAccountBalance(),
+                user.getCart(),
+                user.getSocialCredit(),
+                user.getPurchases()
         );
 
-        return UserSettingsDto.convert(repository.save(user));
+
+        return UserSettingsDto.convert(repository.save(newUser));
     }
 
     protected User findByUsername(String username) {
@@ -299,5 +311,11 @@ public class UserService {
         );
         repository.save(newUser);
         return "password updated successfully";
+    }
+
+    public UserDto getUserSettings(Principal currentUser) {
+        User user = userUtil.extractUser(currentUser);
+
+        return UserDto.convert(user);
     }
 }

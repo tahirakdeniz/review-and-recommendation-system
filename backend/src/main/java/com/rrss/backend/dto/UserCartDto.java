@@ -11,7 +11,9 @@ public record UserCartDto (
     public static UserCartDto convert(Cart from) {
         return new UserCartDto(
                 from.getId(),
-                from.getItems().stream().map(CartItemDto::convert).toList()
+                from.getItems()
+                        .stream()
+                        .map(CartItemDto::convert).toList()
         );
     }
 }

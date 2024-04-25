@@ -13,7 +13,6 @@ interface EditProfileModalProps {
 }
 
 const customRequest = ({ file, onSuccess }: any) => {
-  // Simulate an upload process.
   setTimeout(() => {
     onSuccess("ok");
   }, 0);
@@ -28,7 +27,7 @@ const beforeUpload = (file: File) => {
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error('Image must smaller than 2MB!').then(() => reject());
+      message.error('Image must be smaller than 2MB!').then(() => reject());
       return;
     }
     resolve(true);
@@ -51,7 +50,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ userInfo, isModalVi
       return;
     }
     if (info.file.status === 'done') {
-      // Assuming the response includes the URL to the uploaded image
       getBase64(info.file.originFileObj as File, imageUrl => {
         form.setFieldsValue({ avatar: imageUrl });
         setUploading(false);
@@ -74,31 +72,53 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ userInfo, isModalVi
           Save
         </Button>,
       ]}>
-      <Form form={form} layout="vertical" initialValues={userInfo}>
-        <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input your name!' }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item label="Bio" name="bio">
-          <Input.TextArea />
-        </Form.Item>
-        <Form.Item label="Avatar" name="avatar">
-          <Upload
-            name="avatar"
-            listType="picture-card"
-            className="avatar-uploader"
-            showUploadList={false}
-            customRequest={customRequest}
-            beforeUpload={beforeUpload}
-            onChange={handleAvatarChange}
-          >
-            {userInfo.avatar ? <img src={userInfo.avatar} alt="avatar" style={{ width: '100%' }} /> : <PlusOutlined />}
-          </Upload>
-        </Form.Item>
-      </Form>
-    </Modal>
+        <Form form={form} layout="vertical" initialValues={userInfo}>
+          <Form.Item label="Avatar" name="avatar">
+            <Upload
+                name="avatar"
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList={false}
+                customRequest={customRequest}
+                beforeUpload={beforeUpload}
+                onChange={handleAvatarChange}
+            >
+              {userInfo.avatar ? <img src={userInfo.avatar} alt="avatar" style={{ width: '100%' }} /> : <PlusOutlined />}
+            </Upload>
+          </Form.Item>
+          <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input your name!' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Bio" name="bio">
+            <Input.TextArea />
+          </Form.Item>
+          <Form.Item label="Current Password" name="currentPassword" rules={[{ required: true, message: 'Please input your current password!' }]}>
+            <Input.Password />
+          </Form.Item>
+          <Form.Item label="New Password" name="newPassword" rules={[{ required: true, message: 'Please input your new password!' }]}>
+            <Input.Password />
+          </Form.Item>
+          <Form.Item label="Confirm New Password" name="confirmNewPassword" dependencies={['newPassword']} rules={[
+            {
+              required: true,
+              message: 'Please confirm your new password!',
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('newPassword') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('The two passwords that you entered do not match!'));
+              },
+            }),
+          ]}>
+            <Input.Password />
+          </Form.Item>
+        </Form>
+      </Modal>
   );
 };
 
