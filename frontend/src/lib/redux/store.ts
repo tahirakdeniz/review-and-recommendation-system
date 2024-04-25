@@ -6,6 +6,7 @@ import signupReducer from "@/lib/redux/features/signup/signupSlice";
 import loginReducer from "@/lib/redux/features/login/loginSlice";
 import productReducer from "@/lib/redux/features/productManagment/productManagmentSlice";
 import {useDispatch as reduxUseDispatch} from "react-redux";
+import userReducer from "@/lib/redux/features/user/userSlice"
 
 
 export const store = configureStore({
@@ -15,6 +16,7 @@ export const store = configureStore({
         signup: signupReducer,
         login: loginReducer,
         products: productReducer,
+        user: userReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(cartApi.middleware),
