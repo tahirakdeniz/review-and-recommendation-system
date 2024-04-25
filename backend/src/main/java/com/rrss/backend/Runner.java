@@ -2,10 +2,14 @@ package com.rrss.backend;
 
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.*;
+import com.rrss.backend.service.MerchantRequestService;
+import com.rrss.backend.service.ProductService;
+import com.rrss.backend.util.ImageUtil;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -20,9 +24,10 @@ public class Runner implements CommandLineRunner {
     private final CartRepository cartRepository;
     private final MerchantRequestRepository merchantRequestRepository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final MerchantRequestService merchantRequestService;
 
 
-    public Runner(RoleRepository roleRepository, AuthorityRepository authorityRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, MerchantRequestRepository merchantRequestRepository, ProductCategoryRepository productCategoryRepository) {
+    public Runner(RoleRepository roleRepository, AuthorityRepository authorityRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, MerchantRequestRepository merchantRequestRepository, ProductCategoryRepository productCategoryRepository, MerchantRequestService merchantRequestService) {
         this.roleRepository = roleRepository;
         this.authorityRepository = authorityRepository;
         this.userRepository = userRepository;
@@ -30,14 +35,15 @@ public class Runner implements CommandLineRunner {
         this.cartRepository = cartRepository;
         this.merchantRequestRepository = merchantRequestRepository;
         this.productCategoryRepository = productCategoryRepository;
+        this.merchantRequestService = merchantRequestService;
     }
 
     @Override
     public void run(String... args) throws Exception {
         createUser();
+        saveProductCategories();
         createMerchantWithRequest();
         createAdmin();
-        saveProductCategories();
     }
 
     private void saveProductCategories() {
@@ -72,6 +78,8 @@ public class Runner implements CommandLineRunner {
         roleRepository.save(roleMerchant);
 
         Cart cartMerchant = cartRepository.save(new Cart());
+        Cart cartRealMerchant = cartRepository.save(new Cart());
+
 
         User merchant = new User(
                 "jon_merchant",
@@ -85,7 +93,25 @@ public class Runner implements CommandLineRunner {
                 cartMerchant
         );
         User newMerchant = userRepository.save(merchant);
+
+        User realMerchant = new User(
+                "jon_real_merchant",
+                passwordEncoder.encode("securepass"),
+                "example2@gmail.com",
+                "jon",
+                "doe",
+                roleRepository.findByName("USER")
+                        .orElseThrow(),
+                LocalDate.of(1995, 5, 5),
+                cartRealMerchant
+        );
+        User newRealMerchant = userRepository.save(realMerchant);
+
         merchantRequestRepository.save(new MerchantRequest(newMerchant));
+        merchantRequestRepository.save(new MerchantRequest(newRealMerchant));
+
+        merchantRequestService.answerRequest("jon_real_merchant", "added from runner", true);
+
     }
 
     private void createAdmin() {

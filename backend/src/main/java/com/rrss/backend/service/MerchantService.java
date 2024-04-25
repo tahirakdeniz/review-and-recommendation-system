@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 import java.util.zip.DataFormatException;
 
 @Service
@@ -27,5 +28,4 @@ public class MerchantService {
     protected Merchant createMerchant(User user) {
         return repository.save(new Merchant(user));
     }
-
 }

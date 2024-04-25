@@ -1,7 +1,17 @@
 'use client'
 import {Button, Input, Modal, Rate, Space, Table, TableColumnType} from "antd";
 import {DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined} from "@ant-design/icons";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {RootState, useDispatch} from "@/lib/redux/store";
+import {
+    deleteProduct,
+    fetchProducts,
+    Product,
+    setProduct
+} from "@/lib/redux/features/productManagment/productManagmentSlice";
+import {useSelector} from "react-redux";
+import TextArea from "antd/es/input/TextArea";
+import {useRouter} from "next/navigation";
 
 interface MerchantProduct {
     key: string;
@@ -34,57 +44,71 @@ const data: MerchantProduct[] = [
 // EditProductModal component
 interface EditProductModalProps {
     isModalVisible: boolean;
-    currentProduct: MerchantProduct | null;
+    currentProduct?: Product;
     handleSave: () => void;
     handleCancel: () => void;
-    handleChange: (product: MerchantProduct) => void;
+    handleChange: (product: Product) => void;
 }
 
 const MerchantEditProductModal: React.FC<EditProductModalProps> = ({ isModalVisible, currentProduct, handleSave, handleCancel, handleChange }) => {
     return (
-        <Modal title={currentProduct?.key === 'new' ? "Add New Product" : "Edit Product"} visible={isModalVisible} onOk={handleSave} onCancel={handleCancel}>
-            <Input
-                placeholder="Product Name"
-                value={currentProduct?.name}
-                onChange={(e) => handleChange({...currentProduct!, name: e.target.value})}
-            />
-            <Input
-                placeholder="Sold Quantity"
-                type="number"
-                value={currentProduct?.sold}
-                onChange={(e) => handleChange({...currentProduct!, sold: parseInt(e.target.value, 10) || 0})}
-            />
-            <Rate
-                onChange={(value) => handleChange({...currentProduct!, avgRate: value})}
-                value={currentProduct?.avgRate}
-            />
+        <Modal title={currentProduct ? "Edit Product" : "New Product"} visible={isModalVisible} onOk={handleSave} onCancel={handleCancel}>
+            <Space direction="vertical" style={{ width: '100%' }}>
+                <Input
+                    placeholder="Product Name"
+                    value={currentProduct?.name}
+                    onChange={(e) => handleChange({...currentProduct!, name: e.target.value})}
+
+                />
+                <Input
+                    prefix="$"
+                    placeholder="Price"
+                    type="number"
+                    value={currentProduct?.price}
+                    onChange={(e) => handleChange({...currentProduct!, price: parseInt(e.target.value, 10) || 0})}
+                />
+                <TextArea
+                    rows={4}
+                    placeholder="Product Description"
+                    value={currentProduct?.description}
+                    onChange={(e) => handleChange({...currentProduct!, description: e.target.value})}
+                />
+            </Space>
         </Modal>
     );
 };
 
 export default function MerchantProductTable() {
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [currentProduct, setCurrentProduct] = useState<MerchantProduct | null>(null);
+    const {products, loading, product, error, isModalVisible} = useSelector((state: RootState) => state.products)
+    const router = useRouter()
+    const dispatch = useDispatch();
 
-    const showModal = (product: MerchantProduct) => {
+    useEffect(() => {
+        dispatch(fetchProducts())
+    }, [dispatch]);
+
+    useEffect(() => {
+        if(!loading){
+            console.log(products)
+        }
+    }, [loading, products]);
+
+    const showModal = (product: Product) => {
         setCurrentProduct(product);
-        setIsModalVisible(true);
     };
 
     const handleCancel = () => {
-        setIsModalVisible(false);
     };
 
     const handleSave = () => {
         console.log('Save product changes', currentProduct);
-        setIsModalVisible(false);
     };
 
-    const handleChange = (product: MerchantProduct) => {
+    const handleChange = (product: Product) => {
         setCurrentProduct(product);
     };
 
-    const columns: TableColumnType<MerchantProduct>[] = [
+    const columns: TableColumnType<Product>[] = [
         {
             title: 'Name',
             dataIndex: 'name',
@@ -93,34 +117,34 @@ export default function MerchantProductTable() {
             sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'Sold',
-            dataIndex: 'sold',
-            key: 'sold',
-            sorter: (a, b) => a.sold - b.sold,
+            title: 'Price',
+            dataIndex: 'price',
+            key: 'price',
+            sorter: (a, b) => a.price - b.price,
             sortDirections: ['descend', 'ascend'],
         },
-        {
-            title: 'Average Rate',
-            dataIndex: 'avgRate',
-            key: 'avgRate',
-            render: (avgRate: number) => <span><Rate disabled defaultValue={avgRate}/> {avgRate}</span>,
-            sorter: (a, b) => a.avgRate - b.avgRate,
-            sortDirections: ['descend', 'ascend'],
-        },
+        // {
+        //     title: 'Average Rate',
+        //     dataIndex: 'rate',
+        //     key: 'avgRate',
+        //     render: (avgRate: number) => <span><Rate disabled defaultValue={avgRate}/> {avgRate}</span>,
+        //     sorter: (a, b) => a.rate - b.rate,
+        //     sortDirections: ['descend', 'ascend'],
+        // },
         {
             title: 'Action',
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button icon={<EditOutlined />} onClick={() => showModal(record)}>Edit</Button>
+                    <Button icon={<EditOutlined />} onClick={() => dispatch(setProduct(record))}>Edit</Button>
                     <Button icon={<DeleteOutlined />} onClick={() => showDeletionProductConfirmationModal(record)}>Delete</Button>
-                    <Button icon={<EyeOutlined />} onClick={() => {}}>Go to Product</Button>
+                    <Button icon={<EyeOutlined />} onClick={() => {router.push(`/products/${record.id}`)}}>Go to Product</Button>
                 </Space>
             ),
         },
     ];
 
-    const showDeletionProductConfirmationModal = (record: MerchantProduct) => {
+    const showDeletionProductConfirmationModal = (record: Product) => {
         Modal.confirm({
             title: `Product name: ${record.name}`,
             content: 'Are you sure you want to delete product?',
@@ -130,21 +154,28 @@ export default function MerchantProductTable() {
                     <OkBtn />
                 </>
             ),
-            onOk:() => deleteProduct(record.key),
+            onOk:async () => {
+                if(!record.id)
+                    throw new Error('NO RECORD ID FOUND');
+                else{
+                    console.log(record.id)
+                    await dispatch(deleteProduct(record.id))
+                }
+            },
         });
     }
-
-    const deleteProduct = (key: string) => {
-        console.log('Delete product', key);
-        // Logic to delete product
-    };
 
     return (
         <>
             <div className={'mb-2'}>
-                <Button icon={<PlusOutlined />} onClick={() => showModal(data.find(d => d.key === 'new')!)}>Add New Product</Button>
+                <Button icon={<PlusOutlined />} onClick={() => dispatch(setProduct({
+                        name: '',
+                        description: '',
+                        price: 0,
+                    }
+                ))}>Add New Product</Button>
             </div>
-            <Table columns={columns} dataSource={data} pagination={{ pageSize: 5, position: ["bottomCenter"]}}/>
+            <Table loading={loading} columns={columns} dataSource={products} pagination={{ pageSize: 5, position: ["bottomCenter"]}}/>
             <MerchantEditProductModal isModalVisible={isModalVisible} currentProduct={currentProduct} handleSave={handleSave} handleCancel={handleCancel} handleChange={handleChange} />
         </>
     );
