@@ -7,7 +7,8 @@ import {useSelector} from 'react-redux';
 import { loginUser, clearError } from '@/lib/redux/features/login/loginSlice';
 import {RootState, useDispatch} from '@/lib/redux/store';
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import {setStep} from "@/lib/redux/features/signup/signupSlice";
 
 const { Title, Text } = Typography;
 
@@ -26,8 +27,9 @@ const LoginFormHeader: React.FC = () => {
 
 const LoginForm: React.FC = () => {
     const dispatch = useDispatch();
+    const [messageApi, contextHolder] = message.useMessage();
     const { loading, error, accessToken } = useSelector((state: RootState) => state.login);
-   // const router = useRouter();
+    const router = useRouter();
 
     useEffect(() => {
         if (error) {
@@ -36,7 +38,7 @@ const LoginForm: React.FC = () => {
                 content: `${error}`,
                 duration: 3,
             });
-            dispatch(clearError());
+            //dispatch(clearError());
         }
     }, [error, dispatch]);
 
@@ -46,12 +48,17 @@ const LoginForm: React.FC = () => {
     //     }
     // }, [accessToken, router]);
 
-    const onFinish = (values: { username: string; password: string }) => {
-        dispatch(loginUser(values));
+    const onFinish = async (values: { username: string; password: string }) => {
+        const res = await dispatch(loginUser(values));
+        if(res.meta.requestStatus == "fulfilled"){
+            messageApi.success("Logged In Successfully");
+            router.push('/');
+        }
     };
 
     return (
         <div className="flex flex-col justify-center items-center w-full md:w-1/2 h-screen">
+            {contextHolder}
             <div className="w-full max-w-md">
                 <LoginFormHeader />
                 <Form

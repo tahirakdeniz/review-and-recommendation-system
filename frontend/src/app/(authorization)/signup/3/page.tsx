@@ -8,6 +8,7 @@ import {RootState, useDispatch} from "@/lib/redux/store";
 import {useRouter} from "next/navigation";
 import {resetSignup, setFields} from "@/lib/redux/features/signup/signupSlice";
 import {confirmUser, registerUser} from "@/lib/redux/features/signup/signupThunks";
+import {loginUser} from "@/lib/redux/features/login/loginSlice";
 
 const OTPInputLength = 6;
 
@@ -20,29 +21,44 @@ export default function Signup3() {
     const error = useSelector((state: RootState) => state.signup.error);
     const [otp, setOTP] = React.useState<string>('');
 
-    // TODO make active here
+    useEffect(() => {
+        if(error !== null){
+            console.error(error)
+            messageApi.error(error);
+        }
+    }, [messageApi, error]);
+
     // useEffect(() => {
-    //     if (step !== 2) router.push(`/signup/${step + 1}`); // Redirect to the correct step if the user has already completed this step
+    //     console.log(step)
+    //     if(step == 3) {
+    //         messageApi.success(" Has Completed"); // TODO look at its ui.
+    //         // after 1 second redirect to the login page.
+    //     }
+    //     else if (step !== 2) {
+    //         router.push(`/signup/${step + 1}`);
+    //     }// Redirect to the correct step if the user has already completed this step
     // }, [router, step]);
 
     const onFinish = async () => {
         dispatch(setFields([
             {field: 'otp', value: otp}
         ]));
-        await dispatch(registerUser());
+        const res = await dispatch(registerUser());
+        if(res.meta.requestStatus == "fulfilled"){
+            messageApi.success("User Created Successfully");
+            router.push('/login');
+        }
     };
 
     async function handleResendClick() {
         await dispatch(confirmUser());
     }
 
-    if(error !== null){
-        console.error(error)
-        messageApi.error(error);
-    }
+
 
     return (
         <div className="w-full max-w-md">
+            {contextHolder}
             <SignupFormHeader/>
             <Form name="otp_form" onFinish={onFinish}>
                 <Form.Item>

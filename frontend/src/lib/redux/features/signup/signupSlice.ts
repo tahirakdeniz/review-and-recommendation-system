@@ -16,6 +16,7 @@ const initialState: SignupState = {
     },
     loading: false,
     error: null,
+    success: false,
     step: 0
 };
 
@@ -54,29 +55,35 @@ const signupSlice = createSlice({
         builder
             .addCase(registerUser.pending, (state) => {
                 state.loading = true;
+                state.success = false;
                 state.error = null;
             })
             .addCase(registerUser.fulfilled, (state, action) => {
                 state.loading = false;
+                state.success = true;
                 state.error = null;
-
-                Object.assign(state, initialState); // reset the state
+                //Object.assign(state, initialState); // reset the state
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || "Failed to register user";
+                state.success = false;
+                state.error = JSON.stringify(action.payload) || "Failed to register user";
             })
             .addCase(confirmUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.success = false;
             })
             .addCase(confirmUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                state.success = true;
+                state.step = 2;
             })
             .addCase(confirmUser.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || "Failed to confirm user";
+                state.success = false;
+                state.error = JSON.stringify(action.payload) || "Failed to confirm user";
             });
     }
 });

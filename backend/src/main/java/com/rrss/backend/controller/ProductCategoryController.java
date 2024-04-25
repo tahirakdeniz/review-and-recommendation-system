@@ -25,7 +25,7 @@ public class ProductCategoryController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADD_PRODUCT')")
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT_CATEGORY')")
     public ResponseEntity<ProductCategoryDto> addProductCategory(@RequestBody ProductCategoryRequest productCategoryRequest) {
         return ResponseEntity.ok(productCategoryService.addProductCategory(productCategoryRequest));
     }

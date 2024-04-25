@@ -47,7 +47,6 @@ public class UserController {
     @GetMapping
     public ResponseEntity<UserDto> getUserSettings(Principal currentUser) {
         return ResponseEntity.ok(userService.getUserSettings(currentUser));
-
     }
 
     @PutMapping

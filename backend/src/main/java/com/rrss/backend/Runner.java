@@ -66,7 +66,9 @@ public class Runner implements CommandLineRunner {
     }
 
     private void createMerchantWithRequest() {
-        Role roleMerchant = new Role("MERCHANT");
+        Role roleMerchant = roleRepository.save(new Role("MERCHANT"));
+        Authority authorityAddProduct = authorityRepository.save(new Authority("MANAGE_PRODUCT"));
+        roleMerchant.getAuthorities().add(authorityAddProduct);
         roleRepository.save(roleMerchant);
 
         Cart cartMerchant = cartRepository.save(new Cart());
@@ -89,11 +91,11 @@ public class Runner implements CommandLineRunner {
     private void createAdmin() {
         Authority authorityApprove = authorityRepository.save(new Authority("APPROVE_MERCHANT_REQUEST"));
         Authority authoritySee = authorityRepository.save(new Authority("SEE_MERCHANT_REQUEST"));
-        Authority authorityAddProduct = authorityRepository.save(new Authority("ADD_PRODUCT"));
+        Authority addProductCategory = authorityRepository.save(new Authority("MANAGE_PRODUCT_CATEGORY"));
         Role roleAdmin = roleRepository.save(new Role("ADMIN"));
         roleAdmin.getAuthorities().add(authorityApprove);
         roleAdmin.getAuthorities().add(authoritySee);
-        roleAdmin.getAuthorities().add(authorityAddProduct);
+        roleAdmin.getAuthorities().add(addProductCategory);
         roleRepository.save(roleAdmin);
 
         Cart cartAdmin = cartRepository.save(new Cart());

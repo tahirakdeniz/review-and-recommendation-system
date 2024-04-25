@@ -1,8 +1,5 @@
 import {Steps} from "antd";
 
-
-
-
 export default function SignupStepper({current} : {current: number}){
     const steps = [
         {
