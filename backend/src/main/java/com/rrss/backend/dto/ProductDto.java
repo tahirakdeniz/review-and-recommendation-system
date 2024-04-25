@@ -17,7 +17,7 @@ public record ProductDto(
                 from.getId(),
                 from.getName(),
                 from.getDescription(),
-                from.getMerchant().getId(),
+                from.getMerchant().getUser().getId(),
                 from.getProductCategory().getName(),
                 from.getPrice()
         );

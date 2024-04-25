@@ -39,7 +39,7 @@ public class ConfirmationService {
         int randomNumber = random.nextInt(99999);
         StringBuilder output = new StringBuilder(Integer.toString(randomNumber));
 
-        while (output.length() < 5) {
+        while (output.length() < 6) {
             output.insert(0, "0");
         }
         return "000000";

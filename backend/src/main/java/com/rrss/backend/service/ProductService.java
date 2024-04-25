@@ -3,12 +3,15 @@ package com.rrss.backend.service;
 import com.rrss.backend.dto.AddProductRequest;
 import com.rrss.backend.dto.ProductDto;
 import com.rrss.backend.dto.UpdateProductRequest;
+import com.rrss.backend.model.Merchant;
 import com.rrss.backend.model.Product;
 import com.rrss.backend.model.User;
+import com.rrss.backend.repository.MerchantRepository;
 import com.rrss.backend.repository.ProductCategoryRepository;
 import com.rrss.backend.repository.ProductRepository;
 import com.rrss.backend.util.ImageUtil;
 import com.rrss.backend.util.UserUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,12 +28,14 @@ public class ProductService {
     private final ProductCategoryService productCategoryService;
     private final UserUtil userUtil;
     private final ProductCategoryRepository productCategoryRepository;
+    private final MerchantRepository merchantRepository;
 
-    public ProductService(ProductRepository repository, ProductCategoryService productCategoryService, UserUtil userUtil, ProductCategoryRepository productCategoryRepository) {
+    public ProductService(ProductRepository repository, ProductCategoryService productCategoryService, UserUtil userUtil, ProductCategoryRepository productCategoryRepository, MerchantRepository merchantRepository) {
         this.repository = repository;
         this.productCategoryService = productCategoryService;
         this.userUtil = userUtil;
         this.productCategoryRepository = productCategoryRepository;
+        this.merchantRepository = merchantRepository;
     }
 
     public ProductDto addProduct(Principal currentUser, AddProductRequest addProductRequest, MultipartFile file) throws IOException {
@@ -49,18 +54,32 @@ public class ProductService {
         return ProductDto.convert(repository.save(product));
     }
 
+    @Transactional
     public ProductDto deleteProduct(Principal currentUser, Long productId) {
         Product product = repository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        User user = userUtil.extractUser(currentUser);
+        Merchant merchant = userUtil.extractUser(currentUser).getMerchant();
 
-        if (user.getMerchant() == null || Objects.equals(user.getMerchant().getId(), product.getMerchant().getId())) {
-            throw new IllegalArgumentException("you are not the owner of this product");
+        if (merchant == null || !Objects.equals(merchant.getId(), product.getMerchant().getId())) {
+            throw new RuntimeException("you are not the owner of this product");
         }
 
-        repository.delete(product);
+        List<Product> products = merchant.getProducts();
+        try {
+            products.removeIf(e -> Objects.equals(e.getId(), productId));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
+        merchantRepository.save(new Merchant(
+                merchant.getId(),
+                merchant.getUser(),
+                merchant.getReviewReplies(),
+                products
+        ));
+
+        repository.delete(product);
         return ProductDto.convert(product);
     }
 
@@ -92,7 +111,7 @@ public class ProductService {
 
     public List<ProductDto> getProductsByCategory(String categoryName) {
         return repository
-                .findByProductCategoryName(categoryName)
+                .findProductsByName(categoryName)
                 .stream()
                 .map(ProductDto::convert)
                 .toList();
@@ -103,21 +122,32 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         User user = userUtil.extractUser(currentUser);
-        if (user.getMerchant() == null || Objects.equals(user.getMerchant().getId(), product.getMerchant().getId())) {
+        if (user.getMerchant() == null || !Objects.equals(user.getMerchant().getId(), product.getMerchant().getId())) {
             throw new IllegalArgumentException("you are not the owner of this product");
         }
 
-                new Product(
-                productId,
+        Product newProduct = new Product(
+                product.getId(),
                 updateProductRequest.name(),
                 updateProductRequest.description(),
-                product.getMerchant(),
+                user.getMerchant(),
                 productCategoryRepository.findByName(updateProductRequest.productCategoryName())
-                        .orElseThrow(() -> new IllegalArgumentException("Product category not found")),
+                    .orElseThrow(() -> new IllegalArgumentException("Product category not found")),
                 updateProductRequest.price(),
                 product.getPicture()
         );
 
-        return ProductDto.convert(repository.save(product));
+        return ProductDto.convert(repository.save(newProduct));
+    }
+
+    public List<ProductDto> getProductsByUser(Principal currentUser) {
+        User user = userUtil.extractUser(currentUser);
+
+        return user
+                .getMerchant()
+                .getProducts()
+                .stream()
+                .map(ProductDto::convert)
+                .toList();
     }
 }
