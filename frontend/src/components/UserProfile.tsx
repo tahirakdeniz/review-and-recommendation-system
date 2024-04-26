@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useSelector, } from 'react-redux';
-import {Card, Avatar, Button, Row, Col, message, List} from 'antd';
+import {Card, Avatar, Button, Row, Col, message, List, Space} from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import EditProfileModal from './EditProfileModal';
 import {fetchUser, updateUser, deleteUser, User} from '@/lib/redux/features/user/userSlice'; // Correct path
@@ -65,12 +65,14 @@ const UserProfilePage: React.FC = () => {
                             <br />
                             <strong>Social Credit:</strong> $1
                         </div>
-                        <Button icon={<EditOutlined />} onClick={() => setIsModalVisible(true)} style={{ marginTop: '10px' }}>
-                            Edit Profile
-                        </Button>
-                        <Button danger onClick={handleDeleteUser} style={{ marginTop: '10px' }}>
-                            Delete Profile
-                        </Button>
+                        <Space direction="horizontal">
+                            <Button icon={<EditOutlined />} onClick={() => setIsModalVisible(true)} style={{ marginTop: '10px' }}>
+                                Edit Profile
+                            </Button>
+                            <Button danger onClick={handleDeleteUser} style={{ marginTop: '10px' }}>
+                                Delete Profile
+                            </Button>
+                        </Space>
                     </Col>
                 </Row>
             </Card>

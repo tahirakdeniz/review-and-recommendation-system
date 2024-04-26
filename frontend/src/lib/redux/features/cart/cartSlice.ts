@@ -93,7 +93,7 @@ export const addProductToCart = createAsyncThunk<ICartItem, string | any>('cart/
     }
 });
 
-export const buyProduct = createAsyncThunk<any, Product>('cart/buyProduct', async (id, { rejectWithValue }) => {
+export const buyProduct = createAsyncThunk<any, any>('cart/buyProduct', async (_, { rejectWithValue }) => {
     try {
         const token = localStorage.getItem('accessToken');
         if (!token) {

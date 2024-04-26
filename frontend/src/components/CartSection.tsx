@@ -1,6 +1,6 @@
 'use client';
 
-import {Button, Card, Col, message, Modal, Row} from "antd";
+import {Button, Card, Col, Empty, message, Modal, Row} from "antd";
 import CartItem from "@/components/CartItem";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
 import {useGetCartItemsQuery} from "@/lib/redux/features/cart/cartApi";
@@ -85,7 +85,7 @@ export default function CartSection(){
             <Col className={'gutter-row'} span={20}>
                 <Card title="Shopping Cart">
                     <Row gutter={[16, 16]}>
-                        {cartItems?.map((cartItem, index) => (
+                        {cartItems.length > 0 ? cartItems?.map((cartItem, index) => (
                             <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
                                 <CartItem name={cartItem.productDto.name}
                                           id={cartItem.productDto.id}
@@ -94,7 +94,11 @@ export default function CartSection(){
                                           price={cartItem.productDto.price}
                                           rating={5} />
                             </Col>
-                        ))}
+                        )) : (
+                            <div className={'mx-auto'}>
+                                <Empty />
+                            </div>
+                        )}
                     </Row>
                 </Card>
             </Col>
@@ -102,9 +106,8 @@ export default function CartSection(){
                 <Card
                     actions={[
                         <Button key="Buy" type="link" onClick={async () => {
-                            await dispatch(buyProduct())
+                            await dispatch(buyProduct(null))
                         }}>Buy</Button>,
-                        <Button key="Clear" type="link" danger>Clear</Button>
                     ]}
                 >
                     <p>Total: {cart?.totalPrice}</p>

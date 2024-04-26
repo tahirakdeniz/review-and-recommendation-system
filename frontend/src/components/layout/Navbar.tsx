@@ -68,7 +68,7 @@ const Navbar = () => {
             </div>
             {accessToken ?
                 (<div className={'flex-auto'}>
-                    <Avatar size={32} icon={<UserOutlined/>} /* src={user.avatar || defaultAvatar} */ />
+                    {/*<Avatar size={32} icon={<UserOutlined/>}*/}
                     <span style={{marginLeft: '8px'}}>{user?.firstName} {user?.lastName}</span>
                 </div>)
                 :
