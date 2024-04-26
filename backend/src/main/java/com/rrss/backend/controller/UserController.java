@@ -69,4 +69,9 @@ public class UserController {
                 .contentType(MediaType.valueOf(IMAGE_PNG_VALUE))
                 .body(imageData);
     }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteUser(Principal currentUser) {
+        return ResponseEntity.ok(userService.deleteUser(currentUser));
+    }
 }

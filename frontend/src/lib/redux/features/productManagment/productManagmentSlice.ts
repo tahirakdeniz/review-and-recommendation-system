@@ -1,6 +1,7 @@
 'use client';
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import {act} from "react-dom/test-utils";
 
 export interface Product {
     id?: string;
@@ -14,16 +15,18 @@ export interface Product {
 
 interface ProductsState {
     products: Product[];
-    product: Partial<Product>;
-    isModalVisible: boolean;
+    editingProduct: Product | null;
+    isEditingModalOpen: boolean;
+    isNewModalOpen: boolean;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: ProductsState = {
     products: [],
-    product: {},
-    isModalVisible: false,
+    editingProduct: null,
+    isEditingModalOpen: false,
+    isNewModalOpen: false,
     loading: false,
     error: null
 };
@@ -51,22 +54,33 @@ export const fetchProducts = createAsyncThunk<Product[]>('products/fetchProducts
     }
 });
 
-const addProduct = createAsyncThunk<Product, Partial<Product>>('products/addProduct', async (productData, { rejectWithValue }) => {
-    const formData = new FormData();
+export const addProduct = createAsyncThunk<Product, Partial<Product>>('products/addProduct', async (productData, { rejectWithValue }) => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        return rejectWithValue('No access token found');
+    }
+
+
+
     if (productData.name && productData.description && productData.productCategoryName && productData.price) {
-        formData.append('addProductRequest', JSON.stringify({
-            name: productData.name,
-            description: productData.description,
-            productCategoryName: productData.productCategoryName,
-            price: productData.price
-        }));
-        if (productData.image) formData.append('image', productData.image);
         try {
-            const response = await axios.post<Product>('http://localhost:8081/api/v1/products', formData, {
+            const response = await axios.post<Product>('http://localhost:8081/api/v1/products/info', {
+                name: productData.name,
+                description: productData.description,
+                productCategoryName: productData.productCategoryName,
+                price: productData.price,
+            }, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    Authorization: `Bearer ${token}`
+                },
             });
+            // const productID = response.data.id;
+            // const formData = new FormData();
+            // if (productData.image) {
+            //     formData.append('image', productData.image);
+            // }
+            // const res = await axios.post<Product>( `http://localhost:8081/api/v1/products/${productID}/image`, formData)
+            // return res.data;
             return response.data;
         } catch (error) {
             return rejectWithValue('Failed to add product');
@@ -76,10 +90,48 @@ const addProduct = createAsyncThunk<Product, Partial<Product>>('products/addProd
     }
 });
 
-const updateProduct = createAsyncThunk<Product, Product>('products/updateProduct', async (productData, { rejectWithValue }) => {
+export const updateProduct = createAsyncThunk<Product, Product>('products/updateProduct', async (productData, { rejectWithValue }) => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        return rejectWithValue('No access token found');
+    }
+    
+    const response = axios.put
+    // const formData = new FormData();
+    // if (productData.name && productData.description && productData.productCategoryName && productData.price) {
+    //     formData.append('addProductRequest', new Blob([JSON.stringify({
+    //         name: productData.name,
+    //         description: productData.description,
+    //         productCategoryName: productData.productCategoryName,
+    //         price: productData.price
+    //     })]));
+    //     if (productData.image) formData.append('image', productData.image);
+    //     try {
+    //         const response = await axios.put<Product>('http://localhost:8081/api/v1/products', formData, {
+    //             headers: {
+    //                 'Content-Type': 'multipart/form-data'
+    //             }
+    //         });
+    //         return response.data;
+    //     } catch (error) {
+    //         return rejectWithValue('Failed to add product');
+    //     }
+    // } else {
+    //     return rejectWithValue('Missing product data fields');
+    // }
+
     if (productData.id) {
         try {
-            const response = await axios.put<Product>(`http://localhost:8081/api/v1/products/${productData.id}`, productData);
+            const response = await axios.put<Product>(`http://localhost:8081/api/v1/products/${productData.id}`, {
+                'name': productData.name,
+                'description': productData.description,
+                'productCategoryName': productData.productCategoryName,
+                'price': productData.price,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            });
             return response.data;
         } catch (error) {
             return rejectWithValue('Failed to update product');
@@ -88,6 +140,8 @@ const updateProduct = createAsyncThunk<Product, Product>('products/updateProduct
         return rejectWithValue('Product ID is missing');
     }
 });
+
+
 
 export const deleteProduct = createAsyncThunk(
     'products/deleteProduct',
@@ -104,11 +158,7 @@ export const deleteProduct = createAsyncThunk(
                 }
             });
 
-            if (response.status === 204) { // Assuming 204 No Content on successful deletion
-                return productId; // Return the ID of the deleted product
-            } else {
-                return rejectWithValue('Failed to delete the product');
-            }
+            return productId
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
                 return rejectWithValue(error.response.data.message || 'An error occurred while deleting the product');
@@ -125,16 +175,22 @@ const productsSlice = createSlice({
     initialState,
     reducers: {
         setProductField(state, action: PayloadAction<{ field: keyof Product; value: any }>) {
-            state.product[action.payload.field] = action.payload.value;
+            //state.editingProduct[action.payload.field] = action.payload.value;
         },
-        clearProduct(state) {
-            state.product = {};
-            state.isModalVisible = false;
+        clearEditingProduct(state) {
+            state.editingProduct = null;
+            state.isEditingModalOpen = false;
         },
-        setProduct(state, action: PayloadAction<Product>) {
-            state.product = action.payload;
-            state.isModalVisible = true;
-        }
+        setEditingProduct(state, action: PayloadAction<Product>) {
+            state.editingProduct = action.payload;
+            state.isEditingModalOpen = true;
+        },
+        setNewModalOpen(state, action: PayloadAction<boolean>) {
+            state.isNewModalOpen = action.payload;
+        },
+        setEditModalOpen(state, action: PayloadAction<boolean>) {
+            state.isEditingModalOpen = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -148,7 +204,7 @@ const productsSlice = createSlice({
             })
             .addCase(fetchProducts.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || null;
+                state.error = JSON.stringify(action.payload) || null;
             })
             .addCase(addProduct.pending, (state) => {
                 state.loading = true;
@@ -157,11 +213,11 @@ const productsSlice = createSlice({
             .addCase(addProduct.fulfilled, (state, action: PayloadAction<Product>) => {
                 state.loading = false;
                 state.products.push(action.payload);
-                state.product = {};
+                state.editingProduct = null;
             })
             .addCase(addProduct.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || null;
+                state.error = JSON.stringify(action.payload) || null;
             })
             .addCase(updateProduct.pending, (state) => {
                 state.loading = true;
@@ -176,7 +232,7 @@ const productsSlice = createSlice({
             })
             .addCase(updateProduct.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || null;
+                state.error = JSON.stringify(action.payload) || null;
             })
             .addCase(deleteProduct.pending, (state) => {
                 state.loading = true;
@@ -184,19 +240,19 @@ const productsSlice = createSlice({
             })
             .addCase(deleteProduct.fulfilled, (state, action) => {
                 state.loading = false;
-                // Remove the product from the state
                 state.products = state.products.filter(product => product.id !== action.payload);
+                //location.reload();
             })
             .addCase(deleteProduct.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                state.error = JSON.stringify(action.payload) as string;
             })
         ;
 
     }
 });
 
-export const { setProductField, clearProduct, setProduct} = productsSlice.actions;
+export const { setProductField, clearEditingProduct, setEditingProduct, setNewModalOpen, setEditModalOpen} = productsSlice.actions;
 export default productsSlice.reducer;
 
 

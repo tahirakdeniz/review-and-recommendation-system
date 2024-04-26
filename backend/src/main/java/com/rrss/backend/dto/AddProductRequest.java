@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public record AddProductRequest(
         String name,
         String description,
-        String productCategoryName,
+        String productCategoryName, //todo ismi yannis
         BigDecimal price
 ) {
 }

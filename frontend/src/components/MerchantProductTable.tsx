@@ -1,77 +1,155 @@
 'use client'
-import {Button, Input, Modal, Rate, Space, Table, TableColumnType} from "antd";
-import {DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined} from "@ant-design/icons";
+
+import {Button, GetProp, Input, message, Modal, Rate, Space, Table, TableColumnType, Upload} from "antd";
+import {DeleteOutlined, EditOutlined, EyeOutlined, LoadingOutlined, PlusOutlined} from "@ant-design/icons";
 import {useEffect, useState} from "react";
 import {RootState, useDispatch} from "@/lib/redux/store";
 import {
+    addProduct,
     deleteProduct,
     fetchProducts,
-    Product,
-    setProduct
+    Product, setEditingProduct, setEditModalOpen, setNewModalOpen, updateProduct
 } from "@/lib/redux/features/productManagment/productManagmentSlice";
 import {useSelector} from "react-redux";
 import TextArea from "antd/es/input/TextArea";
 import {useRouter} from "next/navigation";
+import {UploadChangeParam} from "antd/es/upload";
+import {MerchantProductCategorySelect} from "@/components/MerchantProductCategory";
 
-interface MerchantProduct {
-    key: string;
-    name: string;
-    sold: number;
-    avgRate: number;
-}
+type FileType = File;
 
-const data: MerchantProduct[] = [
-    { key: '1', name: 'Product 1', sold: 110, avgRate: 1 },
-    { key: '2', name: 'Product 2', sold: 99, avgRate: 4 },
-    { key: '3', name: 'Product 3', sold: 621, avgRate: 2 },
-    { key: '4', name: 'Product 4', sold: 12, avgRate: 1 },
-    { key: '5', name: 'Product 5', sold: 53, avgRate: 5 },
-    { key: '6', name: 'Product 6', sold: 32, avgRate: 4 },
-    { key: '7', name: 'Product 7', sold: 110, avgRate: 1 },
-    { key: '8', name: 'Product 8', sold: 99, avgRate: 4 },
-    { key: '9', name: 'Product 9', sold: 621, avgRate: 2 },
-    { key: '10', name: 'Product 10', sold: 12, avgRate: 1 },
-    { key: '11', name: 'Product 11', sold: 53, avgRate: 5 },
-    { key: '12', name: 'Product 12', sold: 32, avgRate: 4 },
-    { key: '13', name: 'Product 13', sold: 110, avgRate: 1 },
-    { key: '14', name: 'Product 14', sold: 99, avgRate: 4 },
-    { key: '15', name: 'Product 15', sold: 621, avgRate: 2 },
-    { key: '16', name: 'Product 16', sold: 12, avgRate: 1 },
-    { key: '17', name: 'Product 17', sold: 53, avgRate: 5 },
-    { key: '18', name: 'Product 18', sold: 32, avgRate: 4 },
-];
+const getBase64 = (file: FileType): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = error => reject(error);
+    });
+};
 
-// EditProductModal component
-interface EditProductModalProps {
-    isModalVisible: boolean;
-    currentProduct?: Product;
-    handleSave: () => void;
-    handleCancel: () => void;
-    handleChange: (product: Product) => void;
-}
+const MerchantAddNewProductModal = () => {
+    const isNewModalOpen = useSelector((state: RootState) => state.products.isNewModalOpen);
+    const dispatch = useDispatch();
+    const [product, setProduct] = useState<Product>()
+    const [imageLoading, setImageLoading] = useState(false);
+    const [imageURL, setImageURL] = useState<string>();
+    const [messageApi, contextHolder] = message.useMessage();
 
-const MerchantEditProductModal: React.FC<EditProductModalProps> = ({ isModalVisible, currentProduct, handleSave, handleCancel, handleChange }) => {
+    const addNewProduct = async () => {
+        if(product){
+            const res = await dispatch(addProduct(product))
+            if(res.meta.requestStatus == "fulfilled") {
+                messageApi.success("Product Added Successfully");
+            }
+        }
+    }
+
+    const handleCancel = () => {
+        dispatch(setNewModalOpen(false))
+    }
+
+    const handleAvatarChange = (info: UploadChangeParam) => {
+        if (info.file.status === 'uploading') {
+            setImageLoading(true);
+            return;
+        }
+        if (info.file.status === 'done') {
+            getBase64(info.file.originFileObj as File).then(base64 => setImageURL(base64));
+            setProduct({...product!, image: info.file.originFileObj as File})
+        }
+    };
+
+    const uploadButton = (
+        <button style={{ border: 0, background: 'none' }} type="button">
+            {imageLoading ? <LoadingOutlined /> : <PlusOutlined />}
+            <div style={{ marginTop: 8 }}>Upload</div>
+        </button>
+    );
+
+    const customRequest = ({ file, onSuccess }: any) => {
+        onSuccess("ok");
+    };
+
     return (
-        <Modal title={currentProduct ? "Edit Product" : "New Product"} visible={isModalVisible} onOk={handleSave} onCancel={handleCancel}>
+        <Modal title={"Add New Product"} open={isNewModalOpen} onOk={addNewProduct} onCancel={handleCancel}>
+            {contextHolder}
             <Space direction="vertical" style={{ width: '100%' }}>
+                {/*<Upload*/}
+                {/*    name="avatar"*/}
+                {/*    listType="picture-card"*/}
+                {/*    className="avatar-uploader"*/}
+                {/*    showUploadList={false}*/}
+                {/*    customRequest={customRequest}*/}
+                {/*    onChange={handleAvatarChange}*/}
+                {/*>*/}
+                {/*    {imageURL ? <img src={imageURL} alt="avatar" style={{ width: '100%' }} /> : uploadButton}*/}
+                {/*</Upload>*/}
                 <Input
                     placeholder="Product Name"
-                    value={currentProduct?.name}
-                    onChange={(e) => handleChange({...currentProduct!, name: e.target.value})}
+                    value={product?.name}
+                    onChange={(e) => setProduct({...product!, name: e.target.value})}
 
                 />
+                <MerchantProductCategorySelect onChange={(value) => setProduct({...product!, productCategoryName: value})}/>
                 <Input
                     prefix="$"
                     placeholder="Price"
                     type="number"
-                    value={currentProduct?.price}
-                    onChange={(e) => handleChange({...currentProduct!, price: parseInt(e.target.value, 10) || 0})}
+                    value={product?.price}
+                    onChange={(e) => setProduct({...product!, price: parseInt(e.target.value, 10) || 0})}
                 />
                 <TextArea
                     rows={4}
                     placeholder="Product Description"
-                    value={currentProduct?.description}
-                    onChange={(e) => handleChange({...currentProduct!, description: e.target.value})}
+                    value={product?.description}
+                    onChange={(e) => setProduct({...product!, description: e.target.value})}
+                />
+            </Space>
+        </Modal>
+    )
+}
+
+const MerchantEditProductModal: React.FC = () => {
+    const {isEditingModalOpen, editingProduct} = useSelector((state: RootState) => state.products);
+    const dispatch = useDispatch();
+    const [product, setProduct] = useState<Product>()
+
+    useEffect(() => {
+        if(editingProduct){
+            setProduct(editingProduct)
+        }
+    }, [editingProduct]);
+    const handleOk = async () => {
+        if(product)
+            dispatch(updateProduct(product));
+    }
+
+    const handleCancel = () => {
+        dispatch(setEditModalOpen(false))
+    }
+
+    return (
+        <Modal title={"Edit Product"} open={isEditingModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Space direction="vertical" style={{ width: '100%' }}>
+                <Input
+                    placeholder="Product Name"
+                    value={product?.name}
+                    onChange={(e) => setProduct({...product!, name: e.target.value})}
+
+                />
+                <MerchantProductCategorySelect value={product?.productCategoryName} onChange={(value) => setProduct({...product!, productCategoryName: value})}/>
+                <Input
+                    prefix="$"
+                    placeholder="Price"
+                    type="number"
+                    value={product?.price}
+                    onChange={(e) => setProduct({...product!, price: parseInt(e.target.value, 10) || 0})}
+                />
+                <TextArea
+                    rows={4}
+                    placeholder="Product Description"
+                    value={product?.description}
+                    onChange={(e) => setProduct({...product!, description: e.target.value})}
                 />
             </Space>
         </Modal>
@@ -79,7 +157,8 @@ const MerchantEditProductModal: React.FC<EditProductModalProps> = ({ isModalVisi
 };
 
 export default function MerchantProductTable() {
-    const {products, loading, product, error, isModalVisible} = useSelector((state: RootState) => state.products)
+    const {products, loading, error} = useSelector((state: RootState) => state.products)
+    const [messageApi, contextHolder] = message.useMessage();
     const router = useRouter()
     const dispatch = useDispatch();
 
@@ -93,20 +172,10 @@ export default function MerchantProductTable() {
         }
     }, [loading, products]);
 
-    const showModal = (product: Product) => {
-        setCurrentProduct(product);
-    };
-
-    const handleCancel = () => {
-    };
-
-    const handleSave = () => {
-        console.log('Save product changes', currentProduct);
-    };
-
-    const handleChange = (product: Product) => {
-        setCurrentProduct(product);
-    };
+    useEffect(() => {
+        console.log(error)
+        messageApi.error(error)
+    }, [messageApi, error]);
 
     const columns: TableColumnType<Product>[] = [
         {
@@ -136,7 +205,7 @@ export default function MerchantProductTable() {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button icon={<EditOutlined />} onClick={() => dispatch(setProduct(record))}>Edit</Button>
+                    <Button icon={<EditOutlined />} onClick={() => dispatch(setEditingProduct(record))}>Edit</Button>
                     <Button icon={<DeleteOutlined />} onClick={() => showDeletionProductConfirmationModal(record)}>Delete</Button>
                     <Button icon={<EyeOutlined />} onClick={() => {router.push(`/products/${record.id}`)}}>Go to Product</Button>
                 </Space>
@@ -165,18 +234,25 @@ export default function MerchantProductTable() {
         });
     }
 
+    const role = localStorage.getItem("role");
+
+    if(role != "MERCHANT"){
+        return (
+            <div>
+                Not Allowed
+            </div>
+        )
+    }
+
     return (
         <>
+            {contextHolder}
             <div className={'mb-2'}>
-                <Button icon={<PlusOutlined />} onClick={() => dispatch(setProduct({
-                        name: '',
-                        description: '',
-                        price: 0,
-                    }
-                ))}>Add New Product</Button>
+                <Button icon={<PlusOutlined />} onClick={() => dispatch(setNewModalOpen(true))}>Add New Product</Button>
             </div>
             <Table loading={loading} columns={columns} dataSource={products} pagination={{ pageSize: 5, position: ["bottomCenter"]}}/>
-            <MerchantEditProductModal isModalVisible={isModalVisible} currentProduct={currentProduct} handleSave={handleSave} handleCancel={handleCancel} handleChange={handleChange} />
+            <MerchantAddNewProductModal/>
+            <MerchantEditProductModal/>
         </>
     );
 }

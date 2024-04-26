@@ -2,6 +2,8 @@ package com.rrss.backend.model
 
 import com.rrss.backend.enums.TokenType
 import jakarta.persistence.*
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UuidGenerator
 
 @Entity
@@ -18,6 +20,7 @@ data class Token @JvmOverloads constructor (
     var revoked: Boolean,
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     val user: User
 
 ) {

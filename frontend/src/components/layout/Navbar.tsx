@@ -38,7 +38,7 @@ const Navbar = () => {
                         <Link href="/community">Forum</Link>
                     </Menu.Item>
                     <Menu.Item key="/shop" icon={<ShopOutlined />}>
-                        <Link href="/shop">Shop</Link>
+                        <Link href="/products">Shop</Link>
                     </Menu.Item>
                     <Menu.Item key="/scshop" icon={<ShopOutlined />}>
                         <Link href="/scshop">SC Shop</Link>

@@ -1,5 +1,6 @@
 package com.rrss.backend.service;
 
+import com.rrss.backend.controller.ProductCategoryController;
 import com.rrss.backend.dto.AddProductRequest;
 import com.rrss.backend.dto.ProductDto;
 import com.rrss.backend.dto.UpdateProductRequest;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
@@ -29,13 +31,17 @@ public class ProductService {
     private final UserUtil userUtil;
     private final ProductCategoryRepository productCategoryRepository;
     private final MerchantRepository merchantRepository;
+    private final ProductCategoryController productCategoryController;
+    private final ProductRepository productRepository;
 
-    public ProductService(ProductRepository repository, ProductCategoryService productCategoryService, UserUtil userUtil, ProductCategoryRepository productCategoryRepository, MerchantRepository merchantRepository) {
+    public ProductService(ProductRepository repository, ProductCategoryService productCategoryService, UserUtil userUtil, ProductCategoryRepository productCategoryRepository, MerchantRepository merchantRepository, ProductCategoryController productCategoryController, ProductRepository productRepository) {
         this.repository = repository;
         this.productCategoryService = productCategoryService;
         this.userUtil = userUtil;
         this.productCategoryRepository = productCategoryRepository;
         this.merchantRepository = merchantRepository;
+        this.productCategoryController = productCategoryController;
+        this.productRepository = productRepository;
     }
 
     public ProductDto addProduct(Principal currentUser, AddProductRequest addProductRequest, MultipartFile file) throws IOException {
@@ -46,7 +52,8 @@ public class ProductService {
                 addProductRequest.name(),
                 addProductRequest.description(),
                 user.getMerchant(),
-                productCategoryService.findByName(addProductRequest.productCategoryName()),
+                productCategoryRepository.findByName(addProductRequest.productCategoryName())
+                        .orElseThrow(() -> new RuntimeException("no such category")),
                 addProductRequest.price(),
                 ImageUtil.compressImage(file.getBytes())
         );
@@ -66,11 +73,8 @@ public class ProductService {
         }
 
         List<Product> products = merchant.getProducts();
-        try {
-            products.removeIf(e -> Objects.equals(e.getId(), productId));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+        products.removeIf(e -> Objects.equals(e.getId(), productId));
 
         merchantRepository.save(new Merchant(
                 merchant.getId(),
@@ -149,5 +153,57 @@ public class ProductService {
                 .stream()
                 .map(ProductDto::convert)
                 .toList();
+    }
+
+    public ProductDto addProductInfo(Principal currentUser, AddProductRequest addProductRequest) {
+        User user = userUtil.extractUser(currentUser);
+
+        Product product = new Product(
+                addProductRequest.name(),
+                addProductRequest.description(),
+                user.getMerchant(),
+                productCategoryRepository.findByName(addProductRequest.productCategoryName())
+                        .orElseThrow(() -> new RuntimeException("no such category")),
+                addProductRequest.price(),
+                null
+        );
+
+        return ProductDto.convert(repository.save(product));
+    }
+
+    public ProductDto addProductImage(Principal currentUser, long productId, MultipartFile file) throws IOException {
+        User user = userUtil.extractUser(currentUser);
+
+        Product oldProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Product product = new Product(
+                oldProduct.getId(),
+                oldProduct.getName(),
+                oldProduct.getDescription(),
+                user.getMerchant(),
+                oldProduct.getProductCategory(),
+                oldProduct.getPrice(),
+                ImageUtil.compressImage(file.getBytes())
+        );
+
+        return ProductDto.convert(repository.save(product));
+    }
+
+    public ProductDto addProductParam(Principal currentUser, String name, String description,  long categoryId,  BigDecimal price, MultipartFile file) throws IOException {
+        User user = userUtil.extractUser(currentUser);
+
+        Product product = new Product(
+                name,
+                description,
+                user.getMerchant(),
+                productCategoryRepository.findById(categoryId)
+                        .orElseThrow(() -> new RuntimeException("no such category")),
+                price,
+                ImageUtil.compressImage(file.getBytes())
+        );
+
+        return ProductDto.convert(repository.save(product));
+
     }
 }
