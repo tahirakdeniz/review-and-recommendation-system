@@ -15,6 +15,7 @@ import TextArea from "antd/es/input/TextArea";
 import {useRouter} from "next/navigation";
 import {UploadChangeParam} from "antd/es/upload";
 import {MerchantProductCategorySelect} from "@/components/MerchantProductCategory";
+import {setStep} from "@/lib/redux/features/signup/signupSlice";
 
 type FileType = File;
 
@@ -113,15 +114,20 @@ const MerchantEditProductModal: React.FC = () => {
     const {isEditingModalOpen, editingProduct} = useSelector((state: RootState) => state.products);
     const dispatch = useDispatch();
     const [product, setProduct] = useState<Product>()
-
+    const [messageApi, contextHolder] = message.useMessage()
     useEffect(() => {
         if(editingProduct){
             setProduct(editingProduct)
         }
     }, [editingProduct]);
     const handleOk = async () => {
-        if(product)
-            dispatch(updateProduct(product));
+        if(product){
+            const res = await dispatch(updateProduct(product));
+            if(res.meta.requestStatus == "fulfilled"){
+                messageApi.success("Edited Successfully.");
+            }
+        }
+
     }
 
     const handleCancel = () => {
@@ -130,6 +136,7 @@ const MerchantEditProductModal: React.FC = () => {
 
     return (
         <Modal title={"Edit Product"} open={isEditingModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            {contextHolder}
             <Space direction="vertical" style={{ width: '100%' }}>
                 <Input
                     placeholder="Product Name"
@@ -173,8 +180,9 @@ export default function MerchantProductTable() {
     }, [loading, products]);
 
     useEffect(() => {
-        console.log(error)
-        messageApi.error(error)
+        if(error){
+            messageApi.error(error)
+        }
     }, [messageApi, error]);
 
     const columns: TableColumnType<Product>[] = [
@@ -207,7 +215,7 @@ export default function MerchantProductTable() {
                 <Space size="middle">
                     <Button icon={<EditOutlined />} onClick={() => dispatch(setEditingProduct(record))}>Edit</Button>
                     <Button icon={<DeleteOutlined />} onClick={() => showDeletionProductConfirmationModal(record)}>Delete</Button>
-                    <Button icon={<EyeOutlined />} onClick={() => {router.push(`/products/${record.id}`)}}>Go to Product</Button>
+                    {/*<Button icon={<EyeOutlined />} onClick={() => {router.push(`/products/${record.id}`)}}>Go to Product</Button>*/}
                 </Space>
             ),
         },

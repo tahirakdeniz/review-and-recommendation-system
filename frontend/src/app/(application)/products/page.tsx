@@ -52,7 +52,7 @@ const ProductPage: React.FC = () => {
                                 <p>Rating: {5} ★</p>
                                 <p>Price: ${item.price}</p>
                                 <Button icon={<ShoppingCartOutlined />} type="primary" style={{ width: '100%' }} onClick={async () => {
-                                   const res = await dispatch(addProductToCart(item))
+                                   const res = await dispatch(addProductToCart(item.id))
                                     if(res.meta.requestStatus == "fulfilled"){
                                         messageApi.success("Added to Cart Successfully");
                                     }

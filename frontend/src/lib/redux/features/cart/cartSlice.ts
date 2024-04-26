@@ -70,7 +70,7 @@ export const removeProduct = createAsyncThunk<any, number>('cart/removeProduct',
     }
 });
 
-export const addProductToCart = createAsyncThunk<ICartItem, string>('cart/addProduct', async (id, { rejectWithValue }) => {
+export const addProductToCart = createAsyncThunk<ICartItem, string | any>('cart/addProduct', async (id, { rejectWithValue }) => {
     try {
         const token = localStorage.getItem('accessToken');
         if (!token) {
@@ -93,23 +93,25 @@ export const addProductToCart = createAsyncThunk<ICartItem, string>('cart/addPro
     }
 });
 
-export const buyProduct = createAsyncThunk<any, Product>('cart/buyProduct', async (productData, { rejectWithValue }) => {
+export const buyProduct = createAsyncThunk<any, Product>('cart/buyProduct', async (id, { rejectWithValue }) => {
     try {
         const token = localStorage.getItem('accessToken');
         if (!token) {
             return rejectWithValue('No access token found');
         }
 
-        const response = await axios.post('http://localhost:8081/api/v1/cart', {id: productData.id, quantity:1}, {
+        const config = {
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        });
+        };
+
+        const response = await axios.post('http://localhost:8081/api/v1/cart', {}, config);
 
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            return rejectWithValue(error.response.data.message || 'An error occurred while fetching products');
+            return rejectWithValue(error.response.data.message || 'Not Enough Balance');
         } else {
             return rejectWithValue('An unknown error occurred');
         }

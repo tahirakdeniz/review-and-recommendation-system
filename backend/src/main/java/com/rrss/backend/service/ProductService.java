@@ -135,8 +135,7 @@ public class ProductService {
                 updateProductRequest.name(),
                 updateProductRequest.description(),
                 user.getMerchant(),
-                productCategoryRepository.findByName(updateProductRequest.productCategoryName())
-                    .orElseThrow(() -> new IllegalArgumentException("Product category not found")),
+                productCategoryService.findByName(updateProductRequest.productCategoryName()),
                 updateProductRequest.price(),
                 product.getPicture()
         );
@@ -162,8 +161,7 @@ public class ProductService {
                 addProductRequest.name(),
                 addProductRequest.description(),
                 user.getMerchant(),
-                productCategoryRepository.findByName(addProductRequest.productCategoryName())
-                        .orElseThrow(() -> new RuntimeException("no such category")),
+                productCategoryService.findByName(addProductRequest.productCategoryName()),
                 addProductRequest.price(),
                 null
         );

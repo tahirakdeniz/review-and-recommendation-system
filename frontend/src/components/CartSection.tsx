@@ -1,21 +1,24 @@
 'use client';
 
-import {Button, Card, Col, Modal, Row} from "antd";
+import {Button, Card, Col, message, Modal, Row} from "antd";
 import CartItem from "@/components/CartItem";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
 import {useGetCartItemsQuery} from "@/lib/redux/features/cart/cartApi";
 import {useEffect, useState} from "react";
 import {RootState, useDispatch} from "@/lib/redux/store";
-import {fetchCart} from "@/lib/redux/features/cart/cartSlice";
+import {buyProduct, fetchCart} from "@/lib/redux/features/cart/cartSlice";
 import {useSelector} from "react-redux";
 import {Product} from "@/lib/types";
 import {ICartItem} from "@/lib/entity/CartItem";
+import {Simulate} from "react-dom/test-utils";
+
 
 export default function CartSection(){
     const [modal, contextHolder] = Modal.useModal();
-    const {cart} = useSelector((state: RootState) => state.cart);
+    const {cart, error} = useSelector((state: RootState) => state.cart);
     const [cartItems, setCartItems] = useState<ICartItem[]>([]);
     const dispatch = useDispatch();
+    const [messageApi, messageContextHolder] = message.useMessage();
 
     useEffect(() => {
         dispatch(fetchCart())
@@ -28,6 +31,11 @@ export default function CartSection(){
         }
     }, [cart]);
 
+    useEffect(() => {
+        if(error){
+            messageApi.error(error)
+        }
+    }, [error]);
 
     // const products = data?.items || [ // TODO delete temporary data
     //     {
@@ -72,6 +80,7 @@ export default function CartSection(){
 
     return (
         <Row gutter={16} className={'w-full'}>
+            {messageContextHolder}
             {contextHolder}
             <Col className={'gutter-row'} span={20}>
                 <Card title="Shopping Cart">
@@ -92,7 +101,9 @@ export default function CartSection(){
             <Col span={4}>
                 <Card
                     actions={[
-                        <Button key="Buy" type="link" >Buy</Button>,
+                        <Button key="Buy" type="link" onClick={async () => {
+                            await dispatch(buyProduct())
+                        }}>Buy</Button>,
                         <Button key="Clear" type="link" danger>Clear</Button>
                     ]}
                 >

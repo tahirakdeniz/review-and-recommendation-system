@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useSelector, } from 'react-redux';
-import { Card, Avatar, Button, Row, Col } from 'antd';
+import {Card, Avatar, Button, Row, Col, message, List} from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import EditProfileModal from './EditProfileModal';
 import {fetchUser, updateUser, deleteUser, User} from '@/lib/redux/features/user/userSlice'; // Correct path
@@ -11,6 +11,7 @@ import { RootState, useDispatch } from '@/lib/redux/store'; // Assuming RootStat
 const UserProfilePage: React.FC = () => {
     const dispatch = useDispatch();
     const { user, loading, error } = useSelector((state: RootState) => state.user); // Ensure 'user' slice is defined in RootState
+    const[messageApi, contextHolder] = message.useMessage()
 
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
@@ -26,9 +27,14 @@ const UserProfilePage: React.FC = () => {
         setIsModalVisible(false);
     };
 
-    const handleDeleteUser = () => {
-        if (user && user.UserName) {
-            dispatch(deleteUser(user.UserName));
+    const handleDeleteUser =async () => {
+        if (user && user.username) {
+            const res = await dispatch(deleteUser(user.username));
+            if(res.meta.requestStatus == "fulfilled"){
+                messageApi.success("Saved Successfully.");
+               localStorage.removeItem("accessToken");
+               localStorage.removeItem("role");
+            }
         }
     };
 
@@ -42,6 +48,7 @@ const UserProfilePage: React.FC = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
+            {contextHolder}
             <Card style={{ maxWidth: 1500, width: '100%' }}>
                 <Row gutter={16}>
                     {/*}
@@ -54,9 +61,9 @@ const UserProfilePage: React.FC = () => {
                         <div><strong>Email:</strong> {user.email}</div>
                         <div><strong>Bio:</strong> {user.description}</div>
                         <div>
-                            <strong>Balance:</strong> ${user.balance}
+                            <strong>Balance:</strong> {user.accountBalance}
                             <br />
-                            <strong>Social Credit:</strong> {user.socialCredit}
+                            <strong>Social Credit:</strong> $1
                         </div>
                         <Button icon={<EditOutlined />} onClick={() => setIsModalVisible(true)} style={{ marginTop: '10px' }}>
                             Edit Profile
@@ -67,9 +74,22 @@ const UserProfilePage: React.FC = () => {
                     </Col>
                 </Row>
             </Card>
-            {/*}
-            <EditProfileModal userInfo={user} isModalVisible={isModalVisible} handleOk={handleOk} handleCancel={handleCancel} />
-            {*/}
+            <EditProfileModal isModalVisible={isModalVisible} handleOk={handleOk} handleCancel={handleCancel} />
+            <Card title="Purchased Products" style={{ maxWidth: 1500, width: '100%', marginTop: '20px', overflowX: 'auto', whiteSpace: 'nowrap' }}>
+                <List
+                    grid={{ gutter: 4, xs: 1, sm: 2, md: 4, lg: 6, xl: 6, xxl: 3 }}
+                    dataSource={user.purchaseDtos[0]?.purchaseItemDtoList}
+                    renderItem={item => (
+                        <List.Item>
+                            <Card style={{ width: 180, margin: '0 10px' }}
+                            >
+                                <strong>{item.productDto.name}</strong>
+                                <p>Price: ${item.productDto.price}</p>
+                            </Card>
+                        </List.Item>
+                    )}
+                />
+            </Card>
         </div>
     );
 };
