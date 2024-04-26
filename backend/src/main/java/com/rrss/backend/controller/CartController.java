@@ -30,4 +30,10 @@ public class CartController {
     public ResponseEntity<UserPurchaseDto> buyItemsInCart(Principal currentUser) {
         return ResponseEntity.ok(cartService.buyItemsInCart(currentUser));
     }
+
+    @GetMapping
+    public ResponseEntity<CartDto> getCart(Principal currentUser) {
+        return ResponseEntity.ok(cartService.getCart(currentUser));
+    }
+    
 }

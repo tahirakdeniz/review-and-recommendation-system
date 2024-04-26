@@ -1,22 +1,22 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import {CartItem} from "@/lib/entity/CartItem";
+import {ICartItem} from "@/lib/entity/CartItem";
 
 export interface GetCartItemsResponse {
-    items: CartItem[];
+    items: ICartItem[];
 }
 
 export interface AddCartItemParams {
-   itemId: CartItem['id']
+   itemId: ICartItem['id']
 }
 export interface AddCartItemResponse {
-    item: CartItem;
+    item: ICartItem;
 }
 
 export interface RemoveCartItemParams {
-    itemId: CartItem['id']
+    itemId: ICartItem['id']
 }
 export interface RemoveCartItemResponse {
-    itemId: CartItem['id']
+    itemId: ICartItem['id']
 }
 
 export interface ClearCartResponse {

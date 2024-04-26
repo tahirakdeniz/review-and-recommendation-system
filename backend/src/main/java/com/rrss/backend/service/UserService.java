@@ -318,4 +318,11 @@ public class UserService {
 
         return UserDto.convert(user);
     }
+
+    public String deleteUser(Principal currentUser) {
+        User user = userUtil.extractUser(currentUser);
+        repository.delete(user);
+
+        return "user deleted successfully";
+    }
 }

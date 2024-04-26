@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 
 import static org.springframework.util.MimeTypeUtils.IMAGE_PNG_VALUE;
 
@@ -68,5 +69,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf(IMAGE_PNG_VALUE))
                 .body(imageData);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteUser(Principal currentUser) {
+        return ResponseEntity.ok(userService.deleteUser(currentUser));
     }
 }

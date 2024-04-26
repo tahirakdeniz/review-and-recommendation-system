@@ -2,6 +2,8 @@ package com.rrss.backend.model
 
 import com.rrss.backend.enums.MerchantRequestStatus
 import jakarta.persistence.*
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.time.LocalDateTime
 
 @Entity
@@ -13,6 +15,7 @@ data class MerchantRequest @JvmOverloads constructor(
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @OnDelete(action = OnDeleteAction.CASCADE) //todo BAK BAK BAK BAK
     val user: User,
 
     @Column(nullable = false)

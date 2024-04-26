@@ -15,7 +15,11 @@ data class Merchant @JvmOverloads constructor(
     val user: User,
 
     @OneToMany(mappedBy = "merchant", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val reviewReplies: List<ReviewReply> = mutableListOf()
+    val reviewReplies: List<ReviewReply> = mutableListOf(),
+
+    @OneToMany(mappedBy = "merchant", cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH], fetch = FetchType.EAGER)
+    val products: List<Product> = mutableListOf()
+
 ) {
 
 }

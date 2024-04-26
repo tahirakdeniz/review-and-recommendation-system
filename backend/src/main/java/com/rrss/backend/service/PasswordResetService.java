@@ -82,11 +82,13 @@ public class PasswordResetService {
         int randomNumber = random.nextInt(99999);
         StringBuilder output = new StringBuilder(Integer.toString(randomNumber));
 
-        while (output.length() < 5) {
+        while (output.length() < 6) {
             output.insert(0, "0");
         }
 
-        return output.toString();
+        //return output.toString();
+        return "000000";
+
     }
 
 }

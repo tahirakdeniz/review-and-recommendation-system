@@ -2,17 +2,30 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import axios, {AxiosError} from 'axios';
 import {ErrorResponse} from "@/lib/types";
+import {Product} from "@/lib/redux/features/productManagment/productManagmentSlice";
+import {step} from "next/dist/experimental/testmode/playwright/step";
 
 
 export interface User {
-    UserName: string;
+    id: string;
+    username: string;
+    email : string;
     description: string;
     firstName: string;
     lastName: string;
+    role:string;
     dateOfBirth: string;
-    balance : number;
-    socialCredit : number;
-    email : string;
+    accountBalance : number;
+    purchaseDtos: {
+        id: number;
+        purchaseItemDtoList: {
+            id: number;
+            productDto: Product
+            priceAtPurchase: number;
+            quantity: number;
+        }[];
+        totalCost: number;
+    }[]
 }
 
 interface UserState {
@@ -32,8 +45,17 @@ const baseURL = 'http://localhost:8081/api/v1/users';
 export const fetchUser = createAsyncThunk(
     'user/fetchUser',
     async (_, { rejectWithValue }) => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            return rejectWithValue('No access token found');
+        }
+
         try {
-            const response = await axios.get(baseURL);
+            const response = await axios.get(baseURL, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }});
+            console.log(response.data);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -52,9 +74,22 @@ export const fetchUser = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
     'user/updateUser',
-    async (user: User, { rejectWithValue }) => {
+    async (user: {
+        username: string,
+        lastName: string,
+        firstName: string
+        description: string,
+        dateOfBirth: string,
+    }, { rejectWithValue }) => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            return rejectWithValue('No access token found');
+        }
         try {
-            const response = await axios.put(`${baseURL}/${user.UserName}`, user);
+            const response = await axios.put(`${baseURL}`, user, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }});
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -74,8 +109,15 @@ export const updateUser = createAsyncThunk(
 export const deleteUser = createAsyncThunk(
     'user/deleteUser',
     async (UserName: string, { rejectWithValue }) => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            return rejectWithValue('No access token found');
+        }
         try {
-            await axios.delete(`${baseURL}/${UserName}`);
+            await axios.delete(baseURL, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }});
             return UserName;
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -100,10 +142,12 @@ const userSlice = createSlice({
         builder
             .addCase(fetchUser.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
             .addCase(fetchUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload;
+                state.error = null;
             })
             .addCase(fetchUser.rejected, (state, action) => {
                 state.loading = false;
@@ -111,10 +155,18 @@ const userSlice = createSlice({
             })
             .addCase(updateUser.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
             .addCase(updateUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.user = action.payload;
+                state.error = null;
+                if(state.user){
+                    state.user.username = action.payload.username
+                    state.user.lastName = action.payload.lastName
+                    state.user.firstName = action.payload.firstName
+                    state.user.description = action.payload.description
+                    state.user.dateOfBirth = action.payload.dateOfBirth
+                }
             })
             .addCase(updateUser.rejected, (state, action) => {
                 state.loading = false;
@@ -122,10 +174,13 @@ const userSlice = createSlice({
             })
             .addCase(deleteUser.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
             .addCase(deleteUser.fulfilled, (state) => {
                 state.loading = false;
-                state.user = null; // Clears user data on deletion
+                state.user = null;
+                state.error = null;
+                location.reload()
             })
             .addCase(deleteUser.rejected, (state, action) => {
                 state.loading = false;

@@ -28,7 +28,7 @@ data class Product @JvmOverloads constructor(
 
     @Lob
     @JdbcTypeCode(Types.LONGVARBINARY)
-    val picture: ByteArray,
+    val picture: ByteArray?,
 
 
 ) {

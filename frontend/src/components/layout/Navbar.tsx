@@ -5,6 +5,10 @@ import {UserOutlined, ShoppingCartOutlined, FormOutlined, HeartOutlined, ShopOut
 import Link from 'next/link';
 import {usePathname, useRouter} from "next/navigation";
 import {PoweroffOutlined} from "@ant-design/icons";
+import {RootState, useDispatch} from "@/lib/redux/store";
+import {fetchUser} from "@/lib/redux/features/user/userSlice";
+import {useSelector} from "react-redux";
+
 
 const defaultAvatar = '/path/to/default/avatar.jpg'; // Path to your default avatar image
 
@@ -15,15 +19,23 @@ const user = {
 };
 
 const Navbar = () => {
+    const dispatch = useDispatch();
     const accessToken = localStorage.getItem('accessToken');
     const role = localStorage.getItem('role');
     const pathname = usePathname();
+    const {user} = useSelector((state: RootState) => state.user);
+    const router = useRouter();
+
+    useEffect(() => {
+        dispatch(fetchUser())
+    }, [dispatch]);
 
     const logOut = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('role');
         window.location.reload();
     }
+
     return (
         <div className={'bg-inherit flex gap-4 justify-between'}>
             <div>
@@ -38,7 +50,7 @@ const Navbar = () => {
                         <Link href="/community">Forum</Link>
                     </Menu.Item>
                     <Menu.Item key="/shop" icon={<ShopOutlined />}>
-                        <Link href="/shop">Shop</Link>
+                        <Link href="/products">Shop</Link>
                     </Menu.Item>
                     <Menu.Item key="/scshop" icon={<ShopOutlined />}>
                         <Link href="/scshop">SC Shop</Link>
@@ -57,7 +69,7 @@ const Navbar = () => {
             {accessToken ?
                 (<div className={'flex-auto'}>
                     <Avatar size={32} icon={<UserOutlined/>} /* src={user.avatar || defaultAvatar} */ />
-                    <span style={{marginLeft: '8px'}}>{user.name}</span>
+                    <span style={{marginLeft: '8px'}}>{user?.firstName} {user?.lastName}</span>
                 </div>)
                 :
                 (<div className={'flex-auto'}>
@@ -74,7 +86,7 @@ const Navbar = () => {
                         <Button shape="circle" icon={<HeartOutlined/>} size={'large'} />
                     </Tooltip>
                     <Tooltip title="Shopping Cart">
-                        <Button shape="circle" icon={<ShoppingCartOutlined/>} size={'large'} />
+                        <Button shape="circle" icon={<ShoppingCartOutlined/>} onClick={() => router.push('/cart')} size={'large'} />
                     </Tooltip>
 
                 </Flex>

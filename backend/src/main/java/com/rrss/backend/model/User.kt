@@ -50,7 +50,7 @@ data class User @JvmOverloads constructor(
     val reviews: List<Review> = mutableListOf(),
 
     @Column(nullable = false)
-    var accountBalance: BigDecimal = BigDecimal.ZERO,
+    var accountBalance: BigDecimal = BigDecimal.valueOf(1000),
 
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "cart_id", nullable = true)

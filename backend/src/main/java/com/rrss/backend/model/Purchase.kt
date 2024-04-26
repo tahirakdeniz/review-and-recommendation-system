@@ -17,7 +17,7 @@ data class Purchase @JvmOverloads constructor(
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinColumn(name = "purchase_id")
     val items: List<PurchaseItem>,
 

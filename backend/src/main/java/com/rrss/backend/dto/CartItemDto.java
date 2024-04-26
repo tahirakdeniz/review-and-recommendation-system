@@ -2,10 +2,11 @@ package com.rrss.backend.dto;
 
 import com.rrss.backend.model.CartItem;
 
+
 public record CartItemDto(
         Long id,
         ProductDto productDto,
-        int quatity
+        int quantity
 ) {
     public static CartItemDto convert(CartItem from) {
         return new CartItemDto(

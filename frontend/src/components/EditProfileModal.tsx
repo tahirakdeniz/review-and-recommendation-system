@@ -1,12 +1,15 @@
 'use client';
-import React, { useState } from 'react';
-import { Modal, Form, Input, Upload, Button, message } from 'antd';
+import React, {useEffect, useState} from 'react';
+import {Modal, Form, Input, Upload, Button, message, DatePicker} from 'antd';
 import { UserInfo } from '@/lib/types';
 import { UploadChangeParam } from 'antd/es/upload';
 import { PlusOutlined } from '@ant-design/icons';
+import {RootState, useDispatch} from "@/lib/redux/store";
+import {useSelector} from "react-redux";
+import {updateUser, User} from "@/lib/redux/features/user/userSlice";
+import {setStep} from "@/lib/redux/features/signup/signupSlice";
 
 interface EditProfileModalProps {
-  userInfo: UserInfo;
   isModalVisible: boolean;
   handleOk: (userInfo: UserInfo) => void;
   handleCancel: () => void;
@@ -40,10 +43,24 @@ const getBase64 = (img: File, callback: (imageUrl: string) => void) => {
   reader.readAsDataURL(img);
 };
 
-const EditProfileModal: React.FC<EditProfileModalProps> = ({ userInfo, isModalVisible, handleOk, handleCancel }) => {
+const EditProfileModal: React.FC<EditProfileModalProps> = ({isModalVisible, handleOk, handleCancel }) => {
+  const dispatch = useDispatch();
+  const { user, loading, error } = useSelector((state: RootState) => state.user);
   const [form] = Form.useForm();
   const [uploading, setUploading] = useState(false);
+  const [editingUser, setEditingUser] = useState<{
+    username: string,
+    lastName: string,
+    firstName: string
+    description: string,
+    dateOfBirth: string,
+  } | null>(null);
+  const [messageApi, contextHolder] = message.useMessage()
 
+
+  useEffect(() => {
+    setEditingUser(user)
+  }, [user]);
   const handleAvatarChange = (info: UploadChangeParam) => {
     if (info.file.status === 'uploading') {
       setUploading(true);
@@ -57,11 +74,30 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ userInfo, isModalVi
     }
   };
 
-  const onSave = () => {
-    form.validateFields().then(values => {
-      handleOk(values as UserInfo);
-    });
+  const onSave = async (value: any) => {
+      if(editingUser){
+        const res = await dispatch(updateUser({
+          username: editingUser.username,
+          lastName: editingUser.lastName,
+          firstName: editingUser.firstName,
+          description: editingUser.description,
+          dateOfBirth: editingUser.dateOfBirth,
+        }))
+        if(res.meta.requestStatus == "fulfilled"){
+          messageApi.success("Saved Successfully.");
+          handleCancel()
+        }
+      }
+
   };
+
+  if(!user){
+    return
+    (<>
+      Loading...
+      </>
+    )
+  }
 
   return (
       <Modal title="Edit Profile" open={isModalVisible} onOk={onSave} onCancel={handleCancel} footer={[
@@ -72,50 +108,41 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ userInfo, isModalVi
           Save
         </Button>,
       ]}>
-        <Form form={form} layout="vertical" initialValues={userInfo}>
-          <Form.Item label="Avatar" name="avatar">
-            <Upload
-                name="avatar"
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                customRequest={customRequest}
-                beforeUpload={beforeUpload}
-                onChange={handleAvatarChange}
-            >
-              {userInfo.avatar ? <img src={userInfo.avatar} alt="avatar" style={{ width: '100%' }} /> : <PlusOutlined />}
-            </Upload>
+        <Form form={form} layout="vertical" initialValues={{
+          username: user.username,
+          lastName: user.lastName,
+          firstName: user.firstName,
+          description: user.description,
+          dateOfBirth: user.dateOfBirth,
+        }}>
+          {/*<Form.Item label="Avatar" name="avatar">*/}
+          {/*  <Upload*/}
+          {/*      name="avatar"*/}
+          {/*      listType="picture-card"*/}
+          {/*      className="avatar-uploader"*/}
+          {/*      showUploadList={false}*/}
+          {/*      customRequest={customRequest}*/}
+          {/*      beforeUpload={beforeUpload}*/}
+          {/*      onChange={handleAvatarChange}*/}
+          {/*  >*/}
+          {/*    {userInfo.avatar ? <img src={userInfo.avatar} alt="avatar" style={{ width: '100%' }} /> : <PlusOutlined />}*/}
+          {/*  </Upload>*/}
+          {/*</Form.Item>*/}
+          <Form.Item label="Username" name="username" rules={[{ required: true, message: 'Please input your username!' }]}>
+            <Input value={ editingUser?.username} onChange={(e) => setEditingUser({...editingUser!, username: e.target.value })} />
           </Form.Item>
-          <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input your name!' }]}>
-            <Input />
+          <Form.Item label="First Name" name="firstName" rules={[{ required: true, message: 'Please input your firstname!' }]}>
+            <Input value={ editingUser?.firstName} onChange={(e) => setEditingUser({...editingUser!, firstName: e.target.value })}/>
           </Form.Item>
-          <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
-            <Input />
+          <Form.Item label="Last Name" name="lastName" rules={[{ required: true, message: 'Please input your lastname!' }]}>
+            <Input value={ editingUser?.lastName} onChange={(e) => setEditingUser({...editingUser!, lastName: e.target.value })}/>
           </Form.Item>
-          <Form.Item label="Bio" name="bio">
-            <Input.TextArea />
+          <Form.Item label="Date Of Birth" name="dateOfBirth" rules={[{ required: true, message: 'Please input your dateOfBirth!' }]}>
+            <Input value={ editingUser?.dateOfBirth} onChange={(e) => setEditingUser({...editingUser!, dateOfBirth: e.target.value })}/>
+            {/*<DatePicker />*/}
           </Form.Item>
-          <Form.Item label="Current Password" name="currentPassword" rules={[{ required: true, message: 'Please input your current password!' }]}>
-            <Input.Password />
-          </Form.Item>
-          <Form.Item label="New Password" name="newPassword" rules={[{ required: true, message: 'Please input your new password!' }]}>
-            <Input.Password />
-          </Form.Item>
-          <Form.Item label="Confirm New Password" name="confirmNewPassword" dependencies={['newPassword']} rules={[
-            {
-              required: true,
-              message: 'Please confirm your new password!',
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('newPassword') === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error('The two passwords that you entered do not match!'));
-              },
-            }),
-          ]}>
-            <Input.Password />
+          <Form.Item label="Bio" name="description">
+            <Input.TextArea value={ editingUser?.description} onChange={(e) => setEditingUser({...editingUser!, description: e.target.value })}/>
           </Form.Item>
         </Form>
       </Modal>

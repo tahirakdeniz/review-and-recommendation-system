@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
@@ -26,31 +27,55 @@ public class ProductController {
         this.productService = productService;
     }
 
+
+    //add product with info and picture
     @PostMapping
     @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
     public ResponseEntity<ProductDto> addProduct(Principal currentUser, @RequestPart AddProductRequest addProductRequest, @RequestParam("image") MultipartFile file) throws IOException {
         return new ResponseEntity<>(productService.addProduct(currentUser, addProductRequest, file), HttpStatus.CREATED);
     }
 
+    //add product info
+    @PostMapping("/info")
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
+    public ResponseEntity<ProductDto> addProductInfo(Principal currentUser, @RequestBody AddProductRequest addProductRequest) throws IOException {
+        return new ResponseEntity<>(productService.addProductInfo(currentUser, addProductRequest), HttpStatus.CREATED);
+    }
+
+    //add product image
+    @PutMapping("/{productId}/image")
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
+    public ResponseEntity<ProductDto> addProductPicture(Principal currentUser, @PathVariable long productId, @RequestParam("image") MultipartFile file) throws IOException {
+        return new ResponseEntity<>(productService.addProductImage(currentUser, productId, file), HttpStatus.CREATED);
+    }
+
+    //add product with image but path variables.
+    @PostMapping("/add")
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
+    public ResponseEntity<ProductDto> addProductParam(Principal currentUser, @RequestParam String name, @RequestParam String description, @RequestParam long categoryId, @RequestParam BigDecimal price, @RequestParam("image") MultipartFile file) throws IOException {
+        return new ResponseEntity<>(productService.addProductParam(currentUser, name, description, categoryId, price, file), HttpStatus.CREATED);
+    }
+
+
     @PutMapping("/{productId}")
     @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
     public ResponseEntity<ProductDto> updateProduct(Principal currentUser, @PathVariable Long productId, @RequestBody UpdateProductRequest updateProductRequest) {
-        return new ResponseEntity<>(productService.updateProduct(currentUser, productId, updateProductRequest), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(productService.updateProduct(currentUser, productId, updateProductRequest), HttpStatus.OK);
     }
 
+    //todo product fotografi update
 
     @DeleteMapping("/{productId}")
     @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
     public ResponseEntity<ProductDto> deleteProduct(Principal currentUser, @PathVariable Long productId) {
-        return new ResponseEntity<>(productService.deleteProduct(currentUser, productId), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(productService.deleteProduct(currentUser, productId), HttpStatus.OK);
     }
 
-
-    //TODO THIS AND BELOW ENDPOINTS CAN BE MERGE.
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDto> getProduct(@PathVariable Long productId) {
         return ResponseEntity.ok(productService.getProduct(productId));
     }
+
 
     @GetMapping("/{productId}/picture")
     public ResponseEntity<byte[]> downloadProductPicture(@PathVariable Long productId) {
@@ -69,4 +94,11 @@ public class ProductController {
     public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable(name = "category-name") String categoryName) {
         return ResponseEntity.ok(productService.getProductsByCategory(categoryName));
     }
+
+    @GetMapping("my-products")
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
+    public ResponseEntity<List<ProductDto>> getProductsByUser(Principal currentUser) {
+        return ResponseEntity.ok(productService.getProductsByUser(currentUser));
+    }
+
 }

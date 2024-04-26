@@ -1,7 +1,7 @@
-export interface CartItem {
+import {Product} from "@/lib/redux/features/productManagment/productManagmentSlice";
+
+export interface ICartItem {
     id: number;
-    name: string;
-    image: string;
-    rating: number;
-    price: number;
+    productDto: Product;
+    quantity: number;
 }
