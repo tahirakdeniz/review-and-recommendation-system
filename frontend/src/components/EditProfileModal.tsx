@@ -128,8 +128,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({isModalVisible, hand
           {/*    {userInfo.avatar ? <img src={userInfo.avatar} alt="avatar" style={{ width: '100%' }} /> : <PlusOutlined />}*/}
           {/*  </Upload>*/}
           {/*</Form.Item>*/}
-          <Form.Item label="Username" name="username" rules={[{ required: true, message: 'Please input your username!' }]}>
-            <Input value={ editingUser?.username} onChange={(e) => setEditingUser({...editingUser!, username: e.target.value })} />
+          <Form.Item label="Username" name="username">
+            <Input value={ editingUser?.username} onChange={(e) => setEditingUser({...editingUser!, username: e.target.value })} disabled/>
           </Form.Item>
           <Form.Item label="First Name" name="firstName" rules={[{ required: true, message: 'Please input your firstname!' }]}>
             <Input value={ editingUser?.firstName} onChange={(e) => setEditingUser({...editingUser!, firstName: e.target.value })}/>
