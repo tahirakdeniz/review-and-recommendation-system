@@ -1,18 +1,120 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import { cartApi } from './cartApi';
-import {CartItem} from "@/lib/entity/CartItem";
+import {ICartItem} from "@/lib/entity/CartItem";
+import axios from "axios";
+import {
+    Product,
+} from "@/lib/redux/features/productManagment/productManagmentSlice";
 
 interface CartState {
-    items: CartItem[];
-    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    cart: Cart | null;
+    loading: boolean;
     error: string | null;
 }
 
+interface Cart {
+    id: number,
+    cartItemDtos: ICartItem[],
+    totalPrice: number
+}
+
 const initialState: CartState = {
-    items: [],
-    status: 'idle',
+    cart: null,
+    loading: false,
     error: null,
 };
+
+export const fetchCart = createAsyncThunk<Cart>('cart/fetchCart', async (_, { rejectWithValue }) => {
+    try {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            return rejectWithValue('No access token found');
+        }
+
+        const response = await axios.get<Cart>('http://localhost:8081/api/v1/cart', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            return rejectWithValue(error.response.data.message || 'An error occurred while fetching products');
+        } else {
+            return rejectWithValue('An unknown error occurred');
+        }
+    }
+});
+
+export const removeProduct = createAsyncThunk<any, number>('cart/removeProduct', async (id, { rejectWithValue }) => {
+    try {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            return rejectWithValue('No access token found');
+        }
+
+        const response = await axios.put('http://localhost:8081/api/v1/cart/remove-product', {productId: id}, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return id;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            return rejectWithValue(error.response.data.message || 'An error occurred while fetching products');
+        } else {
+            return rejectWithValue('An unknown error occurred');
+        }
+    }
+});
+
+export const addProductToCart = createAsyncThunk<ICartItem, string>('cart/addProduct', async (id, { rejectWithValue }) => {
+    try {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            return rejectWithValue('No access token found');
+        }
+
+        const response = await axios.put<ICartItem>('http://localhost:8081/api/v1/cart/add-product', {productId: id, quantity:1}, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            return rejectWithValue(error.response.data.message || 'An error occurred while fetching products');
+        } else {
+            return rejectWithValue('An unknown error occurred');
+        }
+    }
+});
+
+export const buyProduct = createAsyncThunk<any, Product>('cart/buyProduct', async (productData, { rejectWithValue }) => {
+    try {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            return rejectWithValue('No access token found');
+        }
+
+        const response = await axios.post('http://localhost:8081/api/v1/cart', {id: productData.id, quantity:1}, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            return rejectWithValue(error.response.data.message || 'An error occurred while fetching products');
+        } else {
+            return rejectWithValue('An unknown error occurred');
+        }
+    }
+});
 
 export const cartSlice = createSlice({
     name: 'cart',
@@ -22,33 +124,76 @@ export const cartSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addMatcher(
-                cartApi.endpoints.getCartItems.matchFulfilled,
-                (state, action) => {
-                    state.items = action.payload.items;
-                }
-            )
-            .addMatcher(
-                cartApi.endpoints.addCartItem.matchFulfilled,
-                (state, action) => {
-                    state.items.push(action.payload.item);
-                }
-            )
-            .addMatcher(
-                cartApi.endpoints.removeCartItem.matchFulfilled,
-                (state, action) => {
-                    const index = state.items.findIndex(item => item.id === action.payload.itemId);
-                    if (index !== -1) {
-                        state.items.splice(index, 1);
+            .addCase(fetchCart.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchCart.fulfilled, (state, action: PayloadAction<Cart>) => {
+                console.log(action.payload)
+                state.cart = action.payload;
+                console.log(state.cart)
+                state.loading = false;
+            })
+            .addCase(fetchCart.rejected, (state, action) => {
+                state.loading = false;
+                state.error = JSON.stringify(action.payload) || null;
+            })
+            .addCase(addProductToCart.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addProductToCart.fulfilled, (state, action: PayloadAction<ICartItem>) => {
+                state.loading = false;
+                if(state.cart){
+                    const index = state.cart.cartItemDtos.findIndex(cartItem => cartItem.id == action.payload.id)
+                    if(index == -1){
+                        state.cart.cartItemDtos.push(action.payload);
                     }
+                    else {
+                        state.cart.cartItemDtos[index].quantity = state.cart.cartItemDtos[index].quantity + 1
+                    }
+                    state.cart.totalPrice += action.payload.productDto.price;
                 }
-            )
-            .addMatcher(
-                cartApi.endpoints.clearCart.matchFulfilled,
-                (state, action) => {
-                    state.items = [];
+
+            })
+            .addCase(addProductToCart.rejected, (state, action) => {
+                state.loading = false;
+                state.error = JSON.stringify(action.payload) || null;
+            })
+            .addCase(removeProduct.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(removeProduct.fulfilled, (state, action) => {
+                state.loading = false;
+                if(state.cart){
+                    const index = state.cart.cartItemDtos.findIndex(cartItem => cartItem.productDto.id = action.payload )
+                    console.log(state.cart.cartItemDtos[index])
                 }
-            );
+                // const index = state.cart?.cartItemDTOs.filter(cartItem => cartItem.product.id !== action.payload)//state.findIndex(p => p.id === action.payload.id);
+                // if (index !== -1) {
+                //     state.products[index] = action.payload;
+                // }
+                location.reload()
+            })
+            .addCase(removeProduct.rejected, (state, action) => {
+                state.loading = false;
+                state.error = JSON.stringify(action.payload) || null;
+            })
+            .addCase(buyProduct.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(buyProduct.fulfilled, (state, action) => {
+                state.loading = false;
+                //state.products = state.products.filter(product => product.id !== action.payload);
+                location.reload()
+            })
+            .addCase(buyProduct.rejected, (state, action) => {
+                state.loading = false;
+                state.error = JSON.stringify(action.payload) as string;
+            })
+        ;
     },
 });
 
