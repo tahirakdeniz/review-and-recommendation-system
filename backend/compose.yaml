@@ -1,10 +1,4 @@
 services:
-  server:
-    build:
-      context: .
-    ports:
-      - 8081:8081
-
   db:
     image: postgres
     restart: always
@@ -13,9 +7,8 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_USER=postgres
       - POSTGRES_DB=rrss
-    expose:
-      - 5432
-
+    ports:
+      - "5432:5432"
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pg-admin
