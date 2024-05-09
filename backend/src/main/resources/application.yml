@@ -2,7 +2,7 @@ spring:
   application:
     name: backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/rrss
+    url: jdbc:postgresql://db:5432/rrss
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
