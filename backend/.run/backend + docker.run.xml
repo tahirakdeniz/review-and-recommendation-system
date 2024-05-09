@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="backend + docker" type="CompoundRunConfigurationType">
+    <toRun name="docker" type="docker-deploy" />
+    <toRun name="BackendApplication" type="SpringBootApplicationConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>
