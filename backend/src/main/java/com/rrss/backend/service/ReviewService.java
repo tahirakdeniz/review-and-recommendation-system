@@ -1,6 +1,10 @@
 package com.rrss.backend.service;
 
 import com.rrss.backend.dto.*;
+import com.rrss.backend.exception.custom.ProductCategoryNotFoundException;
+import com.rrss.backend.exception.custom.ProductNotFoundException;
+import com.rrss.backend.exception.custom.ReviewFieldNotFoundException;
+import com.rrss.backend.exception.custom.ReviewFormNotFoundException;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.*;
 import com.rrss.backend.util.UserUtil;
@@ -37,7 +41,7 @@ public class ReviewService {
                 reviewFormRepository.save(
                         new ReviewForm(
                                 productCategoryRepository.findByName(reviewFormRequest.productCategoryName())
-                                        .orElseThrow(() -> new RuntimeException("Product category not found"))
+                                        .orElseThrow(() -> new ProductCategoryNotFoundException("Product category not found"))
                         )
                 )
         );
@@ -46,7 +50,7 @@ public class ReviewService {
 
     public ReviewFieldDto addReviewField(Long id, ReviewFieldRequest reviewFieldRequest) {
         ReviewForm reviewForm = reviewFormRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Review form not found"));
+                .orElseThrow(() -> new ReviewFormNotFoundException("Review form not found"));
 
 
         ReviewField reviewField = reviewFieldRepository.save(
@@ -69,16 +73,16 @@ public class ReviewService {
     public ReviewFormDto getReviewForm(String productCategoryName) {
         return ReviewFormDto.convert(
                 reviewFormRepository.findByProductTypeName(productCategoryName)
-                        .orElseThrow(() -> new RuntimeException("Review form not found"))
+                        .orElseThrow(() -> new ReviewFormNotFoundException("Review form not found"))
         );
     }
 
     public String deleteReviewField(Long id, Long fieldId) {
         ReviewForm reviewForm = reviewFormRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Review form not found"));
+                .orElseThrow(() -> new ReviewFormNotFoundException("Review form not found"));
 
         ReviewField reviewField = reviewFieldRepository.findById(fieldId)
-                .orElseThrow(() -> new RuntimeException("Review field not found"));
+                .orElseThrow(() -> new ReviewFieldNotFoundException("Review field not found"));
 
         reviewForm.getFields().remove(reviewField);
         reviewFormRepository.save(reviewForm);
@@ -90,10 +94,10 @@ public class ReviewService {
 
     public ReviewFieldDto updateReviewField(Long id, Long fieldId, ReviewFieldRequest reviewFieldRequest) {
         ReviewForm reviewForm = reviewFormRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Review form not found"));
+                .orElseThrow(() -> new ReviewFormNotFoundException("Review form not found"));
 
         ReviewField reviewField = reviewFieldRepository.findById(fieldId)
-                .orElseThrow(() -> new RuntimeException("Review field not found"));
+                .orElseThrow(() -> new ReviewFieldNotFoundException("Review field not found"));
 
         reviewForm.getFields().remove(reviewField);
 
@@ -129,7 +133,7 @@ public class ReviewService {
         }
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                    .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         var review = reviewRepository.save(
                 new Review(
@@ -148,7 +152,7 @@ public class ReviewService {
                                     new FieldScoreId(0L, scoreDto.fieldId()),
                                     review,
                                     reviewFieldRepository.findById(scoreDto.fieldId()) // TODO maybe look field is in reviewform
-                                        .orElseThrow(() -> new RuntimeException("Review field not found")),
+                                        .orElseThrow(() -> new ReviewFieldNotFoundException("Review field not found")),
                                     scoreDto.score()
                                 )
                         )

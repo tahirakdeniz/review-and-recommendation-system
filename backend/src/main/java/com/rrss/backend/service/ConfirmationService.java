@@ -2,10 +2,7 @@ package com.rrss.backend.service;
 
 import com.rrss.backend.dto.ConfirmationTokenDto;
 import com.rrss.backend.dto.CreateTokenRequest;
-import com.rrss.backend.exception.custom.OtpTokenNotFoundException;
-import com.rrss.backend.exception.custom.TokenExpiredException;
-import com.rrss.backend.exception.custom.UserAlreadyExistsException;
-import com.rrss.backend.exception.custom.WrongOtpException;
+import com.rrss.backend.exception.custom.*;
 import com.rrss.backend.model.ConfirmationToken;
 import com.rrss.backend.repository.ConfirmationRepository;
 import com.rrss.backend.repository.UserRepository;
@@ -15,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Random;
 
 
@@ -68,7 +64,7 @@ public class ConfirmationService {
         try {
             emailUtil.sendOtpEmail(confirmationToken.getEmail(), confirmationToken.getOtp());
         } catch (MessagingException e) {
-            throw new RuntimeException("Unable to send otp please try again");
+            throw new OtpTokenSendingException("Unable to send otp. Please try again.");
         }
 
         return ConfirmationTokenDto.convert(repository.save(confirmationToken));
@@ -84,9 +80,9 @@ public class ConfirmationService {
 
         if (token.getExpirationTime().isBefore(LocalDateTime.now())) {
             createToken(new CreateTokenRequest(email));
-            throw new TokenExpiredException("Token is expired new token is send to your mail.");
+            throw new OtpTokenExpiredException("Token is expired new token is send to your mail.");
         } else if(!token.getOtp().equals(otp)) {
-            throw new WrongOtpException("You have written wrong otp.");
+            throw new InvalidOtpTokenException("You have written wrong otp.");
         }
     }
 }
