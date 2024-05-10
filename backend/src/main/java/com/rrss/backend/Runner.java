@@ -115,6 +115,7 @@ public class Runner implements CommandLineRunner {
     }
 
     private void createAdmin() {
+        Authority authorityManageReview = authorityRepository.save(new Authority("MANAGE_REVIEW"));
         Authority authorityApprove = authorityRepository.save(new Authority("APPROVE_MERCHANT_REQUEST"));
         Authority authoritySee = authorityRepository.save(new Authority("SEE_MERCHANT_REQUEST"));
         Authority addProductCategory = authorityRepository.save(new Authority("MANAGE_PRODUCT_CATEGORY"));
@@ -122,6 +123,7 @@ public class Runner implements CommandLineRunner {
         roleAdmin.getAuthorities().add(authorityApprove);
         roleAdmin.getAuthorities().add(authoritySee);
         roleAdmin.getAuthorities().add(addProductCategory);
+        roleAdmin.getAuthorities().add(authorityManageReview);
         roleRepository.save(roleAdmin);
 
         Cart cartAdmin = cartRepository.save(new Cart());
@@ -129,7 +131,7 @@ public class Runner implements CommandLineRunner {
         User admin = new User(
                 "jon_admin",
                 passwordEncoder.encode("securepass"),
-                "example2@gmail.com",
+                "example3@gmail.com",
                 "jon",
                 "doe",
                 roleRepository.findByName("ADMIN")

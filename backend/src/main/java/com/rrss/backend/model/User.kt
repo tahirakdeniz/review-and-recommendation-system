@@ -21,7 +21,9 @@ data class User @JvmOverloads constructor(
     private val username: String,
 
     private val password: String,
+
     @Email
+    @Column(unique = true)
     val email: String,
 
     val description: String? = null,

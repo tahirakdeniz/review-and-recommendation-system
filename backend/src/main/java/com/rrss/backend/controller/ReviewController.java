@@ -21,7 +21,7 @@ public class ReviewController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGE_REVIEW')")
     public ResponseEntity<ReviewFormDto> createReviewForm(@RequestBody ReviewFormRequest reviewFormRequest) {
         return new ResponseEntity<>(reviewService.createReviewForm(reviewFormRequest), HttpStatus.CREATED);
     }
@@ -32,19 +32,19 @@ public class ReviewController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGE_REVIEW')")
     public ResponseEntity<ReviewFieldDto> addReviewField(@PathVariable Long id, @RequestBody ReviewFieldRequest reviewFieldRequest) {
         return ResponseEntity.ok(reviewService.addReviewField(id, reviewFieldRequest));
     }
 
     @PutMapping("/{id}/fields/{fieldId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGE_REVIEW')")
     public ResponseEntity<ReviewFieldDto> updateReviewField(@PathVariable Long id, @PathVariable Long fieldId, @RequestBody ReviewFieldRequest reviewFieldRequest) {
         return ResponseEntity.ok(reviewService.updateReviewField(id, fieldId, reviewFieldRequest));
     }
 
     @DeleteMapping("/{id}/fields/{fieldId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGE_REVIEW')")
     public ResponseEntity<String> deleteReviewField(@PathVariable Long id, @PathVariable Long fieldId) {
         return new ResponseEntity<>(reviewService.deleteReviewField(id, fieldId), HttpStatus.NO_CONTENT);
     }
@@ -53,13 +53,4 @@ public class ReviewController {
     public ResponseEntity<ReviewDto> submitReview(Principal currentUser, @PathVariable Long productId, @RequestBody ReviewSubmitRequest reviewSubmitRequest) {
         return new ResponseEntity<>(reviewService.submitReview(currentUser, productId, reviewSubmitRequest), HttpStatus.CREATED);
     }
-
-
-
-
-
-
-
-
-
 }

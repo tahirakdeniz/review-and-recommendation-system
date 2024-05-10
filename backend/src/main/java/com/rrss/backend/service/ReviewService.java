@@ -4,6 +4,7 @@ import com.rrss.backend.dto.*;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.*;
 import com.rrss.backend.util.UserUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -35,7 +36,6 @@ public class ReviewService {
         return ReviewFormDto.convert(
                 reviewFormRepository.save(
                         new ReviewForm(
-                                reviewFormRequest.name(),
                                 productCategoryRepository.findByName(reviewFormRequest.productCategoryName())
                                         .orElseThrow(() -> new RuntimeException("Product category not found"))
                         )
@@ -107,16 +107,20 @@ public class ReviewService {
         );
 
         reviewForm.getFields().add(newReviewField);
+        reviewFormRepository.save(reviewForm);
 
         return ReviewFieldDto.convert(newReviewField);
     }
 
 
+    @Transactional
     public ReviewDto submitReview(Principal currentUser, Long productId, ReviewSubmitRequest reviewSubmitRequest) {
         var user = userUtil.extractUser(currentUser);
 
         // Check if the user has bought the product
-        boolean boughtProduct = user.getPurchases().stream()
+        boolean boughtProduct = user
+                .getPurchases()
+                .stream()
                 .anyMatch(purchase -> purchase.getItems().stream()
                         .anyMatch(item -> Objects.equals(item.getProduct().getId(), productId)));
 
@@ -129,14 +133,11 @@ public class ReviewService {
 
         var review = reviewRepository.save(
                 new Review(
-                        null,
                         product,
                         user,
                         reviewSubmitRequest.comment()
                 )
         );
-
-        reviewRepository.save(review);
 
         List<FieldScore> fieldScores = reviewSubmitRequest
                 .fieldScores()
@@ -144,9 +145,9 @@ public class ReviewService {
                 .map(scoreDto ->
                         fieldScoreRepository.save(
                                 new FieldScore(
-                                    new FieldScoreId(0L, scoreDto.reviewFieldDto().id()), // Assuming fieldId is the ID for ReviewField
+                                    new FieldScoreId(0L, scoreDto.fieldId()),
                                     review,
-                                    reviewFieldRepository.findById(scoreDto.reviewFieldDto().id())
+                                    reviewFieldRepository.findById(scoreDto.fieldId()) // TODO maybe look field is in reviewform
                                         .orElseThrow(() -> new RuntimeException("Review field not found")),
                                     scoreDto.score()
                                 )
@@ -154,7 +155,13 @@ public class ReviewService {
                 )
                 .toList();
 
-        return ReviewDto.convert(review);
+        review.getScores().addAll(fieldScores);
 
+        var reviewWithFields = reviewRepository.save(review);
+
+        product.getReviews().add(reviewWithFields);
+        productRepository.save(product);
+
+        return ReviewDto.convert(reviewWithFields);
     }
 }
