@@ -2,6 +2,7 @@ package com.rrss.backend.service;
 
 import com.rrss.backend.dto.AddForumCategoryRequest;
 import com.rrss.backend.dto.ForumCategoryDto;
+import com.rrss.backend.dto.TopicDto;
 import com.rrss.backend.model.ForumCategory;
 import com.rrss.backend.model.User;
 import com.rrss.backend.repository.ForumCategoryRepository;
@@ -9,6 +10,7 @@ import com.rrss.backend.util.UserUtil;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.List;
 
 @Service
 public class ForumCategoryService {
@@ -28,5 +30,12 @@ public class ForumCategoryService {
         );
         
         return ForumCategoryDto.convert(repository.save(forumCategory));
+    }
+
+    public List<ForumCategoryDto> getCategories() {
+        return repository.findAll()
+                .stream()
+                .map(ForumCategoryDto::convert)
+                .toList();
     }
 }
