@@ -22,7 +22,7 @@ data class Review @JvmOverloads constructor(
     val scores: List<FieldScore> = mutableListOf(),
 
     @OneToOne
-    val reply: ReviewReply,
+    val reply: ReviewReply? = null,
 
     val comment: String
 )

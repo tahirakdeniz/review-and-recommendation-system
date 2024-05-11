@@ -24,8 +24,6 @@ public record ProductReviewDto(
             });
 
             fieldAverageScore.forEach((label, score) -> fieldAverageScore.put(label, score / reviewDtos.size()));
-
-
         });
 
         return new ProductReviewDto(
