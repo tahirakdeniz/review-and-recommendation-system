@@ -5,10 +5,10 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "review_replies")
-data class ReviewReply(
+data class ReviewReply @JvmOverloads constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id", nullable = false)

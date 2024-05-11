@@ -86,10 +86,10 @@ public class CartService {
             cartItemRepository.save(updatedItem);
         } else {
             cart.getItems().removeIf(e -> Objects.equals(e.getId() , item.getId()));
-            repository.save(cart); // TODO CART I NEWLEMEK GEREKEBILIR
+            repository.save(cart);
             cartItemRepository.delete(item);
         }
-        return "Product removed from cart"; //TODO RETURN DELETED ITEM
+        return "Product removed from cart";
     }
 
     @Transactional

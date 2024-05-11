@@ -12,7 +12,7 @@ data class Review @JvmOverloads constructor(
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    val product: Product, // TODO PURCHASE OLABILIR
+    val product: Product,
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

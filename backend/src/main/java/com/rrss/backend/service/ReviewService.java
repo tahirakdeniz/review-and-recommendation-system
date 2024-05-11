@@ -148,7 +148,7 @@ public class ReviewService {
                                 new FieldScore(
                                     new FieldScoreId(0L, scoreDto.fieldId()),
                                     review,
-                                    reviewFieldRepository.findById(scoreDto.fieldId()) // TODO maybe look field is in reviewform
+                                    reviewFieldRepository.findById(scoreDto.fieldId())
                                         .orElseThrow(() -> new ReviewFieldNotFoundException("Review field not found")),
                                     scoreDto.score()
                                 )

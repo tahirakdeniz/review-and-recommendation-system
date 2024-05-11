@@ -5,7 +5,6 @@ import com.rrss.backend.model.Product;
 import java.math.BigDecimal;
 import java.util.List;
 
-// TODO PRODUCT DTO IMAGE DONDURECEK
 public record ProductDto(
         Long id,
         String name,
