@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "topics")
-data class Topic(
+data class Topic @JvmOverloads constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -25,6 +25,8 @@ data class Topic(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
-    val category: ForumCategory
+    val category: ForumCategory,
+
+    val isAnonymous: Boolean
 )
 
