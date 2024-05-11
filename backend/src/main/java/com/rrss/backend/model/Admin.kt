@@ -15,6 +15,6 @@ data class Admin @JvmOverloads constructor(
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    @OnDelete(action = OnDeleteAction.CASCADE) //todo BAK BAK BAK BAK
+    @OnDelete(action = OnDeleteAction.CASCADE) //todo might be wrong
     val user: User,
     )

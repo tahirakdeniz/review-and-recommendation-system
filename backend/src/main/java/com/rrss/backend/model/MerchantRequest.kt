@@ -15,7 +15,7 @@ data class MerchantRequest @JvmOverloads constructor(
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    @OnDelete(action = OnDeleteAction.CASCADE) //todo BAK BAK BAK BAK
+    @OnDelete(action = OnDeleteAction.CASCADE) //todo might be wrong
     val user: User,
 
     @Column(nullable = false)

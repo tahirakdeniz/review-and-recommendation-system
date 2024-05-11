@@ -33,8 +33,8 @@ data class User @JvmOverloads constructor(
     private val isAccountNonExpired: Boolean = true,
     private val isAccountNonLocked: Boolean = true,
 
-    val firstName: String, //TODO  GUI YOK SIGNUP
-    val lastName: String, //TODO  GUI YOK SIGNUP
+    val firstName: String,
+    val lastName: String,
 
     @Lob
     @JdbcTypeCode(Types.LONGVARBINARY)
@@ -43,7 +43,7 @@ data class User @JvmOverloads constructor(
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     val role: Role,
-    val dateOfBirth: LocalDate, //TODO  GUI YOK
+    val dateOfBirth: LocalDate,
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true)
     val merchant: Merchant? = null,

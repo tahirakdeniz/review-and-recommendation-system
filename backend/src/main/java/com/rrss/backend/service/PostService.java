@@ -2,6 +2,7 @@ package com.rrss.backend.service;
 
 import com.rrss.backend.dto.AddPostRequest;
 import com.rrss.backend.dto.PostDto;
+import com.rrss.backend.exception.custom.PermissionDeniedException;
 import com.rrss.backend.exception.custom.PostNotFoundException;
 import com.rrss.backend.exception.custom.TopicNotFoundException;
 import com.rrss.backend.model.Post;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PostService {
@@ -58,8 +60,8 @@ public class PostService {
 
         Post post = repository.findById(postId).orElseThrow(() -> new PostNotFoundException("Post not found."));
 
-        if (user.getId() != post.getCreatedBy().getId()) {
-            throw new RuntimeException("You are not the owner of this post.");
+        if (!Objects.equals(user.getId(), post.getCreatedBy().getId())) {
+            throw new PermissionDeniedException("You are not the owner of this post.");
         }
 
         Post newPost = new Post(
@@ -79,8 +81,8 @@ public class PostService {
         Post post = repository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found."));
 
-        if (user.getId() != post.getCreatedBy().getId()) {
-            throw new RuntimeException("You are not the owner of this post."); //TODO RUNTIME
+        if (!Objects.equals(user.getId(), post.getCreatedBy().getId())) {
+            throw new PermissionDeniedException("You are not the owner of this post.");
         }
 
         repository.deleteById(postId);
