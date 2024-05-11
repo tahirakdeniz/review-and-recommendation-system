@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "posts")
-data class Post(
+data class Post @JvmOverloads constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -22,5 +22,7 @@ data class Post(
     val content: String,
 
     @Column(nullable = false)
-    val creationDate: LocalDateTime = LocalDateTime.now()
+    val creationDate: LocalDateTime = LocalDateTime.now(),
+
+    val isAnonymous: Boolean
 )
