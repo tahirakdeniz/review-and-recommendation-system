@@ -18,7 +18,7 @@ public record UserReviewDto(
                         .stream()
                         .map(FieldScoreDto::convert)
                         .toList(),
-                ReviewReplyDto.convert(from.getReply())
+                (from.getReply() == null) ? null : ReviewReplyDto.convert(from.getReply())
 
 
         );

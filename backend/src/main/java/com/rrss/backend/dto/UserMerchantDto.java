@@ -2,9 +2,11 @@ package com.rrss.backend.dto;
 
 import com.rrss.backend.model.Merchant;
 
+import java.util.List;
+
 public record UserMerchantDto(
-        String id
-        MerchantReviewReplyDto reviewReplyDto //TODO YAP BUNU
+        String id,
+        List<ReviewReplyDto> reviewReplyDto
 ) {
     public static UserMerchantDto convert(Merchant from) {
         if (from == null)
@@ -13,7 +15,7 @@ public record UserMerchantDto(
                 from.getId(),
                 from.getReviewReplies()
                         .stream()
-                        .map(MerchantReviewReplyDto::convert)
+                        .map(ReviewReplyDto::convert)
                         .toList()
         );
     }

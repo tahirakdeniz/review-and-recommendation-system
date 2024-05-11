@@ -33,7 +33,10 @@ public record UserDto(
                 from.getRole().getName(),
                 from.getDateOfBirth(),
                 UserMerchantDto.convert(from.getMerchant()),
-                from.getReviews().stream().map() // TODO SONRA YAP
+                from.getReviews()
+                        .stream()
+                        .map(UserReviewDto::convert)
+                        .toList(),
                 from.getAccountBalance(),
                 UserCartDto.convert(from.getCart()),
                 from.getSocialCredit(),

@@ -1,10 +1,8 @@
 package com.rrss.backend.dto;
 
 import com.rrss.backend.model.Review;
-import com.rrss.backend.model.ReviewReply;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record ReviewDto(
         Long id,
@@ -23,7 +21,7 @@ public record ReviewDto(
                         .stream()
                         .map(FieldScoreDto::convert)
                         .toList(),
-                ReviewReplyDto.convert(from.getReply()),
+                (from.getReply() == null) ? null : ReviewReplyDto.convert(from.getReply()),
                 from.getComment()
         );
     }
