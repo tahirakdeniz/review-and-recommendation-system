@@ -119,10 +119,12 @@ public class Runner implements CommandLineRunner {
         Authority authorityApprove = authorityRepository.save(new Authority("APPROVE_MERCHANT_REQUEST"));
         Authority authoritySee = authorityRepository.save(new Authority("SEE_MERCHANT_REQUEST"));
         Authority addProductCategory = authorityRepository.save(new Authority("MANAGE_PRODUCT_CATEGORY"));
+        Authority managePost = authorityRepository.save(new Authority("MANAGE_POST"));
         Role roleAdmin = roleRepository.save(new Role("ADMIN"));
         roleAdmin.getAuthorities().add(authorityApprove);
         roleAdmin.getAuthorities().add(authoritySee);
         roleAdmin.getAuthorities().add(addProductCategory);
+        roleAdmin.getAuthorities().add(managePost);
         roleAdmin.getAuthorities().add(authorityManageReview);
         roleRepository.save(roleAdmin);
 
