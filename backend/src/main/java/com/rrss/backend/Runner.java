@@ -40,10 +40,65 @@ public class Runner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        createAuthorities();
+        createRoles();
         createUser();
         saveProductCategories();
+        createCommunityModerator();
         createMerchantWithRequest();
         createAdmin();
+    }
+
+    private void createAuthorities() {
+        authorityRepository.save(new Authority("MANAGE_PRODUCT"));
+        authorityRepository.save(new Authority("MANAGE_REVIEW"));
+        authorityRepository.save(new Authority("APPROVE_MERCHANT_REQUEST"));
+        authorityRepository.save(new Authority("SEE_MERCHANT_REQUEST"));
+        authorityRepository.save(new Authority("MANAGE_PRODUCT_CATEGORY"));
+        authorityRepository.save(new Authority("MANAGE_POST"));
+        authorityRepository.save(new Authority("MANAGE_TOPIC"));
+        authorityRepository.save(new Authority("MANAGE_FORUM_CATEGORY"));
+    }
+
+    private void createRoles() {
+        roleRepository.save(new Role("USER"));
+
+        Role roleCommunityModerator = roleRepository.save(new Role("COMMUNITY_MODERATOR"));
+        roleCommunityModerator.getAuthorities().add(authorityRepository.findByName("MANAGE_POST").orElseThrow());
+        roleCommunityModerator.getAuthorities().add(authorityRepository.findByName("MANAGE_TOPIC").orElseThrow());
+        roleCommunityModerator.getAuthorities().add(authorityRepository.findByName("MANAGE_FORUM_CATEGORY").orElseThrow());
+        roleRepository.save(roleCommunityModerator);
+
+        Role roleAdmin = roleRepository.save(new Role("ADMIN"));
+        roleAdmin.getAuthorities().add(authorityRepository.findByName("APPROVE_MERCHANT_REQUEST").orElseThrow());
+        roleAdmin.getAuthorities().add(authorityRepository.findByName("SEE_MERCHANT_REQUEST").orElseThrow());
+        roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_PRODUCT_CATEGORY").orElseThrow());
+        roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_REVIEW").orElseThrow());
+        roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_POST").orElseThrow());
+        roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_TOPIC").orElseThrow());
+        roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_FORUM_CATEGORY").orElseThrow());
+        roleRepository.save(roleAdmin);
+
+        Role roleMerchant = roleRepository.save(new Role("MERCHANT"));
+        roleMerchant.getAuthorities().add(authorityRepository.findByName("MANAGE_PRODUCT").orElseThrow());
+        roleRepository.save(roleMerchant);
+
+    }
+
+    private void createCommunityModerator() {
+        Cart cartUser =  cartRepository.save(new Cart());
+        User user = new User(
+                "jon_moderator",
+                passwordEncoder.encode("securepass"),
+                "example@gmail.com",
+                "jon",
+                "doe",
+                roleRepository.findByName("COMMUNITY_MODERATOR")
+                        .orElseThrow(),
+                LocalDate.of(1995, 5, 5),
+                cartUser
+        );
+        userRepository.save(user);
     }
 
     private void saveProductCategories() {
@@ -52,9 +107,6 @@ public class Runner implements CommandLineRunner {
     }
 
     private void createUser() {
-        Role roleUser = new Role("USER");
-        roleRepository.save(roleUser);
-
         Cart cartUser =  cartRepository.save(new Cart());
         User user = new User(
                 "jon_user",
@@ -72,11 +124,6 @@ public class Runner implements CommandLineRunner {
     }
 
     private void createMerchantWithRequest() {
-        Role roleMerchant = roleRepository.save(new Role("MERCHANT"));
-        Authority authorityAddProduct = authorityRepository.save(new Authority("MANAGE_PRODUCT"));
-        roleMerchant.getAuthorities().add(authorityAddProduct);
-        roleRepository.save(roleMerchant);
-
         Cart cartMerchant = cartRepository.save(new Cart());
         Cart cartRealMerchant = cartRepository.save(new Cart());
 
@@ -115,19 +162,6 @@ public class Runner implements CommandLineRunner {
     }
 
     private void createAdmin() {
-        Authority authorityManageReview = authorityRepository.save(new Authority("MANAGE_REVIEW"));
-        Authority authorityApprove = authorityRepository.save(new Authority("APPROVE_MERCHANT_REQUEST"));
-        Authority authoritySee = authorityRepository.save(new Authority("SEE_MERCHANT_REQUEST"));
-        Authority addProductCategory = authorityRepository.save(new Authority("MANAGE_PRODUCT_CATEGORY"));
-        Authority managePost = authorityRepository.save(new Authority("MANAGE_POST"));
-        Role roleAdmin = roleRepository.save(new Role("ADMIN"));
-        roleAdmin.getAuthorities().add(authorityApprove);
-        roleAdmin.getAuthorities().add(authoritySee);
-        roleAdmin.getAuthorities().add(addProductCategory);
-        roleAdmin.getAuthorities().add(managePost);
-        roleAdmin.getAuthorities().add(authorityManageReview);
-        roleRepository.save(roleAdmin);
-
         Cart cartAdmin = cartRepository.save(new Cart());
 
         User admin = new User(
@@ -142,6 +176,5 @@ public class Runner implements CommandLineRunner {
                 cartAdmin
         );
         userRepository.save(admin);
-
     }
 }
