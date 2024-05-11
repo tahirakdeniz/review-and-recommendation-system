@@ -14,7 +14,7 @@ data class Merchant @JvmOverloads constructor(
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     val user: User,
 
-    @OneToMany(mappedBy = "merchant", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "merchant", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     val reviewReplies: List<ReviewReply> = mutableListOf(),
 
     @OneToMany(mappedBy = "merchant", cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH], fetch = FetchType.EAGER)

@@ -2,6 +2,7 @@ package com.rrss.backend.service;
 
 import com.rrss.backend.dto.MerchantRequestDto;
 import com.rrss.backend.enums.MerchantRequestStatus;
+import com.rrss.backend.exception.custom.MerchantRequestNotFoundException;
 import com.rrss.backend.model.MerchantRequest;
 import com.rrss.backend.model.User;
 import com.rrss.backend.repository.MerchantRequestRepository;
@@ -27,7 +28,7 @@ public class MerchantRequestService {
 
         MerchantRequest request = repository
                 .findMerchantRequestByUsername(username)
-                .orElseThrow(() -> new RuntimeException("no such merchant request"));
+                .orElseThrow(() -> new MerchantRequestNotFoundException("no such merchant request"));
 
         User oldUser = request.getUser();
 

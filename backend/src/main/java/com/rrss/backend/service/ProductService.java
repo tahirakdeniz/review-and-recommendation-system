@@ -4,6 +4,10 @@ import com.rrss.backend.controller.ProductCategoryController;
 import com.rrss.backend.dto.AddProductRequest;
 import com.rrss.backend.dto.ProductDto;
 import com.rrss.backend.dto.UpdateProductRequest;
+import com.rrss.backend.exception.custom.ImageProcessingException;
+import com.rrss.backend.exception.custom.PermissionDeniedException;
+import com.rrss.backend.exception.custom.ProductCategoryNotFoundException;
+import com.rrss.backend.exception.custom.ProductNotFoundException;
 import com.rrss.backend.model.Merchant;
 import com.rrss.backend.model.Product;
 import com.rrss.backend.model.User;
@@ -53,7 +57,7 @@ public class ProductService {
                 addProductRequest.description(),
                 user.getMerchant(),
                 productCategoryRepository.findByName(addProductRequest.productCategoryName())
-                        .orElseThrow(() -> new RuntimeException("no such category")),
+                        .orElseThrow(() -> new ProductCategoryNotFoundException("no such category")),
                 addProductRequest.price(),
                 ImageUtil.compressImage(file.getBytes())
         );
@@ -64,12 +68,12 @@ public class ProductService {
     @Transactional
     public ProductDto deleteProduct(Principal currentUser, Long productId) {
         Product product = repository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         Merchant merchant = userUtil.extractUser(currentUser).getMerchant();
 
         if (merchant == null || !Objects.equals(merchant.getId(), product.getMerchant().getId())) {
-            throw new RuntimeException("you are not the owner of this product");
+            throw new PermissionDeniedException("you are not the owner of this product");
         }
 
         List<Product> products = merchant.getProducts();
@@ -89,18 +93,18 @@ public class ProductService {
 
     public ProductDto getProduct(Long productId) {
         return ProductDto.convert(repository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found")));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found")));
     }
 
 
     public byte[] downloadProductPicture(Long productId) {
         Product product = repository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         try {
             return ImageUtil.decompressImage(product.getPicture());
         } catch (DataFormatException | IOException e) {
-            throw new RuntimeException("change this....");
+            throw new ImageProcessingException("change this....");
         }
 
     }
@@ -123,11 +127,11 @@ public class ProductService {
 
     public ProductDto updateProduct(Principal currentUser, Long productId, UpdateProductRequest updateProductRequest) {
         Product product = repository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         User user = userUtil.extractUser(currentUser);
         if (user.getMerchant() == null || !Objects.equals(user.getMerchant().getId(), product.getMerchant().getId())) {
-            throw new IllegalArgumentException("you are not the owner of this product");
+            throw new PermissionDeniedException("you are not the owner of this product");
         }
 
         Product newProduct = new Product(
@@ -173,7 +177,7 @@ public class ProductService {
         User user = userUtil.extractUser(currentUser);
 
         Product oldProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         Product product = new Product(
                 oldProduct.getId(),
@@ -196,7 +200,7 @@ public class ProductService {
                 description,
                 user.getMerchant(),
                 productCategoryRepository.findById(categoryId)
-                        .orElseThrow(() -> new RuntimeException("no such category")),
+                        .orElseThrow(() -> new ProductCategoryNotFoundException("no such category")),
                 price,
                 ImageUtil.compressImage(file.getBytes())
         );

@@ -2,6 +2,7 @@ package com.rrss.backend.service;
 
 import com.rrss.backend.dto.ProductCategoryDto;
 import com.rrss.backend.dto.ProductCategoryRequest;
+import com.rrss.backend.exception.custom.ProductCategoryNotFoundException;
 import com.rrss.backend.model.ProductCategory;
 import com.rrss.backend.repository.ProductCategoryRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class ProductCategoryService {
 
     protected ProductCategory findByName(String name) {
         return repository.findByName(name)
-                .orElseThrow(() -> new RuntimeException("Product category not found"));
+                .orElseThrow(() -> new ProductCategoryNotFoundException("Product category not found."));
     }
 
     public List<ProductCategoryDto> getAllProductCategories() {
