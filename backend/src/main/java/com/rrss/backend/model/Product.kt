@@ -30,6 +30,8 @@ data class Product @JvmOverloads constructor(
     @JdbcTypeCode(Types.LONGVARBINARY)
     val picture: ByteArray?,
 
+    @OneToMany(mappedBy = "product", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    val reviews: List<Review> = mutableListOf()
 
 ) {
 

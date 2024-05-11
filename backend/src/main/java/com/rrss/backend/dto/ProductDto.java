@@ -3,6 +3,7 @@ package com.rrss.backend.dto;
 import com.rrss.backend.model.Product;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 // TODO PRODUCT DTO IMAGE DONDURECEK
 public record ProductDto(
@@ -12,7 +13,8 @@ public record ProductDto(
         String userId,
         String productCategoryName,
         BigDecimal price,
-        byte[] photo
+        byte[] photo,
+        ProductReviewDto reviewDto
 ) {
     public static ProductDto convert(Product from) {
         return new ProductDto(
@@ -22,7 +24,9 @@ public record ProductDto(
                 from.getMerchant().getUser().getId(),
                 from.getProductCategory().getName(),
                 from.getPrice(),
-                from.getPicture()
+                from.getPicture(),
+                ProductReviewDto.convert(from.getReviews())
+
         );
     }
 }

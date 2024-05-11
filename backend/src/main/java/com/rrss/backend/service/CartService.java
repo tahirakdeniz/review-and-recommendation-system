@@ -1,6 +1,8 @@
 package com.rrss.backend.service;
 
 import com.rrss.backend.dto.*;
+import com.rrss.backend.exception.custom.InsufficientBalanceException;
+import com.rrss.backend.exception.custom.ProductNotFoundException;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.*;
 import com.rrss.backend.util.UserUtil;
@@ -62,7 +64,7 @@ public class CartService {
 
     private CartItem createNewItem(Cart cart, AddProductToCartRequest request) {
         Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
         return new CartItem(null, cart, product, request.quantity());
     }
 
@@ -110,7 +112,7 @@ public class CartService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         if (user.getAccountBalance().compareTo(totalCost) < 0) {
-            throw new RuntimeException("cant buy the product");
+            throw new InsufficientBalanceException("Can't buy the product due to insufficient balance.");
         }
 
         BigDecimal newAccountBalance = user.getAccountBalance().subtract(totalCost);

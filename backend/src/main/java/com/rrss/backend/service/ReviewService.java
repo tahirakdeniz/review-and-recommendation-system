@@ -1,9 +1,11 @@
 package com.rrss.backend.service;
 
 import com.rrss.backend.dto.*;
+import com.rrss.backend.exception.custom.*;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.*;
 import com.rrss.backend.util.UserUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -35,9 +37,8 @@ public class ReviewService {
         return ReviewFormDto.convert(
                 reviewFormRepository.save(
                         new ReviewForm(
-                                reviewFormRequest.name(),
                                 productCategoryRepository.findByName(reviewFormRequest.productCategoryName())
-                                        .orElseThrow(() -> new RuntimeException("Product category not found"))
+                                        .orElseThrow(() -> new ProductCategoryNotFoundException("Product category not found"))
                         )
                 )
         );
@@ -46,7 +47,7 @@ public class ReviewService {
 
     public ReviewFieldDto addReviewField(Long id, ReviewFieldRequest reviewFieldRequest) {
         ReviewForm reviewForm = reviewFormRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Review form not found"));
+                .orElseThrow(() -> new ReviewFormNotFoundException("Review form not found"));
 
 
         ReviewField reviewField = reviewFieldRepository.save(
@@ -69,16 +70,16 @@ public class ReviewService {
     public ReviewFormDto getReviewForm(String productCategoryName) {
         return ReviewFormDto.convert(
                 reviewFormRepository.findByProductTypeName(productCategoryName)
-                        .orElseThrow(() -> new RuntimeException("Review form not found"))
+                        .orElseThrow(() -> new ReviewFormNotFoundException("Review form not found"))
         );
     }
 
     public String deleteReviewField(Long id, Long fieldId) {
         ReviewForm reviewForm = reviewFormRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Review form not found"));
+                .orElseThrow(() -> new ReviewFormNotFoundException("Review form not found"));
 
         ReviewField reviewField = reviewFieldRepository.findById(fieldId)
-                .orElseThrow(() -> new RuntimeException("Review field not found"));
+                .orElseThrow(() -> new ReviewFieldNotFoundException("Review field not found"));
 
         reviewForm.getFields().remove(reviewField);
         reviewFormRepository.save(reviewForm);
@@ -90,10 +91,10 @@ public class ReviewService {
 
     public ReviewFieldDto updateReviewField(Long id, Long fieldId, ReviewFieldRequest reviewFieldRequest) {
         ReviewForm reviewForm = reviewFormRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Review form not found"));
+                .orElseThrow(() -> new ReviewFormNotFoundException("Review form not found"));
 
         ReviewField reviewField = reviewFieldRepository.findById(fieldId)
-                .orElseThrow(() -> new RuntimeException("Review field not found"));
+                .orElseThrow(() -> new ReviewFieldNotFoundException("Review field not found"));
 
         reviewForm.getFields().remove(reviewField);
 
@@ -107,36 +108,37 @@ public class ReviewService {
         );
 
         reviewForm.getFields().add(newReviewField);
+        reviewFormRepository.save(reviewForm);
 
         return ReviewFieldDto.convert(newReviewField);
     }
 
 
+    @Transactional
     public ReviewDto submitReview(Principal currentUser, Long productId, ReviewSubmitRequest reviewSubmitRequest) {
         var user = userUtil.extractUser(currentUser);
 
         // Check if the user has bought the product
-        boolean boughtProduct = user.getPurchases().stream()
+        boolean boughtProduct = user
+                .getPurchases()
+                .stream()
                 .anyMatch(purchase -> purchase.getItems().stream()
                         .anyMatch(item -> Objects.equals(item.getProduct().getId(), productId)));
 
         if (!boughtProduct) {
-            throw new RuntimeException("User has not bought the product");
+            throw new PermissionDeniedException("User has not bought the product");
         }
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                    .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         var review = reviewRepository.save(
                 new Review(
-                        null,
                         product,
                         user,
                         reviewSubmitRequest.comment()
                 )
         );
-
-        reviewRepository.save(review);
 
         List<FieldScore> fieldScores = reviewSubmitRequest
                 .fieldScores()
@@ -144,17 +146,23 @@ public class ReviewService {
                 .map(scoreDto ->
                         fieldScoreRepository.save(
                                 new FieldScore(
-                                    new FieldScoreId(0L, scoreDto.reviewFieldDto().id()), // Assuming fieldId is the ID for ReviewField
+                                    new FieldScoreId(0L, scoreDto.fieldId()),
                                     review,
-                                    reviewFieldRepository.findById(scoreDto.reviewFieldDto().id())
-                                        .orElseThrow(() -> new RuntimeException("Review field not found")),
+                                    reviewFieldRepository.findById(scoreDto.fieldId()) // TODO maybe look field is in reviewform
+                                        .orElseThrow(() -> new ReviewFieldNotFoundException("Review field not found")),
                                     scoreDto.score()
                                 )
                         )
                 )
                 .toList();
 
-        return ReviewDto.convert(review);
+        review.getScores().addAll(fieldScores);
 
+        var reviewWithFields = reviewRepository.save(review);
+
+        product.getReviews().add(reviewWithFields);
+        productRepository.save(product);
+
+        return ReviewDto.convert(reviewWithFields);
     }
 }

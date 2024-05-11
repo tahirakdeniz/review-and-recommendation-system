@@ -3,6 +3,9 @@ package com.rrss.backend.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rrss.backend.dto.*;
 import com.rrss.backend.enums.TokenType;
+import com.rrss.backend.exception.custom.ImageProcessingException;
+import com.rrss.backend.exception.custom.InvalidCredentialsException;
+import com.rrss.backend.exception.custom.RoleNotFoundException;
 import com.rrss.backend.exception.custom.UsernameIsNotUniqueException;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.MerchantRequestRepository;
@@ -96,7 +99,7 @@ public class UserService {
 
         User user = repository.findByUsername(loginRequest.username())
                 .filter(u -> passwordEncoder.matches(loginRequest.password(), u.getPassword()))
-                .orElseThrow(() -> new RuntimeException("invalid username or password"));
+                .orElseThrow(() -> new InvalidCredentialsException("invalid username or password"));
 
 
         authenticationManager.authenticate(
@@ -197,7 +200,7 @@ public class UserService {
         try {
             return ImageUtil.decompressImage(userImage);
         } catch (DataFormatException | IOException e) {
-            throw new RuntimeException("change this....");
+            throw new ImageProcessingException("change this....");
         }
 
     }
@@ -212,14 +215,14 @@ public class UserService {
         try {
             return ImageUtil.decompressImage(userImage);
         } catch (DataFormatException | IOException e) {
-            throw new RuntimeException("change this....");
+            throw new ImageProcessingException("change this....");
         }
     }
 
 
     protected void changeUserRole(User user, String role) {
         Role newRole = roleService.findByName(role)
-                .orElseThrow(() -> new RuntimeException(role + " role not found"));
+                .orElseThrow(() -> new RoleNotFoundException(role + " role not found"));
 
         Merchant merchant = null;
         if (user.getMerchant() != null) {

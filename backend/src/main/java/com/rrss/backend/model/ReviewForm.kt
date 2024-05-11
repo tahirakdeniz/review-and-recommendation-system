@@ -10,8 +10,6 @@ data class ReviewForm @JvmOverloads constructor(
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long? = null,
 
-    val name: String,
-
     @OneToOne
     @JoinColumn(name = "product_type_id", nullable = false)
     val productType: ProductCategory,

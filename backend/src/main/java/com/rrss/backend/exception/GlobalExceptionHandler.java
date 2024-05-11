@@ -15,23 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
-/**
-
- * 4001 = Email Verification token gönderirken email eğer db de yoksa gönderilir.gönderilirtoken suresi
- *      bittigi zaman gonderilir, eger bu gonderildiyse emaile yeni bir token gonderilmistir.
- * 4002 = user yaratırken email verified değilse
- * 4041 = user not found in database
- * 4042 = checkOtp fonskiyonunda gonderilen emaile ait token yoktur
- * 4043 = createUser fonksiyonunda gonderilen emaile ait token yoktur
- * 4011 = tutor registration kısmını bitirmeden bi yerlere girmek isterse
- *
- *
- *
- *
- *
- * 999 = Sistem atti valla bizle alakali degil
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -50,13 +33,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(TokenExpiredException ex) {
-        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(WrongOtpException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(WrongOtpException ex) {
+    @ExceptionHandler(OtpTokenExpiredException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(OtpTokenExpiredException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -70,49 +48,60 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
-    /*
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(UserNotFoundException ex) {
+    @ExceptionHandler(ImageProcessingException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ImageProcessingException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InsufficientBalanceException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InvalidCredentialsException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidOtpTokenException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InvalidOtpTokenException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MerchantRequestNotFoundException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(MerchantRequestNotFoundException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(TutorRegistrationIncompleteException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(TutorRegistrationIncompleteException ex) {
+    @ExceptionHandler(OtpTokenSendingException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(OtpTokenSendingException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(PermissionDeniedException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(PermissionDeniedException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(EmailAlreadyInUseException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(EmailAlreadyInUseException ex) {
-        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-
-    @ExceptionHandler(NoSuchEmailVerificationTokenException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(NoSuchEmailVerificationTokenException ex) {
+    @ExceptionHandler(ProductCategoryNotFoundException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ProductCategoryNotFoundException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(EmailVerificationTokenExpiredException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(EmailVerificationTokenExpiredException ex) {
-        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(WrongOtpException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(WrongOtpException ex) {
-        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(EmailIsNotVerifiedException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(EmailIsNotVerifiedException ex) {
-        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(ImageDoesNotExistException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ImageDoesNotExistException ex) {
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ProductNotFoundException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
-     */
 
+    @ExceptionHandler(ReviewFieldNotFoundException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ReviewFieldNotFoundException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ReviewFormNotFoundException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ReviewFormNotFoundException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
 
     /*
      * CUSTOM EXCEPTIONS
