@@ -94,4 +94,28 @@ public class TopicService {
 
         return TopicDto.convert(repository.save(newTopic));
     }
+
+    public String deleteTopicByOwner(Principal currentUser, Long topicId) {
+        User user = userUtil.extractUser(currentUser);
+
+        Topic topic = repository.findById(topicId)
+                .orElseThrow(() -> new TopicNotFoundException("Topic not found."));
+
+        if (!Objects.equals(user.getId(), topic.getCreatedBy().getId())) {
+            throw new PermissionDeniedException("You are not the owner of this topic.");
+        }
+
+        repository.deleteById(topicId);
+
+        return "Topic deleted successfully";
+
+    }
+
+    public String deleteTopic(Long topicId) {
+        Topic topic = repository.findById(topicId)
+                .orElseThrow(() -> new TopicNotFoundException("Topic not found."));
+        repository.deleteById(topicId);
+        return "Topic deleted successfully";
+    }
+
 }

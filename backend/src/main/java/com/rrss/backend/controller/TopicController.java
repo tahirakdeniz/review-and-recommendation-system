@@ -6,6 +6,7 @@ import com.rrss.backend.dto.UpdateTopicRequest;
 import com.rrss.backend.service.TopicService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -35,5 +36,17 @@ public class TopicController {
     public ResponseEntity<TopicDto> updateTopic(Principal currentUser, @PathVariable("topic-id") Long topicId, @RequestBody UpdateTopicRequest updateTopicRequest) {
         return ResponseEntity.ok(topicService.updateTopic(currentUser,topicId,updateTopicRequest));
     }
+
+    @DeleteMapping("/{topic-id}")
+    public ResponseEntity<String> deleteTopicByOwner(Principal currentUser,@PathVariable("topic-id") Long topicId) {
+        return ResponseEntity.ok(topicService.deleteTopicByOwner(currentUser,topicId));
+    }
+
+    @DeleteMapping("/topic-id")
+    @PreAuthorize("hasAnyAuthority('MANAGE_TOPIC')")
+    public ResponseEntity<String> deleteTopic(@PathVariable("topic-id") Long topicId) {
+        return ResponseEntity.ok(topicService.deleteTopic(topicId));
+    }
+
 
 }
