@@ -2,6 +2,7 @@ package com.rrss.backend.controller;
 
 import com.rrss.backend.dto.AddTopicRequest;
 import com.rrss.backend.dto.TopicDto;
+import com.rrss.backend.dto.UpdateTopicRequest;
 import com.rrss.backend.service.TopicService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,11 @@ public class TopicController {
     @GetMapping("/{forum-category-id}")
     public ResponseEntity<List<TopicDto>> getTopics(@PathVariable("forum-category-id") Long categoryId) {
         return ResponseEntity.ok(topicService.getTopics(categoryId));
+    }
+
+    @PutMapping("/{topic-id}")
+    public ResponseEntity<TopicDto> updateTopic(Principal currentUser, @PathVariable("topic-id") Long topicId, @RequestBody UpdateTopicRequest updateTopicRequest) {
+        return ResponseEntity.ok(topicService.updateTopic(currentUser,topicId,updateTopicRequest));
     }
 
 }
