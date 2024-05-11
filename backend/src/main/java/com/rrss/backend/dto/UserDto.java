@@ -16,7 +16,7 @@ public record UserDto(
         String role,
         LocalDate dateOfBirth,
         UserMerchantDto merchantDto,
-        //List<UserReviewDto> reviewDtos
+        List<UserReviewDto> reviewDtos,
         BigDecimal accountBalance,
         UserCartDto cartDto,
         BigDecimal socialCredit,
@@ -33,6 +33,7 @@ public record UserDto(
                 from.getRole().getName(),
                 from.getDateOfBirth(),
                 UserMerchantDto.convert(from.getMerchant()),
+                from.getReviews().stream().map() // TODO SONRA YAP
                 from.getAccountBalance(),
                 UserCartDto.convert(from.getCart()),
                 from.getSocialCredit(),

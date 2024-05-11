@@ -15,7 +15,10 @@ public record UserPurchaseDto(
     public static UserPurchaseDto convert(Purchase from) {
         return new UserPurchaseDto(
                 from.getId(),
-                from.getItems().stream().map(PurchaseItemDto::convert).toList(),
+                from.getItems()
+                        .stream()
+                        .map(PurchaseItemDto::convert)
+                        .toList(),
                 from.getTotalCost(),
                 from.getPurchaseDate()
         );

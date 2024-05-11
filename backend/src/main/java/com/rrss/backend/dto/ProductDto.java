@@ -14,8 +14,7 @@ public record ProductDto(
         String productCategoryName,
         BigDecimal price,
         byte[] photo,
-        List<ReviewDto> reviewDtos,
-        double averageReviewScore
+        ProductReviewDto reviewDto
 ) {
     public static ProductDto convert(Product from) {
         return new ProductDto(
@@ -26,11 +25,7 @@ public record ProductDto(
                 from.getProductCategory().getName(),
                 from.getPrice(),
                 from.getPicture(),
-                from.getReviews()
-                        .stream()
-                        .map(ReviewDto::convert)
-                        .toList(),
-
+                ProductReviewDto.convert(from.getReviews())
 
         );
     }

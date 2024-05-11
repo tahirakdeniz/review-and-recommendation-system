@@ -1,10 +1,7 @@
 package com.rrss.backend.service;
 
 import com.rrss.backend.dto.*;
-import com.rrss.backend.exception.custom.ProductCategoryNotFoundException;
-import com.rrss.backend.exception.custom.ProductNotFoundException;
-import com.rrss.backend.exception.custom.ReviewFieldNotFoundException;
-import com.rrss.backend.exception.custom.ReviewFormNotFoundException;
+import com.rrss.backend.exception.custom.*;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.*;
 import com.rrss.backend.util.UserUtil;
@@ -129,7 +126,7 @@ public class ReviewService {
                         .anyMatch(item -> Objects.equals(item.getProduct().getId(), productId)));
 
         if (!boughtProduct) {
-            throw new RuntimeException("User has not bought the product");
+            throw new PermissionDeniedException("User has not bought the product");
         }
 
         Product product = productRepository.findById(productId)

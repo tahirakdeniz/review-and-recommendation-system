@@ -3,7 +3,6 @@ package com.rrss.backend.dto;
 import com.rrss.backend.model.ReviewForm;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record ReviewFormDto(
         Long id,
@@ -14,7 +13,10 @@ public record ReviewFormDto(
         return new ReviewFormDto(
                 from.getId(),
                 ProductCategoryDto.convert(from.getProductType()),
-                from.getFields().stream().map(ReviewFieldDto::convert).collect(Collectors.toList())
+                from.getFields()
+                        .stream()
+                        .map(ReviewFieldDto::convert)
+                        .toList()
         );
     }
 }

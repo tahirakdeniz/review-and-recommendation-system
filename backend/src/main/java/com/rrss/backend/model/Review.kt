@@ -21,11 +21,8 @@ data class Review @JvmOverloads constructor(
     @OneToMany(mappedBy = "review", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val scores: List<FieldScore> = mutableListOf(),
 
-    @OneToMany(mappedBy = "review", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val flags: List<ReviewFlag> = mutableListOf(),
-
-    @OneToMany(mappedBy = "review", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val replies: List<ReviewReply> = mutableListOf(),
+    @OneToOne
+    val reply: ReviewReply,
 
     val comment: String
 )
