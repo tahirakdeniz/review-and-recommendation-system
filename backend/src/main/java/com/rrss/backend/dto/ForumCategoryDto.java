@@ -1,6 +1,7 @@
 package com.rrss.backend.dto;
 
 import com.rrss.backend.model.ForumCategory;
+import java.util.List;
 
 public record ForumCategoryDto(
 
@@ -16,7 +17,10 @@ public record ForumCategoryDto(
                 from.getId(),
                 from.getName(),
                 from.getDescription(),
-
+                from.getTopics()
+                        .stream()
+                        .map(ForumCategoryTopicDto::convert)
+                        .toList()
         );
     }
 }

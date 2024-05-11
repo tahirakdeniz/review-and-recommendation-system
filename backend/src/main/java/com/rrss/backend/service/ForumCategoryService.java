@@ -14,22 +14,19 @@ import java.security.Principal;
 public class ForumCategoryService {
 
     private final ForumCategoryRepository repository;
-    private final UserUtil userUtil;
 
-    public ForumCategoryService(ForumCategoryRepository repository, UserUtil userUtil) {
+    public ForumCategoryService(ForumCategoryRepository repository) {
         this.repository = repository;
-        this.userUtil = userUtil;
     }
 
 
-    public ForumCategoryDto addForumCategory(Principal currentUser, AddForumCategoryRequest addForumCategoryRequest) {
-        User user = userUtil.extractUser(currentUser);
+    public ForumCategoryDto addForumCategory(AddForumCategoryRequest addForumCategoryRequest) {
 
         ForumCategory forumCategory = new ForumCategory(
                 addForumCategoryRequest.name(),
                 addForumCategoryRequest.description()
         );
         
-        return(ForumCategoryDto.convert(repository.save(forumCategory)));
+        return ForumCategoryDto.convert(repository.save(forumCategory));
     }
 }
