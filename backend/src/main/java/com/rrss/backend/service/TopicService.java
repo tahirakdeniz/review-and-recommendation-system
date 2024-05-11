@@ -2,7 +2,10 @@ package com.rrss.backend.service;
 
 import com.rrss.backend.dto.AddTopicRequest;
 import com.rrss.backend.dto.TopicDto;
+import com.rrss.backend.dto.UpdateTopicRequest;
 import com.rrss.backend.exception.custom.ForumCategoryNotFoundException;
+import com.rrss.backend.exception.custom.PermissionDeniedException;
+import com.rrss.backend.exception.custom.TopicNotFoundException;
 import com.rrss.backend.model.ForumCategory;
 import com.rrss.backend.model.Post;
 import com.rrss.backend.model.Topic;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TopicService {
@@ -66,5 +70,28 @@ public class TopicService {
                 .getTopics()
                 .stream()
                 .map(TopicDto::convert).toList();
+    }
+
+    public TopicDto updateTopic(Principal currentUser, Long topicId, UpdateTopicRequest updateTopicRequest) {
+        User user = userUtil.extractUser(currentUser);
+
+        Topic topic = repository.findById(topicId)
+                .orElseThrow(() -> new TopicNotFoundException("Topic not found"));
+
+        if(!Objects.equals(user.getId(), topic.getCreatedBy().getId())) {
+            throw new PermissionDeniedException("You are not the owner of this post.");
+        }
+
+        Topic newTopic = new Topic(
+                topic.getId(),
+                updateTopicRequest.title(),
+                topic.getCreatedBy(),
+                topic.getCreationDate(),
+                topic.getPosts(),
+                topic.getCategory(),
+                updateTopicRequest.isAnonymous()
+        );
+
+        return TopicDto.convert(repository.save(newTopic));
     }
 }
