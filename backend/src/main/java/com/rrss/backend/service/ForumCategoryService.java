@@ -49,4 +49,11 @@ public class ForumCategoryService {
 
         return ForumCategoryDto.convert(repository.save(newForumCategory));
     }
+
+    public String deleteForumCategory(Long forumCategoryId) {
+        ForumCategory forumCategory = repository.findById(forumCategoryId)
+                .orElseThrow(() -> new ForumCategoryNotFoundException("Forum Category not found."));
+        repository.deleteById(forumCategoryId);
+        return "Forum Category deleted successfully";
+    }
 }

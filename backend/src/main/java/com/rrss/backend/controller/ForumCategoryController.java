@@ -36,5 +36,11 @@ public class ForumCategoryController {
     public ResponseEntity<ForumCategoryDto> updateForumCategory(@RequestBody AddForumCategoryRequest addForumCategoryRequest, @PathVariable("forum-category-id") Long forumCategoryId) {
         return ResponseEntity.ok(forumCategoryService.updateForumCategory(addForumCategoryRequest,forumCategoryId));
     }
+    
+    @DeleteMapping("/{forum-category-id}")
+    @PreAuthorize("hasAnyAuthority('MANAGE_FORUM_CATEGORY')")
+    public ResponseEntity<String> deleteForumCategory(@PathVariable("forum-category-id") Long forumCategoryId) {
+        return ResponseEntity.ok(forumCategoryService.deleteForumCategory(forumCategoryId));
+    }
 
 }
