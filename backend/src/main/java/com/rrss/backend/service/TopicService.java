@@ -3,6 +3,7 @@ package com.rrss.backend.service;
 import com.rrss.backend.dto.AddTopicRequest;
 import com.rrss.backend.dto.TopicDto;
 import com.rrss.backend.exception.custom.ForumCategoryNotFoundException;
+import com.rrss.backend.model.ForumCategory;
 import com.rrss.backend.model.Post;
 import com.rrss.backend.model.Topic;
 import com.rrss.backend.model.User;
@@ -13,6 +14,7 @@ import com.rrss.backend.util.UserUtil;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.List;
 
 @Service
 public class TopicService {
@@ -54,5 +56,15 @@ public class TopicService {
         savedTopic.getPosts().add(savedPost);
 
         return TopicDto.convert(repository.save(savedTopic));
+    }
+
+    public List<TopicDto> getTopics(Long categoryId) {
+        ForumCategory forumCategory = forumCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ForumCategoryNotFoundException("Forum Category not found."));
+
+        return forumCategory
+                .getTopics()
+                .stream()
+                .map(TopicDto::convert).toList();
     }
 }
