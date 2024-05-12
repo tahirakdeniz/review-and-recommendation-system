@@ -46,8 +46,8 @@ const Navbar = () => {
             </div>
             <div>
                 <Menu mode="horizontal" selectedKeys={[pathname]} className={'bg-inherit'}>
-                    <Menu.Item key="/community" icon={<FormOutlined />}>
-                        <Link href="/community">Forum</Link>
+                    <Menu.Item key="/forum" icon={<FormOutlined />}>
+                        <Link href="/forum">Forum</Link>
                     </Menu.Item>
                     <Menu.Item key="/shop" icon={<ShopOutlined />}>
                         <Link href="/products">Shop</Link>
