@@ -90,7 +90,7 @@ public class Runner implements CommandLineRunner {
         User user = new User(
                 "jon_moderator",
                 passwordEncoder.encode("securepass"),
-                "example@gmail.com",
+                "example9@gmail.com",
                 "jon",
                 "doe",
                 roleRepository.findByName("COMMUNITY_MODERATOR")
@@ -111,7 +111,7 @@ public class Runner implements CommandLineRunner {
         User user = new User(
                 "jon_user",
                 passwordEncoder.encode("securepass"),
-                "example@gmail.com",
+                "example8@gmail.com",
                 "jon",
                 "doe",
                 roleRepository.findByName("USER")

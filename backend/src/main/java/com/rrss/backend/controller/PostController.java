@@ -42,7 +42,7 @@ public class PostController {
         return ResponseEntity.ok(postService.deletePostByOwner(currentUser,postId));
     }
 
-    @DeleteMapping("/{post-id}")
+    @DeleteMapping("/admin/{post-id}")
     @PreAuthorize("hasAuthority('MANAGE_POST')")
     public ResponseEntity<String> deletePost(@PathVariable("post-id") Long postId) {
         return ResponseEntity.ok(postService.deletePost(postId));
