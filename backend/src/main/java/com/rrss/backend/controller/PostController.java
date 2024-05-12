@@ -27,7 +27,7 @@ public class PostController {
         return new ResponseEntity<>(postService.addPost(currentUser,addPostRequest), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{topic-id}")
+    @GetMapping("/get/{topic-id}")
     public ResponseEntity<List<PostDto>> getPosts(@PathVariable("topic-id") Long topicId) {
         return ResponseEntity.ok(postService.getPosts(topicId));
     }

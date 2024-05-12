@@ -26,11 +26,11 @@ public class ForumCategoryController {
         return new ResponseEntity<>(forumCategoryService.addForumCategory(addForumCategoryRequest), HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<List<ForumCategoryDto>> getForumCategories() {
         return ResponseEntity.ok(forumCategoryService.getForumCategories());
     }
-    
+
     @PutMapping("/{forum-category-id}")
     @PreAuthorize("hasAnyAuthority('MANAGE_FORUM_CATEGORY')")
     public ResponseEntity<ForumCategoryDto> updateForumCategory(@RequestBody AddForumCategoryRequest addForumCategoryRequest, @PathVariable("forum-category-id") Long forumCategoryId) {

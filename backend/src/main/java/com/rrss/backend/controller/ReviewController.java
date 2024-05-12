@@ -26,7 +26,7 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.createReviewForm(reviewFormRequest), HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/form")
     public ResponseEntity<ReviewFormDto> getReviewForm(@RequestParam String productCategoryName) {
         return ResponseEntity.ok(reviewService.getReviewForm(productCategoryName));
     }
