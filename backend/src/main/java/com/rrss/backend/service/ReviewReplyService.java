@@ -2,7 +2,7 @@ package com.rrss.backend.service;
 
 import com.rrss.backend.dto.ReviewReplyDto;
 import com.rrss.backend.dto.ReviewReplyRequest;
-import com.rrss.backend.exception.ReviewReplyNotFoundException;
+import com.rrss.backend.exception.custom.ReviewReplyNotFoundException;
 import com.rrss.backend.exception.custom.PermissionDeniedException;
 import com.rrss.backend.exception.custom.ReviewNotFoundException;
 import com.rrss.backend.model.Review;
