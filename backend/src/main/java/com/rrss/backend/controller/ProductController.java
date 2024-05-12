@@ -71,7 +71,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.deleteProduct(currentUser, productId), HttpStatus.OK);
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/get/{productId}")
     public ResponseEntity<ProductDto> getProduct(@PathVariable Long productId) {
         return ResponseEntity.ok(productService.getProduct(productId));
     }
@@ -85,7 +85,7 @@ public class ProductController {
                 .body(imageData);
     }
 
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(defaultValue = "") String searchKey) {
         return ResponseEntity.ok(productService.getAllProducts(searchKey));
     }
