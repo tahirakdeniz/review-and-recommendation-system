@@ -86,8 +86,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(defaultValue = "") String searchKey) {
+        return ResponseEntity.ok(productService.getAllProducts(searchKey));
     }
 
     @GetMapping("/category/{category-name}")
