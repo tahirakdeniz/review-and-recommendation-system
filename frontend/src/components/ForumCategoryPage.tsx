@@ -1,9 +1,33 @@
-import { Avatar, Button, Card, Col, Form, Input, Modal, Row } from "antd";
+import { Avatar, Button, Card, Col, Form, Input, Modal, Row, Space } from "antd";
 import { CloseCircleOutlined } from '@ant-design/icons';
 import Meta from "antd/es/card/Meta";
+import TextArea from "antd/es/input/TextArea";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
 
 interface ForumCategoryPageProps {
     categoryId: string;
+}
+
+const AddNewTopicModal = () => {
+
+    const addNewTopic = async () => {}
+
+    const handleCancel = () => {}
+
+    return (
+        <Modal title={"Meeting Area"} open={false}>
+            <Space direction="vertical" style={{ width: '100%' }}>
+                <Input
+                    placeholder="Topic"
+                />
+                <TextArea
+                    rows={10}
+                    placeholder="Description"
+                />
+            </Space>
+        </Modal>
+    )
 }
 
 const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
@@ -45,6 +69,7 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
                 <Button type="primary">Create New Topic</Button>
             </div>
         </Card>
+        <AddNewTopicModal/>
 </div>
  )
 }
