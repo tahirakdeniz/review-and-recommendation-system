@@ -2,6 +2,7 @@ package com.rrss.backend.controller;
 
 import com.rrss.backend.dto.AddForumCategoryRequest;
 import com.rrss.backend.dto.ForumCategoryDto;
+import com.rrss.backend.enums.ForumCategoryHeader;
 import com.rrss.backend.service.ForumCategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +27,16 @@ public class ForumCategoryController {
         return new ResponseEntity<>(forumCategoryService.addForumCategory(addForumCategoryRequest), HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<List<ForumCategoryDto>> getForumCategories() {
         return ResponseEntity.ok(forumCategoryService.getForumCategories());
     }
-    
+
+    @GetMapping("/get/{header}")
+    public ResponseEntity<List<ForumCategoryDto>> getForumCategoriesByHeader(@PathVariable("header")ForumCategoryHeader forumCategoryHeader) {
+        return ResponseEntity.ok(forumCategoryService.getForumCategoriesByHeader(forumCategoryHeader));
+    }
+
     @PutMapping("/{forum-category-id}")
     @PreAuthorize("hasAnyAuthority('MANAGE_FORUM_CATEGORY')")
     public ResponseEntity<ForumCategoryDto> updateForumCategory(@RequestBody AddForumCategoryRequest addForumCategoryRequest, @PathVariable("forum-category-id") Long forumCategoryId) {

@@ -27,7 +27,7 @@ public class TopicController {
         return new ResponseEntity<>(topicService.addTopic(currentUser,addTopicRequest), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{forum-category-id}")
+    @GetMapping("/get/{forum-category-id}")
     public ResponseEntity<List<TopicDto>> getTopics(@PathVariable("forum-category-id") Long categoryId) {
         return ResponseEntity.ok(topicService.getTopics(categoryId));
     }

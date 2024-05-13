@@ -7,7 +7,9 @@ import java.util.List;
 public record ProductReviewReviewDto(
         Long id,
         ReviewUserDto userDto,
-        List<FieldScoreDto> fieldScoreDtos
+        List<FieldScoreDto> fieldScoreDtos,
+        ReviewReplyDto reviewReplyDto,
+        String comment
 ) {
         public static ProductReviewReviewDto convert(Review from) {
                 return new ProductReviewReviewDto(
@@ -16,7 +18,9 @@ public record ProductReviewReviewDto(
                         from.getScores()
                                 .stream()
                                 .map(FieldScoreDto::convert)
-                                .toList()
+                                .toList(),
+                        (from.getReply() == null) ? null : ReviewReplyDto.convert(from.getReply()),
+                        from.getComment()
                 );
         }
 

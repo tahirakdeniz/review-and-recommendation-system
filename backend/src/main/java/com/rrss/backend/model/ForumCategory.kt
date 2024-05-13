@@ -1,5 +1,6 @@
 package com.rrss.backend.model
 
+import com.rrss.backend.enums.ForumCategoryHeader
 import jakarta.persistence.*
 
 @Entity
@@ -16,5 +17,8 @@ data class ForumCategory @JvmOverloads constructor(
     val description: String,
 
     @OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val topics: List<Topic> = mutableListOf()
+    val topics: List<Topic> = mutableListOf(),
+
+    @Enumerated(EnumType.STRING)
+    var header: ForumCategoryHeader
 )

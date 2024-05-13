@@ -19,7 +19,7 @@ public class ProductCategoryController {
         this.productCategoryService = productCategoryService;
     }
 
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<List<ProductCategoryDto>> getAllProductCategories() {
         return ResponseEntity.ok(productCategoryService.getAllProductCategories());
     }

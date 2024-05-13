@@ -8,23 +8,25 @@ import java.util.List;
 public record TopicDto(
         Long id,
         String title,
-        TopicUserDto userDto,
+        BasicUserDto userDto,
         LocalDateTime creationDate,
         List<TopicPostDto> postDtos,
-        TopicForumCategoryDto forumCategoryDto
+        TopicForumCategoryDto forumCategoryDto,
+        Boolean isAnonymous
 ) {
 
     public static TopicDto convert(Topic from) {
         return new TopicDto(
                 from.getId(),
                 from.getTitle(),
-                TopicUserDto.convert(from.getCreatedBy(), from.isAnonymous()),
+                BasicUserDto.convert(from.getCreatedBy(), from.isAnonymous()),
                 from.getCreationDate(),
                 from.getPosts()
                         .stream()
                         .map(TopicPostDto::convert)
                         .toList(),
-                TopicForumCategoryDto.convert(from.getCategory())
+                TopicForumCategoryDto.convert(from.getCategory()),
+                from.isAnonymous()
         );
     }
 }

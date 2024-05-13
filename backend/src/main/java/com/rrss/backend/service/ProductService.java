@@ -119,7 +119,7 @@ public class ProductService {
 
     public List<ProductDto> getProductsByCategory(String categoryName) {
         return repository
-                .findProductsByName(categoryName)
+                .findByProductCategoryName(categoryName)
                 .stream()
                 .map(ProductDto::convert)
                 .toList();
@@ -206,6 +206,19 @@ public class ProductService {
         );
 
         return ProductDto.convert(repository.save(product));
+
+    }
+
+    public List<ProductDto> getAllProducts(String searchKey) {
+        if (searchKey.isEmpty())
+            return getAllProducts();
+
+        return repository
+                .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(searchKey, searchKey)
+                .stream()
+                .map(ProductDto::convert)
+                .toList();
+
 
     }
 }
