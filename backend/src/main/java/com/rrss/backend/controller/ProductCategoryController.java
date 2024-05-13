@@ -29,4 +29,16 @@ public class ProductCategoryController {
     public ResponseEntity<ProductCategoryDto> addProductCategory(@RequestBody ProductCategoryRequest productCategoryRequest) {
         return ResponseEntity.ok(productCategoryService.addProductCategory(productCategoryRequest));
     }
+
+    @PutMapping("/{product-category-id}")
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT_CATEGORY')")
+    public ResponseEntity<ProductCategoryDto> updateProductCategory(@PathVariable("product-category-id") long id, @RequestBody ProductCategoryRequest productCategoryRequest) {
+        return ResponseEntity.ok(productCategoryService.updateProductCategory(id, productCategoryRequest));
+    }
+
+    @DeleteMapping("/{product-category-id}")
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT_CATEGORY')")
+    public ResponseEntity<String> updateProductCategory(@PathVariable("product-category-id") long id) {
+        return ResponseEntity.ok(productCategoryService.deleteProductCategory(id));
+    }
 }
