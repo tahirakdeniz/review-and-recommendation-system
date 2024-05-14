@@ -53,9 +53,9 @@ const Navbar = () => {
                     <Menu.Item key="/shop" icon={<ShopOutlined />}>
                         <Link href="/shop">Shop</Link>
                     </Menu.Item>
-                    <Menu.Item key="/scshop" icon={<ShopOutlined />}>
-                        <Link href="/scshop">SC Shop</Link>
-                    </Menu.Item>
+                    {/*<Menu.Item key="/scshop" icon={<ShopOutlined />}>*/}
+                    {/*    <Link href="/scshop">SC Shop</Link>*/}
+                    {/*</Menu.Item>*/}
                     <Menu.Item key="/account" icon={<UserOutlined />}>
                         <Link href="/account">Profile</Link>
                     </Menu.Item>
