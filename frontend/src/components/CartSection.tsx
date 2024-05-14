@@ -37,37 +37,6 @@ export default function CartSection(){
         }
     }, [error]);
 
-    // const products = data?.items || [ // TODO delete temporary data
-    //     {
-    //         name: 'Doğu Timor',
-    //         image: 'https://cdn.pixabay.com/photo/2016/03/30/21/59/coffee-beans-1291656_1280.jpg',
-    //         rating: 4.3,
-    //         price: 11,
-    //         count: 1,
-    //     },
-    //     {
-    //         name: 'Doğu Timor',
-    //         image: 'https://cdn.pixabay.com/photo/2016/03/30/21/59/coffee-beans-1291656_1280.jpg',
-    //         rating: 4.3,
-    //         price: 10,
-    //         count: 2,
-    //     },
-    //     {
-    //         name: 'Doğu Timor v2',
-    //         image: 'https://cdn.pixabay.com/photo/2016/03/30/21/59/coffee-beans-1291656_1280.jpg',
-    //         rating: 4.3,
-    //         price: 990,
-    //         count: 10,
-    //     },
-    //     {
-    //         name: 'Doğu Timor',
-    //         image: 'https://cdn.pixabay.com/photo/2016/03/30/21/59/coffee-beans-1291656_1280.jpg',
-    //         rating: 4.3,
-    //         price: 10,
-    //         count: 20,
-    //     },
-    // ];
-
     const confirm = () => {
         modal.confirm({
             title: 'Confirm',
