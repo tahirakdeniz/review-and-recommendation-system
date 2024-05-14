@@ -1,5 +1,5 @@
 import {ProductDto} from "@/lib/entity/product";
-import {Button, Card, Carousel, Col, Grid, Image, message, Row, Tooltip, Typography} from "antd";
+import {Button, Card, Carousel, Col, Empty, Grid, Image, message, Row, Tooltip, Typography} from "antd";
 import {HeartOutlined, ShoppingCartOutlined} from "@ant-design/icons";
 import React from "react";
 import {nameFormatter} from "@/lib/utils";
@@ -33,6 +33,7 @@ export default function ShopCategory({title, data, categoryName, full = false} :
                 size='default'
                 extra={!full && <Link href={categoryTargetLabel}>More</Link>}
             >
+                {data.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No products found."}/>}
                 <Row gutter={[16, 16]}>
                     {displayedData.map(item => (
                         <Col key={item.id} xs={24} sm={12} md={8} lg={6} xl={4}>

@@ -27,7 +27,7 @@ export default function ShopCategoryRecommendedProducts(){
 
     return (
         <>
-            <ShopCategory title={"RecommendedProducts"} data={data} full={true}/>
+            <ShopCategory title={"Recommended Products"} data={data} full={true}/>
         </>
     );
 }
