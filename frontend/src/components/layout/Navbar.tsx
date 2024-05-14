@@ -51,7 +51,7 @@ const Navbar = () => {
                         <Link href="/forum">Forum</Link>
                     </Menu.Item>
                     <Menu.Item key="/shop" icon={<ShopOutlined />}>
-                        <Link href="/products">Shop</Link>
+                        <Link href="/shop">Shop</Link>
                     </Menu.Item>
                     <Menu.Item key="/scshop" icon={<ShopOutlined />}>
                         <Link href="/scshop">SC Shop</Link>
