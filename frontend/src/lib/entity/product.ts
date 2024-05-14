@@ -1,119 +1,175 @@
-import {baseURL} from "@/lib/const";
-
-type FieldScoreDto = {
-    reviewFieldDto: ReviewFieldDto;
-    score: number;
+// RoleDto.ts
+export type RoleDto = {
+    id: number;
+    name: string;
+    authorityDtos: AuthorityDto[];
 };
 
-type ReviewFieldDto = {
+// AuthorityDto.ts
+export type AuthorityDto = {
+    id: number;
+    name: string;
+};
+
+// ReviewFieldDto.ts
+export type ReviewFieldDto = {
     id: number;
     label: string;
     minScore: number;
     maxScore: number;
 };
 
-type ReviewUserDto = {
-    id: number;
-    name: string;
+// FieldScoreDto.ts
+export type FieldScoreDto = {
+    reviewFieldDto: ReviewFieldDto;
+    score: number;
 };
 
-type ProductReviewReviewDto = {
+// ReviewUserDto.ts
+export type ReviewUserDto = {
+    id: string;
+    username: string;
+    roleDto: RoleDto;
+};
+
+// ReviewReplyDto.ts
+export type ReviewReplyDto = {
+    id: number;
+    content: string;
+};
+
+// ProductReviewReviewDto.ts
+export type ProductReviewReviewDto = {
     id: number;
     userDto: ReviewUserDto;
     fieldScoreDtos: FieldScoreDto[];
+    reviewReplyDto?: ReviewReplyDto;
+    comment: string;
 };
 
-type ProductReviewDto = {
+// ProductReviewDto.ts
+export type ProductReviewDto = {
     reviews: ProductReviewReviewDto[];
     averageScore: number;
     fieldAverageScore: Record<string, number>;
 };
 
-type ProductDto = {
+// BasicUserDto.ts
+export type BasicUserDto = {
+    id: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    role: RoleDto;
+};
+
+// ProductDto.ts
+export type ProductDto = {
     id: number;
     name: string;
     description: string;
-    userId: string;
+    topicUserDto: BasicUserDto;
     productCategoryName: string;
     price: number;
-    photo: string; // Assuming base64 encoded string for image
+    photo: Uint8Array;  // Using Uint8Array for binary data
     reviewDto: ProductReviewDto;
 };
 
+// Example instantiation
 export const productExample: ProductDto = {
     id: 101,
     name: "Super Gadget",
     description: "The latest in gadget technology, offering unmatched performance.",
-    userId: "user123",
+    topicUserDto: {
+        id: "user123",
+        username: "john_doe",
+        firstName: "John",
+        lastName: "Doe",
+        role: {
+            id: 1,
+            name: "Admin",
+            authorityDtos: [
+                { id: 1, name: "Manage Products" },
+                { id: 2, name: "View Orders" }
+            ]
+        }
+    },
     productCategoryName: "Electronics",
-    price: 299.99,
-    photo: "https://cdn.pixabay.com/photo/2017/03/17/10/29/coffee-2151200_1280.jpg", // Example URL for simplicity
+    price: 399.99,
+    photo: new Uint8Array([]), // Assuming empty for the example
     reviewDto: {
         reviews: [
             {
-                id: 1001,
+                id: 1,
                 userDto: {
-                    id: 201,
-                    name: "John Doe"
+                    id: "user201",
+                    username: "alice_jones",
+                    roleDto: {
+                        id: 2,
+                        name: "Customer",
+                        authorityDtos: []
+                    }
                 },
                 fieldScoreDtos: [
                     {
-                        reviewFieldDto: {
-                            id: 301,
-                            label: "Durability",
-                            minScore: 1,
-                            maxScore: 10
-                        },
+                        reviewFieldDto: { id: 1, label: "Design", minScore: 1, maxScore: 10 },
+                        score: 9
+                    },
+                    {
+                        reviewFieldDto: { id: 2, label: "Performance", minScore: 1, maxScore: 10 },
                         score: 8
                     },
                     {
-                        reviewFieldDto: {
-                            id: 302,
-                            label: "Performance",
-                            minScore: 1,
-                            maxScore: 10
-                        },
-                        score: 9
+                        reviewFieldDto: { id: 3, label: "Value for Money", minScore: 1, maxScore: 10 },
+                        score: 7
                     }
-                ]
+                ],
+                comment: "Great product with sleek design and decent performance.",
+                reviewReplyDto: {
+                    id: 1,
+                    content: "Thank you for your feedback, Alice! We're thrilled you loved the design."
+                }
             },
             {
-                id: 1002,
+                id: 2,
                 userDto: {
-                    id: 202,
-                    name: "Jane Smith"
+                    id: "user202",
+                    username: "bob_smith",
+                    roleDto: {
+                        id: 2,
+                        name: "Customer",
+                        authorityDtos: []
+                    }
                 },
                 fieldScoreDtos: [
                     {
-                        reviewFieldDto: {
-                            id: 303,
-                            label: "Design",
-                            minScore: 1,
-                            maxScore: 10
-                        },
-                        score: 10
+                        reviewFieldDto: { id: 1, label: "Design", minScore: 1, maxScore: 10 },
+                        score: 8
                     },
                     {
-                        reviewFieldDto: {
-                            id: 304,
-                            label: "Value for Money",
-                            minScore: 1,
-                            maxScore: 10
-                        },
-                        score: 7
+                        reviewFieldDto: { id: 2, label: "Performance", minScore: 1, maxScore: 10 },
+                        score: 9
+                    },
+                    {
+                        reviewFieldDto: { id: 3, label: "Value for Money", minScore: 1, maxScore: 10 },
+                        score: 8
                     }
-                ]
+                ],
+                comment: "Performs well for the price, but could use some design improvements.",
+                reviewReplyDto: {
+                    id: 2,
+                    content: "Thanks for your suggestions, Bob! We're always looking to improve."
+                }
             }
         ],
-        averageScore: 8.5,
+        averageScore: 8.17,
         fieldAverageScore: {
-            "Durability": 8,
-            "Performance": 9,
-            "Design": 10,
-            "Value for Money": 7
+            "Design": 8.5,
+            "Performance": 8.5,
+            "Value for Money": 7.5
         }
     }
 };
 
 
-export type { ProductDto, ProductReviewDto, ProductReviewReviewDto, ReviewUserDto, FieldScoreDto, ReviewFieldDto };
+

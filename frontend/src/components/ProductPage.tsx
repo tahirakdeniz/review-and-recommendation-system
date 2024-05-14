@@ -1,170 +1,233 @@
 'use client';
-import {Avatar, Button, Card, Col, Divider, Flex, Modal, Rate, Row, Space, Tooltip, Typography} from "antd";
+import {
+    Avatar,
+    Button,
+    Card,
+    Col,
+    Divider,
+    Flex,
+    List,
+    message,
+    Modal,
+    Rate,
+    Row,
+    Space,
+    Tooltip,
+    Typography
+} from "antd";
 import { Image } from 'antd';
 import {ShoppingCartOutlined, HeartOutlined, StarOutlined} from '@ant-design/icons';
 import {useState} from "react";
-import {ProductDto} from "@/lib/entity/product";
+import {ProductDto, ProductReviewReviewDto} from "@/lib/entity/product";
+import {useRole} from "@/lib/useRole";
+import TextArea from "antd/es/input/TextArea";
+import {baseURL} from "@/lib/const";
 
+const { Text, Link , Title} = Typography;
 
 interface ProductPageProps {
     product: ProductDto;
 }
 
-function ProductRateModal(props: { open: boolean, onCancel: () => void}) {
+interface ProductRateModalProps {
+    open: boolean;
+    onClose: () => void;
+    reviewFields: string[];
+}
+function ProductRateModal({ open, onClose, reviewFields} : ProductRateModalProps) {
     const rates = [
         {name: "Speed", rate: 3.5},
         {name: "Quality", rate: 4.5},
         {name: "Price", rate: 2.5},
     ]
 
+    const saveRate = () => {
+        {/*TODO: Implement rate saving*/}
+        onClose();
+    }
+
     return <Modal
-        open={props.open}
-        title="Reviews"
-        footer={null}
-        onCancel={props.onCancel}
+        open={open}
+        title={<Title level={3}>Rate Product</Title>}
+        onCancel={onClose}
+        onOk={saveRate}
     >
-        {rates.map((rate, index) => (
+        {reviewFields.map((field, index) => (
             <div key={index}>
-                <h3>{rate.name}</h3>
-                <Rate defaultValue={rate.rate}/>
-                <span>{rate.rate}</span>
+                <Title level={5}>{field}</Title>
+                    <Rate/>
             </div>
         ))}
     </Modal>;
 }
 
-const FieldRates = ({ fieldAverageScore }: {fieldAverageScore: number}) => {
-    return (
-        <div className="rateContainer">
-            {Object.entries(fieldAverageScore).map(([field, score]) => (
-                <div key={field} className="rateItem">
-                    {field}: {score}
-                </div>
-            ))}
-        </div>
-    );
-};
+function ReplyModal({open, onClose} : {open: boolean, onClose: () => void}) {
+    return <Modal
+        open={open}
+        title={<Title level={3}>Reply</Title>}
+        onCancel={onClose}
+        onOk={onClose}
+    >
+        <TextArea/>
+    </Modal>;
+
+}
 
 const ProductPage: React.FC<ProductPageProps> = ({product}) => {
 
     const [openRateModal, setOpenRateModal] = useState(false);
-    // Dummy product data, replace with your actual product data
-    // const product = {
-    //     name: "Cofee",
-    //     image: "https://cdn.pixabay.com/photo/2017/03/17/10/29/coffee-2151200_1280.jpg",
-    //     price: 100,
-    //     description: "Description",
-    //     seller: "Seller",
-    //     comments: [
-    //         { id: 1, author: "Kullanıcı 1", content: "Yorum 1", datetime: "2024-04-23T12:00:00Z" },
-    //         { id: 2, author: "Kullanıcı 2", content: "Yorum 2", datetime: "2024-04-23T12:00:00Z" }
-    //     ],
-    //     tag: "#coffeshop",
-    //     rate: 3.6
-    // };
+    const [openReplyModal, setOpenReplyModal] = useState(false);
+
+    const { isAuthorized: isMerchant, error: merchantError } = useRole({ role: 'Merchant' });
+    const { isAuthorized: isAdmin, error: adminError } = useRole({ role: 'Admin' });
+
+    const handleDelete = async (reviewId: number) => {
+        try {
+            const response = await fetch(`${baseURL}/reviews/${reviewId}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                message.success('Review deleted successfully');
+                // TODO: Remove the review from the state if necessary
+            } else {
+                message.error('Failed to delete the review');
+            }
+        } catch (error) {
+            console.error("Error deleting review:", error);
+            message.error('An error occurred while deleting the review');
+        }
+    };
+
+    const confirmDelete = (review: ProductReviewReviewDto) => {
+        Modal.confirm({
+            title: 'Are you sure you want to delete the review?',
+            onOk: () => handleDelete(review.id),
+            onCancel: () => { /* No action needed */ },
+        });
+    };
+
+    const handleReply = (review: ProductReviewReviewDto) => {
+
+        setOpenReplyModal(true);
+    }
+
 
     return (
-        <div style={{padding: '20px'}}>
-            <ProductRateModal open={openRateModal} onCancel={() => setOpenRateModal(false)}/>
-            <Card
-                title={
-                    <h1>
-                        {product.name}
-                    </h1>
-                }
-                extra={product.productCategoryName}
-                // actions={[
-                //     <Tooltip title="Add to Cart">
-                //         <Button type="primary" icon={<ShoppingCartOutlined/>}/>
-                //     </Tooltip>,
-                //     <Tooltip title="Add to Wishlist">
-                //         <Button type="default" icon={<HeartOutlined/>}/>
-                //     </Tooltip>
-                //
-                // ]}
-            >
-                <Row gutter={[16, 16]} justify="center" align="top">
-                    <Col xs={24} md={8}>
-                        <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
-                            <Image
-                                src={product.photo}
-                                alt={product.name}
-                                style={{width: '100%', height: '100%', objectFit: 'cover'}}
-                            />
-                        </div>
-                    </Col>
-                    <Col xs={24} md={16}>
-                        <div>
-                            {/* TODO add field <h2>Merchant: {product.seller}</h2>*/}
-                            <h2>Price: {product.price} $</h2>
-                            <Divider/>
-                            <p>{product.description}</p>
-                            <Flex justify='flex-start' align='center' gap='small'>
-                                <Rate disabled defaultValue={Math.round(product.reviewDto.averageScore/2)}/>
-                                <Typography>{product.reviewDto.averageScore}</Typography>
-                            </Flex>
-                            <div className={'max-w-full'}>
-                                <Flex justify='flex-start' align='center' gap='small'>
-                                    {Object.entries(product.reviewDto.fieldAverageScore).map(([field, score], index) => (
-                                        <>
-                                            <Flex justify='flex-start' align='center' gap='small'>
-                                                <Typography>{field}</Typography>
-                                                <Rate allowHalf disabled defaultValue={product.reviewDto.averageScore/2}/>
-                                                <Typography>{score}</Typography>
-                                            </Flex>
-                                        </>
-                                    ))}
-                                </Flex>
-                            </div>
-                            {/*<Button type='link' onClick={() => setOpenRateModal(true)}> more </Button>*/}
-                            {/*{product.reviewDto.averageScore}*/}
-                            <Divider/>
+        <>
+            <ProductRateModal open={openRateModal} onClose={() => setOpenRateModal(false)}
+                              reviewFields={Object.entries(product.reviewDto.fieldAverageScore).map(([field, score]) => field)}/>
+            <ReplyModal open={openReplyModal} onClose={() => setOpenReplyModal(false)}/>
+            <div style={{padding: '20px'}}>
+                <Space direction={'vertical'} size={20}>
+                    <Card
+                        title={ <Title level={1}>{product.name}</Title>}
+                        extra={<Typography.Link>#{product.productCategoryName}</Typography.Link>} // TODO: Add link to category page
+                    >
+                        <Row gutter={[16, 16]} justify="center" align="top">
+                            <Col xs={24} md={8}>
+                                <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+                                    <Image
+                                        src={"https://cdn.pixabay.com/photo/2017/03/17/10/29/coffee-2151200_1280.jpg"}
+                                        alt={product.name}
+                                        style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                                    />
+                                </div>
+                            </Col>
+                            <Col xs={24} md={16}>
+                                <div>
+                                    <Title level={1}>{product.price} $</Title>
+                                    <div>
+                                        <Text strong>Merchant : </Text>
+                                        <Typography.Link> {product.topicUserDto.username} </Typography.Link> {/* TODO: Add link to merchant page */}
+                                    </div>
+                                    <Divider/>
+                                    <p>{product.description}</p>
+                                    <Flex justify='flex-start' align='center' gap='small'>
+                                        <Rate disabled allowHalf defaultValue={product.reviewDto.averageScore}/>
+                                        <Typography>{product.reviewDto.averageScore}</Typography>
+                                    </Flex>
+                                    <Divider/>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={24}>
+                                <Space>
+                                    <List
+                                        grid={{ gutter: 16, column: 3 }}
+                                        dataSource={Object.entries(product.reviewDto.fieldAverageScore)}
+                                        renderItem={([field, score]) => (
+                                            <List.Item>
+                                                <Card title={field} size={'small'} extra={score}>
+                                                    <Rate allowHalf disabled defaultValue={score / 2}/>
+                                                </Card>
+                                            </List.Item>
+                                        )}
+                                    />
+                                </Space>
+                            </Col>
+                        </Row>
+                        <Flex justify='flex-end' align='center' gap='small'>
+                            <Button type="primary" icon={<ShoppingCartOutlined/>}>Add to Cart</Button>
+                            <Button type="default" icon={<HeartOutlined/>}>Add to Wishlist</Button>
+                            <Button type="default" icon={<StarOutlined />} onClick={() => setOpenRateModal(true)}>Rate</Button>
+                        </Flex>
+                        <Space direction={'horizontal'} >
+                        </Space>
+                    </Card>
+                    <Card title={"Reviews"}>
+                        {
+                            product.reviewDto.reviews.map((review, index) => (
+                                <Card key={index} style={{marginBottom: '10px'}}
+                                      extra={
+                                          <Space>
+                                              {isMerchant && product.topicUserDto.username === localStorage.getItem('username') && ( // TODO username should be stored in the local storage or in the state
+                                                  <Typography.Link onClick={() => setOpenReplyModal(true)}>Reply</Typography.Link>
+                                              )}
+                                              {isAdmin && (
+                                                  <Typography.Link onClick={() => confirmDelete(review)}>Delete</Typography.Link>
+                                              )}
+                                          </Space>
+                                      }
+                                      title={<Space><Avatar>{review.userDto.username[0]}</Avatar><Text strong>{review.userDto.username}</Text></Space>}
+                                >
+                                    <Space direction="vertical" style={{width: '100%'}}>
 
-                        </div>
-                    </Col>
-                </Row>
-                <Flex justify='flex-end' align='center' gap='small'>
-                    <Button type="primary" icon={<ShoppingCartOutlined/>}>Add to Cart</Button>
-                    <Button type="default" icon={<HeartOutlined/>}>Add to Wishlist</Button>
-                    <Button type="default" icon={<StarOutlined />}>Rate</Button>
-                </Flex>
-                <Space direction={'horizontal'} >
-
-
+                                        <Space>
+                                            <Rate disabled defaultValue={review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length}/>
+                                            <span>{review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length}</span>
+                                        </Space>
+                                        <Space direction="horizontal">
+                                            {review.fieldScoreDtos.map((field, index) => (
+                                                <div key={index} >
+                                                    <strong>{field.reviewFieldDto.label}:</strong> {field.score}
+                                                </div>
+                                            ))}
+                                        </Space>
+                                        <Space>
+                                            {review.comment}
+                                        </Space>
+                                        <Divider/>
+                                        {review.reviewReplyDto && (<Space direction={'vertical'} style={{width: '100%'}}>
+                                            <Card>
+                                                <Space>
+                                                    <Avatar>{product.topicUserDto.username[0]}</Avatar>
+                                                    <Text strong>{product.topicUserDto.username}:</Text>
+                                                    <Space>
+                                                        {review.reviewReplyDto.content}
+                                                    </Space>
+                                                </Space>
+                                            </Card>
+                                        </Space>)}
+                                    </Space>
+                                </Card>
+                            ))
+                        }
+                    </Card>
                 </Space>
-            </Card>
-            <Card title={"Reviews"}>
-                {
-                    product.reviewDto.reviews.map((review, index) => (
-                        <Card key={index} style={{marginBottom: '10px'}}>
-                            <Space direction="vertical">
-                            <Space>
-                                    <Avatar>{review.userDto.name[0]}</Avatar>
-                                    <strong>{review.userDto.name}</strong>
-                                </Space>
-                                <Space>
-                                    <Rate disabled defaultValue={review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length}/>
-                                    <span>{review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length}</span>
-                                </Space>
-                                <Space direction="vertical">
-                                    {review.fieldScoreDtos.map((field, index) => (
-                                        <div key={index}>
-                                            <strong>{field.reviewFieldDto.label}</strong>
-                                            <Rate disabled defaultValue={field.score}/>
-                                            <span>{field.score}</span>
-                                        </div>
-                                    ))}
-                                </Space>
-                                <Space>
-                                    -- Mis gibi Comment --
-                                </Space>
-                            </Space>
-                        </Card>
-                    ))
-                }
-            </Card>
-
-        </div>
+            </div>
+        </>
     );
 };
 
