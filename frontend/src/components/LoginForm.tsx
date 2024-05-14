@@ -85,7 +85,7 @@ const LoginForm: React.FC = () => {
                         />
                     </Form.Item>
                     <Form.Item>
-                        <a className="login-form-forgot" href="/forgot-password">
+                        <a className="login-form-forgot" href="/forgot-password/1">
                             Forgot password?
                         </a>
                     </Form.Item>
