@@ -9,7 +9,9 @@ public record ForumCategoryDto(
         String name,
         String description,
         List<ForumCategoryTopicDto> topicDtos,
-        ForumCategoryHeader forumCategoryHeader
+        ForumCategoryHeader forumCategoryHeader,
+        Integer topicCount,
+        Integer messageCount
 ) {
 
     public static ForumCategoryDto convert(ForumCategory from) {
@@ -21,7 +23,12 @@ public record ForumCategoryDto(
                         .stream()
                         .map(ForumCategoryTopicDto::convert)
                         .toList(),
-                from.getHeader()
+                from.getHeader(),
+                from.getTopics().size(),
+                from.getTopics()
+                        .stream()
+                        .map(topic -> topic.getPosts().size())
+                        .reduce(0, Integer::sum)
         );
     }
 }
