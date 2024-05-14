@@ -35,8 +35,9 @@ const ShopClient: React.FC = () => {
     const category = searchParams.get('category');
 
     useEffect(() => {
-        const search = searchParams.get('search');
-        const category = searchParams.get('category');
+
+        setSelectedCategory(category);
+        setSearchInput(search || "");
 
         const fetchProducts = async () => {
             setLoading(true);
@@ -68,7 +69,7 @@ const ShopClient: React.FC = () => {
         }
 
         fetchProducts();
-    }, [search, category]);
+    }, [searchParams]);
 
     if(loading) {
         return <Spin fullscreen/>
@@ -104,7 +105,10 @@ const ShopClient: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
             <Card>
                 <Space>
-                    <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)}/>
+                    <Input
+                        value={searchInput}
+                        placeholder={"Search..."}
+                        onChange={(e) => setSearchInput(e.target.value)}/>
                     <Select
                         showSearch
                         placeholder={"Select Category"}
@@ -114,34 +118,25 @@ const ShopClient: React.FC = () => {
                         value={selectedCategory}
                         onChange={(value) => {setSelectedCategory(value)}}
                     />
-                    <Button type={"primary"} onClick={handleSearchButton} disabled={selectedCategory==null && searchInput.length == 0}>Search</Button>
+                    <Button type={"primary"} onClick={handleSearchButton}>Search</Button>
                 </Space>
 
             </Card>
             {(!search && !category) && <ShopCategoryRecommendedProducts/>}
-            { data?.map(categoryItem => {
-                if(category) {
-                    if(categoryItem.name !== category) {
-                        return null;
-                    }
-                }
-                else {
-                    return <ShopCategory
+            {data?.map(categoryItem => {
+                const showFull = !!((category && category === categoryItem.name) || (search));
+                const showCategory = !category || category === categoryItem.name;
+
+                if (!showCategory) return null;
+
+                return (
+                    <ShopCategory
                         key={categoryItem.name}
                         title={nameFormatter(categoryItem.name)}
                         data={categoryItem.products}
-                        categoryName={categoryItem.name}
-                        full={false}
+                        full={showFull}
                     />
-                }
-                
-                return <ShopCategory
-                    key={categoryItem.name}
-                    title={nameFormatter(categoryItem.name)}
-                    data={categoryItem.products}
-                    categoryName={categoryItem.name}
-                    full={true}
-                />
+                );
             })}
         </div>
     );
