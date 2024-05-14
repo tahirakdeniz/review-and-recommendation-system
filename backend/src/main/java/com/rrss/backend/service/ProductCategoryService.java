@@ -2,6 +2,7 @@ package com.rrss.backend.service;
 
 import com.rrss.backend.dto.ProductCategoryDto;
 import com.rrss.backend.dto.ProductCategoryRequest;
+import com.rrss.backend.exception.custom.PermissionDeniedException;
 import com.rrss.backend.exception.custom.ProductCategoryNotFoundException;
 import com.rrss.backend.model.ProductCategory;
 import com.rrss.backend.repository.ProductCategoryRepository;
@@ -33,6 +34,9 @@ public class ProductCategoryService {
     }
 
     public ProductCategoryDto addProductCategory(ProductCategoryRequest productCategoryRequest) {
+        if (repository.existsByName(productCategoryRequest.name()))
+            throw new PermissionDeniedException("product category with this name name already exists.");
+
         return ProductCategoryDto.convert(
                 repository.save(
                         new ProductCategory(
@@ -41,5 +45,31 @@ public class ProductCategoryService {
                         )
                 )
         );
+    }
+
+    public ProductCategoryDto updateProductCategory(long id, ProductCategoryRequest productCategoryRequest) {
+        if (!repository.existsById(id)) {
+            throw new ProductCategoryNotFoundException("Product category not found");
+        }
+
+        if (repository.existsByName(productCategoryRequest.name()))
+            throw new PermissionDeniedException("product category with this name name already exists.");
+
+
+        return ProductCategoryDto.convert(
+                repository.save(
+                        new ProductCategory(
+                                id,
+                                productCategoryRequest.name(),
+                                productCategoryRequest.description()
+                        )
+                )
+        );
+    }
+
+    public String deleteProductCategory(long id) {
+        repository.deleteById(id);
+        
+        return "Deleted product category with id: " + id;
     }
 }
