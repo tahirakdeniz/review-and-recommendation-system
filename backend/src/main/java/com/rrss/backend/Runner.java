@@ -52,6 +52,7 @@ public class Runner implements CommandLineRunner {
     private void createAuthorities() {
         authorityRepository.save(new Authority("MANAGE_PRODUCT"));
         authorityRepository.save(new Authority("MANAGE_REVIEW"));
+        authorityRepository.save(new Authority("MANAGE_RECOMMENDATION"));
         authorityRepository.save(new Authority("APPROVE_MERCHANT_REQUEST"));
         authorityRepository.save(new Authority("SEE_MERCHANT_REQUEST"));
         authorityRepository.save(new Authority("MANAGE_PRODUCT_CATEGORY"));
@@ -77,6 +78,7 @@ public class Runner implements CommandLineRunner {
         roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_POST").orElseThrow());
         roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_TOPIC").orElseThrow());
         roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_FORUM_CATEGORY").orElseThrow());
+        roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_RECOMMENDATION").orElseThrow());
         roleRepository.save(roleAdmin);
 
         Role roleMerchant = roleRepository.save(new Role("MERCHANT"));

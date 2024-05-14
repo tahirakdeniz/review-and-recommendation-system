@@ -3,6 +3,7 @@ package com.rrss.backend.service;
 import com.rrss.backend.dto.ProductCategoryDto;
 import com.rrss.backend.dto.ProductCategoryRequest;
 import com.rrss.backend.exception.custom.PermissionDeniedException;
+import com.rrss.backend.exception.custom.ProductCategoryAlreadyExistException;
 import com.rrss.backend.exception.custom.ProductCategoryNotFoundException;
 import com.rrss.backend.model.ProductCategory;
 import com.rrss.backend.repository.ProductCategoryRepository;
@@ -35,7 +36,7 @@ public class ProductCategoryService {
 
     public ProductCategoryDto addProductCategory(ProductCategoryRequest productCategoryRequest) {
         if (repository.existsByName(productCategoryRequest.name()))
-            throw new PermissionDeniedException("product category with this name name already exists.");
+            throw new ProductCategoryAlreadyExistException("product category with this name already exists.");
 
         return ProductCategoryDto.convert(
                 repository.save(
@@ -53,7 +54,7 @@ public class ProductCategoryService {
         }
 
         if (repository.existsByName(productCategoryRequest.name()))
-            throw new PermissionDeniedException("product category with this name name already exists.");
+            throw new ProductCategoryAlreadyExistException("product category with this name already exists.");
 
 
         return ProductCategoryDto.convert(

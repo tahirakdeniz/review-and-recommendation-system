@@ -128,6 +128,25 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(InteractionWeightAlreadyExistException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InteractionWeightAlreadyExistException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InvalidRequestException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InteractionWeightNotFoundException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InteractionWeightNotFoundException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ProductCategoryAlreadyExistException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ProductCategoryAlreadyExistException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
     /*
      * CUSTOM EXCEPTIONS
      * */
