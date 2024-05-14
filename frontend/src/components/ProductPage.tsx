@@ -1,104 +1,19 @@
 'use client';
-import { Avatar, Button, Card, Col, Divider, List, Modal, Rate, Row, Space, Typography, message, Input } from "antd";
-import { Image } from 'antd';
-import { ShoppingCartOutlined, HeartOutlined, StarOutlined } from '@ant-design/icons';
-import { useState } from "react";
-import {ProductDto, ProductReviewReviewDto, FieldScoreDto, ReviewFieldDto} from "@/lib/entity/product";
-import { useRole } from "@/lib/useRole";
-import TextArea from "antd/es/input/TextArea";
-import { useImmer } from "use-immer";
+import {Avatar, Button, Card, Col, Divider, Image, List, message, Modal, Rate, Row, Space, Typography} from "antd";
+import {HeartOutlined, ShoppingCartOutlined, StarOutlined} from '@ant-design/icons';
+import {useState} from "react";
+import {ProductDto, ProductReviewReviewDto} from "@/lib/entity/product";
+import {useRole} from "@/lib/useRole";
+import {useImmer} from "use-immer";
 import {baseURL} from "@/lib/const";
+import {ReviewModal} from "@/components/ReviewModal";
+import {ReplyModal} from "@/components/ReplyModal";
 
 const { Text, Title } = Typography;
 
 interface ProductPageProps {
     product: ProductDto;
 }
-
-interface ReviewModalProps {
-    open: boolean;
-    onClose: () => void;
-    onSubmit: (review: Partial<ProductReviewReviewDto>) => void;
-    reviewFields: ReviewFieldDto[];
-}
-
-interface ReplyModalProps {
-    open: boolean;
-    onClose: () => void;
-    onSubmit: (reply: string) => void;
-    review: ProductReviewReviewDto;
-}
-
-const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, onSubmit, reviewFields }) => {
-
-    const [fieldScores, setFieldScores] = useImmer<FieldScoreDto[]>(reviewFields.map(field => ({
-        reviewFieldDto: field,
-        score: 0
-    })));
-
-    const [comment, setComment] = useState("");
-
-    const handleRateChange = (index: number, score: number) => {
-        setFieldScores(draft => {
-            draft[index].score = score;
-        });
-    };
-
-    const handleSubmit = () => {
-        onSubmit({
-            fieldScoreDtos: fieldScores,
-            comment,
-        });
-        onClose();
-    };
-
-    return (
-        <Modal
-            open={open}
-            title={<Title level={3}>Rate Product</Title>}
-            onCancel={onClose}
-            onOk={handleSubmit}
-        >
-            {reviewFields.map((field, index) => (
-                <div key={index}>
-                    <Title level={5}>{field.label}</Title>
-                    <Rate onChange={(value) => handleRateChange(index, value)} />
-                </div>
-            ))}
-            <TextArea
-                rows={4}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Add your comment"
-            />
-        </Modal>
-    );
-};
-
-const ReplyModal: React.FC<ReplyModalProps> = ({ open, onClose, onSubmit, review }) => {
-    const [reply, setReply] = useState(review.reviewReplyDto?.content || "");
-
-    const handleSubmit = () => {
-        onSubmit(reply);
-        onClose();
-    };
-
-    return (
-        <Modal
-            open={open}
-            title={<Title level={3}>Reply</Title>}
-            onCancel={onClose}
-            onOk={handleSubmit}
-        >
-            <TextArea
-                rows={4}
-                value={reply}
-                onChange={(e) => setReply(e.target.value)}
-                placeholder="Add your reply"
-            />
-        </Modal>
-    );
-};
 
 const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
     const [productState, updateProduct] = useImmer<ProductDto>(product);
@@ -173,7 +88,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                 open={openRateModal}
                 onClose={() => setOpenRateModal(false)}
                 onSubmit={handleReviewSubmit}
-                reviewFields={productState.reviewDto.reviews[0].fieldScoreDtos.map(field => field.reviewFieldDto)} // TODO check if there isn't any review
+                reviewFields={productState.reviewDto.reviews[0]?.fieldScoreDtos.map(field => field.reviewFieldDto)} // TODO check if there isn't any review
             />
             {selectedReview && (
                 <ReplyModal

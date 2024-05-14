@@ -30,7 +30,7 @@ export function MerchantProductCategorySelect({ onChange, value}: MerchantProduc
         };
 
         try {
-            const response = await axios.get(`${baseURL}/product-categories`, { headers });
+            const response = await axios.get(`${baseURL}/product-categories/get`, { headers });
             setCategories(response.data); // Assuming the response has the data directly
             setLoading(false);
         } catch (err: any) {
