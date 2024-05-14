@@ -26,6 +26,7 @@ const Navbar = () => {
     const {user} = useSelector((state: RootState) => state.user);
     const router = useRouter();
 
+
     useEffect(() => {
         dispatch(fetchUser())
     }, [dispatch]);
