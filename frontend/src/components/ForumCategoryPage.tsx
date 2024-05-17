@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar, Button, Card, Col, Form, Input, Modal, Row, Space } from "antd";
+import { Avatar, Button, Card, Col, Form, Input, Modal, Pagination, Row, Space } from "antd";
 import { CloseCircleOutlined } from '@ant-design/icons';
 import Meta from "antd/es/card/Meta";
 import TextArea from "antd/es/input/TextArea";
@@ -42,23 +42,36 @@ const AddNewTopicModal = ({isModalOpen, setIsModalOpen}) => {
 const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
     
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const showModal = () => {
       setIsModalOpen(true);
     };
-    
 
     const categories = [
         { id: '1', user: "user1", topic: 'Content of category 1', message: 10, date: '2024-05-12' },
         { id: '2', user: "user2", topic: 'Content of category 2', message: 15, date: '2024-05-11' },
-        { id: '3', user: "user3", topic: 'Content of category 3', message: 20, date: '2024-05-10' }
+        { id: '3', user: "user3", topic: 'Content of category 3', message: 20, date: '2024-05-10' },
+        { id: '1', user: "user1", topic: 'Content of category 1', message: 10, date: '2024-05-12' },
+        { id: '2', user: "user2", topic: 'Content of category 2', message: 15, date: '2024-05-11' },
+        { id: '3', user: "user3", topic: 'Content of category 3', message: 20, date: '2024-05-10' },
     ];
     const categoryTitle = "Meeting Area"
+    
+    const pageSize = 4;
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedCategories = categories.slice(startIndex, endIndex);
 
  return(
         <div>
         <Card title={categoryTitle} style={{ height:630 }}>
-            {categories.map(category => (
+            {paginatedCategories.map(category => (
                 <Link href={"/forum/topic/" + category.topic}>
                     <Card key={category.id} style={{ marginBottom: 16 }}>
                         <Button 
@@ -86,20 +99,19 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
                     </Card>
                 </Link>
             ))}
-            <div style={{ position: 'absolute', left: 32, bottom:16 }}>
+            <div style={{ position: 'absolute', left: 32, bottom:30 }}>
                 <Button type="primary" onClick={()=>{showModal()}}>Create New Topic</Button>
+            </div>
+            <div style={{ position: 'absolute', right: 32, bottom:32 }}>
+                <Pagination
+                    current={currentPage}
+                    pageSize={pageSize}
+                    total={categories.length}
+                    onChange={handlePageChange}
+                />
             </div>
         </Card>
         <AddNewTopicModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
-        {/* <List
-                    pagination={{ position:'bottom', align:'end' }}
-                    dataSource={categories}
-                    renderItem={(category, index) => (
-                        <List.Item>
-                            //Copy link here
-                        </List.Item>
-                    )}
-                /> */}
 </div>
  )
 }
