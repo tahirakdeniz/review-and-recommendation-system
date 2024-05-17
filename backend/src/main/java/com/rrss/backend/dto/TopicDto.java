@@ -12,7 +12,8 @@ public record TopicDto(
         LocalDateTime creationDate,
         List<TopicPostDto> postDtos,
         TopicForumCategoryDto forumCategoryDto,
-        Boolean isAnonymous
+        Boolean isAnonymous,
+        Integer messageCount
 ) {
 
     public static TopicDto convert(Topic from) {
@@ -26,7 +27,8 @@ public record TopicDto(
                         .map(TopicPostDto::convert)
                         .toList(),
                 TopicForumCategoryDto.convert(from.getCategory()),
-                from.isAnonymous()
+                from.isAnonymous(),
+                from.getPosts().size()
         );
     }
 }

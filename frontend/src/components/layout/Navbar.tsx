@@ -1,4 +1,5 @@
 'use client'
+
 import { useEffect, useState } from 'react';
 import { Input, Menu, Avatar, Space, Tooltip, Button, Flex } from 'antd';
 import {UserOutlined, ShoppingCartOutlined, FormOutlined, HeartOutlined, ShopOutlined, SettingOutlined} from '@ant-design/icons';
@@ -25,6 +26,8 @@ const Navbar = () => {
     const pathname = usePathname();
     const {user} = useSelector((state: RootState) => state.user);
     const router = useRouter();
+    const [search, setSearch] = useState('');
+
 
     useEffect(() => {
         dispatch(fetchUser())
@@ -36,13 +39,19 @@ const Navbar = () => {
         window.location.reload();
     }
 
+    const handleSearch = (value: string) => {
+        router.push(`/shop?search=${value}`)
+    }
+
     return (
         <div className={'bg-inherit flex gap-4 justify-between'}>
             <div>
                 <Link href="/">Logo</Link> {/* Removed inline styling for Link */}
             </div>
             <div className={'h-17 grid content-center'}>
-                <Input.Search placeholder="Search..."/>
+                <Input.Search placeholder="Search..."
+                              onSearch={handleSearch}
+                />
             </div>
             <div>
                 <Menu mode="horizontal" selectedKeys={[pathname]} className={'bg-inherit'}>
@@ -52,9 +61,9 @@ const Navbar = () => {
                     <Menu.Item key="/shop" icon={<ShopOutlined />}>
                         <Link href="/shop">Shop</Link>
                     </Menu.Item>
-                    <Menu.Item key="/scshop" icon={<ShopOutlined />}>
-                        <Link href="/scshop">SC Shop</Link>
-                    </Menu.Item>
+                    {/*<Menu.Item key="/scshop" icon={<ShopOutlined />}>*/}
+                    {/*    <Link href="/scshop">SC Shop</Link>*/}
+                    {/*</Menu.Item>*/}
                     <Menu.Item key="/account" icon={<UserOutlined />}>
                         <Link href="/account">Profile</Link>
                     </Menu.Item>

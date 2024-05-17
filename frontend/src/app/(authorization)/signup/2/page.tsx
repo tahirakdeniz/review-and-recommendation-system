@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useEffect} from "react";
-import {Form, Input, Button, DatePicker, message, DatePickerProps} from "antd";
+import {Button, DatePicker, Form, Input, message} from "antd";
 import moment from 'moment';
 import SignupFormHeader from "@/components/SignupFormHeader";
 import SignupStepper from "@/components/SignupStepper";
@@ -9,25 +9,20 @@ import {useSelector} from "react-redux";
 
 import {RootState, useDispatch} from "@/lib/redux/store";
 import {useRouter} from "next/navigation";
-import {
-    registerFailure,
-    registerStart,
-    registerSuccess,
-    setFields, setStep
-} from "@/lib/redux/features/signup/signupSlice";
-import {confirmUser, registerUser} from "@/lib/redux/features/signup/signupThunks";
+import {setFields, setStep} from "@/lib/redux/features/signup/signupSlice";
+import {confirmUser} from "@/lib/redux/features/signup/signupThunks";
 
-export default function Signup2(){
+export default function Signup2() {
     const dispatch = useDispatch();
-    const step = useSelector((state : RootState) => state.signup.step);
+    const step = useSelector((state: RootState) => state.signup.step);
     const loading = useSelector((state: RootState) => state.signup.loading);
     const error = useSelector((state: RootState) => state.signup.error);
-    const userRegistrationData = useSelector((state :RootState) => state.signup.userRegistrationData);
+    const userRegistrationData = useSelector((state: RootState) => state.signup.userRegistrationData);
     const router = useRouter();
     const [messageApi, contextHolder] = message.useMessage();
 
     useEffect(() => {
-        if(error !== null){
+        if (error !== null) {
             console.error(error)
             messageApi.error(error);
         }
@@ -45,7 +40,7 @@ export default function Signup2(){
         ]));
         const res = await dispatch(confirmUser());
         console.log(res)
-        if(res.meta.requestStatus == "fulfilled"){
+        if (res.meta.requestStatus == "fulfilled") {
             messageApi.success("OTP sent successfully.");
             dispatch(setStep(2))
         }
@@ -74,7 +69,7 @@ export default function Signup2(){
                 <Form.Item
                     name="dob"
                     rules={[
-                        { required: true, message: 'Please select your date of birth!' },
+                        {required: true, message: 'Please select your date of birth!'},
                         () => ({
                             validator(_, value) {
                                 if (!value || value.isBefore(moment(), 'day')) {

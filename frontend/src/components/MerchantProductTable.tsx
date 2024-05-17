@@ -215,7 +215,7 @@ export default function MerchantProductTable() {
                 <Space size="middle">
                     <Button icon={<EditOutlined />} onClick={() => dispatch(setEditingProduct(record))}>Edit</Button>
                     <Button icon={<DeleteOutlined />} onClick={() => showDeletionProductConfirmationModal(record)}>Delete</Button>
-                    <Button icon={<EyeOutlined />} onClick={() => {router.push(`/products/${record.id}`)}}>Go to Product</Button>
+                    <Button icon={<EyeOutlined />} onClick={() => {router.push(`shop/product/${record.id}`)}}>Go to Product</Button>
                 </Space>
             ),
         },

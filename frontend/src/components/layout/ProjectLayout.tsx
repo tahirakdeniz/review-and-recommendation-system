@@ -2,8 +2,7 @@
 import {Card, Layout} from "antd";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import {StyleProvider} from '@ant-design/cssinjs';
-import {bgBlack} from "next/dist/lib/picocolors";
+
 
 export function ProjectLayout(props: { children: React.ReactNode }) {
     return (
