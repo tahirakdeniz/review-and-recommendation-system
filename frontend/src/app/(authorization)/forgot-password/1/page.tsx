@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Form, Input, Button } from 'antd';
+import {Form, Input, Button, message, Spin} from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
@@ -10,31 +10,54 @@ import {Typography} from "antd";
 import ImageSide from "@/components/ImageSide";
 import cafeImage from "@/assets/images/cafe.png";
 import LoginForm from "@/components/LoginForm";
+import axios, {Axios} from "axios";
+import {baseURL} from "@/lib/const";
 const { Title, Text } = Typography;
 
 // Define an interface for the form data
 interface ForgotPasswordFormData {
-    email: string;
+    username: string;
 }
 
 export default function ForgotPassword() {
     const router = useRouter();
+    const [loading, setLoading] = React.useState<boolean>(false);
+    const [messageApi, contextHolder] = message.useMessage();
 
-    const onFinish = ({ email }: ForgotPasswordFormData) => {
-        // Logic to handle password reset request here
-        console.log('Password reset email sent to:', email);
-        // Optionally redirect user or display a confirmation message
+    const onFinish = async ({ username }: ForgotPasswordFormData) => {
+        setLoading(true);
+        try {
+            const response = await axios.post(`${baseURL}/password-reset/${username}`,);
+            if(response.status === 201){
+                messageApi.success("Password reset link sent to your email.");
+                localStorage.setItem("FORGOT_PASSWORD_USERNAME", username);
+                router.push('/forgot-password/2');
+            }
+            else {
+                messageApi.error("Failed to send password reset link.");
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                messageApi.error(error.response?.data.message || error.message);
+                console.error('An error occurred:', error.response?.data.message || error.message);
+            }
+            else{
+                messageApi.error(`Failed to send password reset link.`);
+                console.error('An error occurred:', error);
+            }
+        }
+        setLoading(false);
     };
 
     return (
         <div className="flex flex-wrap">
-            <ImageSide imageSrc={cafeImage.src} imageAlt="Coffee Shop" isImageOnRight={false}/>
+            {contextHolder}
             <div className="w-full max-w-md">
                 <div className="text-center mb-8 my-4">
                     <Image src={Coffee.src} alt="Login" width={100} height={100}/>
-                    <Title>ForgotPassword</Title>
+                    <Title>Forgot Password</Title>
                     <Text>
-                        Please enter your email.
+                        Please enter your username.
                     </Text>
                 </div>
                 <Form
@@ -43,16 +66,15 @@ export default function ForgotPassword() {
                     onFinish={onFinish}
                 >
                     <Form.Item
-                        name="email"
+                        name="username"
                         rules={[
-                            {required: true, message: 'Please input your Email!'},
-                            {type: 'email', message: 'The input is not valid E-mail!'}
+                            {required: true, message: 'Please input your Username!'},
                         ]}
                     >
-                        <Input prefix={<MailOutlined className="site-form-item-icon"/>} placeholder="Email"/>
+                        <Input  placeholder="Username"/>
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" className="forgot-password-form-button" block>
+                        <Button type="primary" htmlType="submit" className="forgot-password-form-button" block disabled={loading} loading={loading}>
                             Reset Password
                         </Button>
                     </Form.Item>
