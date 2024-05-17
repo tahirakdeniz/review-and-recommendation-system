@@ -4,7 +4,7 @@ import { baseURL } from "@/lib/const";
 import { ProductDto } from "@/lib/entity/product";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Skeleton, message } from "antd";
+import {Skeleton, message, Spin} from "antd";
 
 interface ProductProps {
     params: { productId: string };
@@ -36,7 +36,7 @@ export default function Product({ params: { productId } }: ProductProps) {
     }, [productId]);
 
     if (loading) {
-        return <Skeleton active />;
+        return <Spin fullscreen={true} />;
     }
 
     if (error) {

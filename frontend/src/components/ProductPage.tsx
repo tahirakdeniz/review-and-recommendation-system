@@ -1,29 +1,57 @@
 'use client';
-import {Avatar, Button, Card, Col, Divider, Image, List, message, Modal, Rate, Row, Space, Typography} from "antd";
+import {
+    Avatar,
+    Button,
+    Card,
+    Col,
+    Divider,
+    Empty,
+    Flex,
+    Image,
+    List,
+    message,
+    Modal,
+    Rate,
+    Row,
+    Space,
+    Typography
+} from "antd";
 import {HeartOutlined, ShoppingCartOutlined, StarOutlined} from '@ant-design/icons';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {ProductDto, ProductReviewReviewDto} from "@/lib/entity/product";
 import {useRole} from "@/lib/useRole";
 import {useImmer} from "use-immer";
 import {baseURL} from "@/lib/const";
 import {ReviewModal} from "@/components/ReviewModal";
 import {ReplyModal} from "@/components/ReplyModal";
+import {RootState, useDispatch} from "@/lib/redux/store";
+import {addProductToCart} from "@/lib/redux/features/cart/cartSlice";
+import {useSelector} from "react-redux";
+import axios from "axios";
 
-const { Text, Title } = Typography;
+const {Text, Title} = Typography;
 
 interface ProductPageProps {
     product: ProductDto;
 }
 
-const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
+const ProductPage: React.FC<ProductPageProps> = ({product}) => {
     const [productState, updateProduct] = useImmer<ProductDto>(product);
     const [openRateModal, setOpenRateModal] = useState(false);
     const [openReplyModal, setOpenReplyModal] = useState(false);
     const [selectedReview, setSelectedReview] = useState<ProductReviewReviewDto | null>(null);
+    const dispatch = useDispatch();
+    const {loading: addToCartLoading, error: addToCartError} = useSelector((state: RootState) => state.cart);
 
-    const { isAuthorized: isMerchant } = useRole({ role: 'MERCHANT' });
-    const { isAuthorized: isAdmin } = useRole({ role: 'ADMIN' });
-    const { isAuthorized: isUser } = useRole({ role: 'USER' });
+    const {isAuthorized: isMerchant} = useRole({role: 'MERCHANT'});
+    const {isAuthorized: isAdmin} = useRole({role: 'ADMIN'});
+    const {isAuthorized: isUser} = useRole({role: 'USER'});
+
+    useEffect(() => {
+        if (addToCartError) {
+            message.error('Failed to add product to cart');
+        }
+    }, [addToCartError]);
 
     const handleDelete = async (reviewId: number) => {
         try {
@@ -49,26 +77,46 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
         Modal.confirm({
             title: 'Are you sure you want to delete the review?',
             onOk: () => handleDelete(review.id),
-            onCancel: () => { /* No action needed */ },
+            onCancel: () => { /* No action needed */
+            },
         });
     };
 
     const handleReviewSubmit = async (review: Partial<ProductReviewReviewDto>) => {
-        // TODO: Send the review to the backend
-        updateProduct(draft => {
-            draft.reviewDto.reviews.push({
-                id: draft.reviewDto.reviews.length + 1,
-                userDto: {
-                    id: "currentUserId", // Replace with actual user ID
-                    username: localStorage.getItem('username') || "currentUsername", // Replace with actual username
-                    roleDto: { id: 3, name: 'User', authorityDtos: [] }
-                },
-                fieldScoreDtos: review.fieldScoreDtos || [],
-                comment: review.comment || "",
-                reviewReplyDto: undefined
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            message.error('You need to be logged in to submit a review');
+            return;
+        }
+
+        try {
+            const response = await axios.post(`http://localhost:8081/api/v1/reviews/${product.id}`, review, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
             });
-        });
-    };
+            if (response.status === 201) {
+                message.success("Review submitted successfully");
+                updateProduct(draft => {
+                    draft.reviewDto.reviews.push(response.data)
+                });
+
+            } else {
+                message.error("Failed to submit review");
+            }
+
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.errors) {
+                error.response.data.errors.forEach((err: { message: string }) => {
+                    message.error(err.message);
+                });
+            } else {
+                message.error("Failed to submit review");
+            }
+            console.error("Failed to submit review", error);
+        }
+    }
 
     const handleReplySubmit = async (reply: string) => {
         if (selectedReview) {
@@ -76,11 +124,18 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
             updateProduct(draft => {
                 const review = draft.reviewDto.reviews.find(r => r.id === selectedReview.id);
                 if (review) {
-                    review.reviewReplyDto = { id: review.id, content: reply };
+                    review.reviewReplyDto = {id: review.id, content: reply};
                 }
             });
         }
     };
+
+    async function handleAddToCart() {
+        const res = await dispatch(addProductToCart(product.id));
+        if (res.meta.requestStatus === 'fulfilled') {
+            message.success('Product added to cart successfully');
+        }
+    }
 
     return (
         <>
@@ -89,6 +144,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                 onClose={() => setOpenRateModal(false)}
                 onSubmit={handleReviewSubmit}
                 reviewFields={productState.reviewDto.reviews[0]?.fieldScoreDtos.map(field => field.reviewFieldDto)} // TODO check if there isn't any review
+                productId={product.id}
             />
             {selectedReview && (
                 <ReplyModal
@@ -98,64 +154,74 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                     review={selectedReview}
                 />
             )}
-            <div style={{ padding: '20px' }}>
+            <Flex style={{padding: '20px'}}>
                 <Space direction={'vertical'} size={20}>
                     <Card
                         title={<Title level={1}>{productState.name}</Title>}
-                        extra={<Typography.Link>#{productState.productCategoryName}</Typography.Link>} // TODO: Add link to category page
+                        extra={<Typography.Link
+                            href={`/shop?category=${productState.productCategoryName}`}>#{productState.productCategoryName}</Typography.Link>}
                     >
                         <Row gutter={[16, 16]} justify="center" align="top">
-                            <Col xs={24} md={8}>
-                                <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+                            <Col xs={24} lg={12}>
+                                <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
                                     <Image
                                         src={"https://cdn.pixabay.com/photo/2017/03/17/10/29/coffee-2151200_1280.jpg"}
                                         alt={productState.name}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     />
                                 </div>
                             </Col>
-                            <Col xs={24} md={16}>
+                            <Col xs={24} lg={12}>
                                 <div>
-                                    <Title level={1}>{productState.price} $</Title>
-                                    <div>
-                                        <Text strong>Merchant : </Text>
-                                        <Typography.Link> {productState.topicUserDto.username} </Typography.Link> {/* TODO: Add link to merchant page */}
-                                    </div>
-                                    <Divider />
+                                    <Space direction={'vertical'}>
+                                        <Title level={1}>{productState.price} $</Title>
+                                        <div>
+                                            <Text strong>Merchant : </Text>
+                                            <Typography.Link> {productState.topicUserDto.username} </Typography.Link> {/* TODO: Add link to merchant page */}
+                                        </div>
+                                        <Flex align={'center'} justify={'flex-start'} gap={4}>
+                                            <Rate disabled allowHalf
+                                                  defaultValue={productState.reviewDto.averageScore}/>
+                                            <Typography.Text>{productState.reviewDto.reviews.length == 0 ? "No Review Found" : productState.reviewDto.averageScore}</Typography.Text>
+                                        </Flex>
+                                    </Space>
+                                    <Divider/>
                                     <p>{productState.description}</p>
-                                    <Rate disabled allowHalf defaultValue={productState.reviewDto.averageScore} />
-                                    <Typography>{productState.reviewDto.averageScore}</Typography>
-                                    <Divider />
                                 </div>
                             </Col>
                         </Row>
+                        <Divider/>
                         <Row>
                             <Col span={24}>
                                 <List
-                                    grid={{ gutter: 16, column: 3 }}
+                                    grid={{gutter: 16, column: 3}}
                                     dataSource={Object.entries(productState.reviewDto.fieldAverageScore)}
                                     renderItem={([field, score]) => (
                                         <List.Item>
                                             <Card title={field} size={'small'} extra={score}>
-                                                <Rate allowHalf disabled defaultValue={score / 2} />
+                                                <Rate allowHalf disabled defaultValue={score / 2}/>
                                             </Card>
                                         </List.Item>
                                     )}
                                 />
                             </Col>
                         </Row>
+                        <Divider/>
                         <Space>
-                            <Button type="primary" icon={<ShoppingCartOutlined />}>Add to Cart</Button>
-                            <Button type="default" icon={<HeartOutlined />}>Add to Wishlist</Button>
+                            <Button type="primary" icon={<ShoppingCartOutlined/>} onClick={handleAddToCart}
+                                    loading={addToCartLoading} disabled={addToCartLoading}>Add to Cart</Button>
+                            <Button type="default" icon={<HeartOutlined/>}>Add to Wishlist</Button>
                             {isUser && (
-                                <Button type="default" icon={<StarOutlined />} onClick={() => setOpenRateModal(true)}>Rate</Button>
+                                <Button type="default" icon={<StarOutlined/>}
+                                        onClick={() => setOpenRateModal(true)}>Rate</Button>
                             )}
                         </Space>
                     </Card>
                     <Card title={"Reviews"}>
+                        {productState.reviewDto.reviews.length === 0 &&
+                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No reviews found."}/>}
                         {
                             productState.reviewDto.reviews.map((review, index) => (
-                                <Card key={index} style={{ marginBottom: '10px' }}
+                                <Card key={index} style={{marginBottom: '10px'}}
                                       extra={
                                           <Space>
                                               {isMerchant && productState.topicUserDto.username === localStorage.getItem('username') && (
@@ -165,15 +231,18 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                                                   }}>Reply</Typography.Link>
                                               )}
                                               {isAdmin && (
-                                                  <Typography.Link onClick={() => confirmDelete(review)}>Delete</Typography.Link>
+                                                  <Typography.Link
+                                                      onClick={() => confirmDelete(review)}>Delete</Typography.Link>
                                               )}
                                           </Space>
                                       }
-                                      title={<Space><Avatar>{review.userDto.username[0]}</Avatar><Text strong>{review.userDto.username}</Text></Space>}
+                                      title={<Space><Avatar>{review.userDto.username[0]}</Avatar><Text
+                                          strong>{review.userDto.username}</Text></Space>}
                                 >
-                                    <Space direction="vertical" style={{ width: '100%' }}>
+                                    <Space direction="vertical" style={{width: '100%'}}>
                                         <Space>
-                                            <Rate disabled defaultValue={review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length} />
+                                            <Rate disabled
+                                                  defaultValue={review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length}/>
                                             <span>{review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length}</span>
                                         </Space>
                                         <Space direction="horizontal">
@@ -186,9 +255,9 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                                         <Space>
                                             {review.comment}
                                         </Space>
-                                        <Divider />
+                                        <Divider/>
                                         {review.reviewReplyDto && (
-                                            <Space direction={'vertical'} style={{ width: '100%' }}>
+                                            <Space direction={'vertical'} style={{width: '100%'}}>
                                                 <Card>
                                                     <Space>
                                                         <Avatar>{productState.topicUserDto.username[0]}</Avatar>
@@ -206,7 +275,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                         }
                     </Card>
                 </Space>
-            </div>
+            </Flex>
         </>
     );
 };
