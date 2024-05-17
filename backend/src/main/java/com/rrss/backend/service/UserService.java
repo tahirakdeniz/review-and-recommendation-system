@@ -3,10 +3,7 @@ package com.rrss.backend.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rrss.backend.dto.*;
 import com.rrss.backend.enums.TokenType;
-import com.rrss.backend.exception.custom.ImageProcessingException;
-import com.rrss.backend.exception.custom.InvalidCredentialsException;
-import com.rrss.backend.exception.custom.RoleNotFoundException;
-import com.rrss.backend.exception.custom.UsernameIsNotUniqueException;
+import com.rrss.backend.exception.custom.*;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.MerchantRequestRepository;
 import com.rrss.backend.repository.UserRepository;
@@ -26,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
 
@@ -81,14 +79,14 @@ public class UserService {
                 cart
         );
 
-        if (registrationRequest.role().equals("MERCHANT")) {
-            merchantRequestRepository.save(new MerchantRequest(user));
-        }
-
         var savedUser = repository.save(user);
 
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        if (registrationRequest.role().equals("MERCHANT")) {
+            merchantRequestRepository.save(new MerchantRequest(savedUser));
+        }
+
+        var jwtToken = jwtService.generateToken(savedUser);
+        var refreshToken = jwtService.generateRefreshToken(savedUser);
 
         saveUserToken(jwtToken, savedUser);
         return new LoginResponse(jwtToken, refreshToken, registrationRequest.role());
@@ -328,4 +326,48 @@ public class UserService {
 
         return "user deleted successfully";
     }
+
+    public String banUser(String userId) {
+        var oldUser = repository.findById(userId)
+                        .orElseThrow(() -> new PermissionDeniedException("user not found"));
+
+        repository.save(
+                new User(
+                        oldUser.getId(),
+                        oldUser.getUsername(),
+                        oldUser.getPassword(),
+                        oldUser.getEmail(),
+                        oldUser.getDescription(),
+                        true,
+                        true,
+                        true,
+                        false,
+                        oldUser.getFirstName(),
+                        oldUser.getLastName(),
+                        oldUser.getProfilePicture(),
+                        oldUser.getRole(),
+                        oldUser.getDateOfBirth(),
+                        oldUser.getMerchant(),
+                        oldUser.getReviews(),
+                        oldUser.getAccountBalance(),
+                        oldUser.getCart(),
+                        oldUser.getSocialCredit(),
+                        oldUser.getPurchases()
+                )
+        );
+
+        return "user has been banned successfully";
+    }
+
+
+    public List<UserDto> searchBannedUsers(SearchBannedUserRequest searchBannedUserRequest) {
+        return repository.findByIsAccountNonLockedFalseAndUsernameContainingIgnoreCase(
+                    searchBannedUserRequest.searchKey()
+                )
+                .stream()
+                .map(UserDto::convert)
+                .toList();
+    }
+
+
 }

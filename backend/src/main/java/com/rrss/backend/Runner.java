@@ -59,6 +59,7 @@ public class Runner implements CommandLineRunner {
         authorityRepository.save(new Authority("MANAGE_POST"));
         authorityRepository.save(new Authority("MANAGE_TOPIC"));
         authorityRepository.save(new Authority("MANAGE_FORUM_CATEGORY"));
+        authorityRepository.save(new Authority("BAN_USER"));
     }
 
     private void createRoles() {
@@ -74,6 +75,7 @@ public class Runner implements CommandLineRunner {
         roleAdmin.getAuthorities().add(authorityRepository.findByName("APPROVE_MERCHANT_REQUEST").orElseThrow());
         roleAdmin.getAuthorities().add(authorityRepository.findByName("SEE_MERCHANT_REQUEST").orElseThrow());
         roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_PRODUCT_CATEGORY").orElseThrow());
+        roleAdmin.getAuthorities().add(authorityRepository.findByName("BAN_USER").orElseThrow());
         roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_REVIEW").orElseThrow());
         roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_POST").orElseThrow());
         roleAdmin.getAuthorities().add(authorityRepository.findByName("MANAGE_TOPIC").orElseThrow());
@@ -105,7 +107,9 @@ public class Runner implements CommandLineRunner {
 
     private void saveProductCategories() {
         productCategoryRepository.save(new ProductCategory("coffee bean", "just a coffee beans"));
-        productCategoryRepository.save(new ProductCategory("tee", "只是一杯茶，我爱约翰-塞纳"));
+        productCategoryRepository.save(new ProductCategory("tea", "只是一杯茶，我爱约翰-塞纳"));
+        productCategoryRepository.save(new ProductCategory("tea equipment", "只是一杯茶，我爱约翰-塞纳"));
+        productCategoryRepository.save(new ProductCategory("coffee equipments", "just a coffee equipment"));
     }
 
     private void createUser() {
@@ -126,42 +130,44 @@ public class Runner implements CommandLineRunner {
     }
 
     private void createMerchantWithRequest() {
-        Cart cartMerchant = cartRepository.save(new Cart());
-        Cart cartRealMerchant = cartRepository.save(new Cart());
+        createMerchant("jon_merchant","securepass","example1@gmail.com","jon","doe","USER");
+        createMerchant("jon_real_merchant","securepass","example2@gmail.com","jon","doe","USER");
 
+        merchantRequestService.answerRequest("jon_real_merchant", "added from runner", true);
+
+        Merchant merchant = userRepository.findByUsername("jon_real_merchant").get().getMerchant();
+
+    }
+
+    private void createMerchant(String username, String password, String email, String firstName, String lastName, String role) {
+        Cart cartMerchant = cartRepository.save(new Cart());
 
         User merchant = new User(
-                "jon_merchant",
-                passwordEncoder.encode("securepass"),
-                "example1@gmail.com",
-                "jon",
-                "doe",
-                roleRepository.findByName("USER")
+                username,
+                passwordEncoder.encode(password),
+                email,
+                firstName,
+                lastName,
+                roleRepository.findByName(role)
                         .orElseThrow(),
                 LocalDate.of(1995, 5, 5),
                 cartMerchant
         );
         User newMerchant = userRepository.save(merchant);
-
-        User realMerchant = new User(
-                "jon_real_merchant",
-                passwordEncoder.encode("securepass"),
-                "example2@gmail.com",
-                "jon",
-                "doe",
-                roleRepository.findByName("USER")
-                        .orElseThrow(),
-                LocalDate.of(1995, 5, 5),
-                cartRealMerchant
-        );
-        User newRealMerchant = userRepository.save(realMerchant);
-
         merchantRequestRepository.save(new MerchantRequest(newMerchant));
-        merchantRequestRepository.save(new MerchantRequest(newRealMerchant));
-
-        merchantRequestService.answerRequest("jon_real_merchant", "added from runner", true);
-
     }
+
+    private void createProduct(String name, String description, Merchant merchant, String productCategoryName, BigDecimal price) {
+        Product product = new Product(
+                name,
+                description,
+                merchant,
+                productCategoryRepository.findByName(productCategoryName).orElseThrow(),
+                price,
+                null
+        );
+    }
+
 
     private void createAdmin() {
         Cart cartAdmin = cartRepository.save(new Cart());

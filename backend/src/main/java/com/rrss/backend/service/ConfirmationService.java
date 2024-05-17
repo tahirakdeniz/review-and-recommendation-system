@@ -38,8 +38,8 @@ public class ConfirmationService {
         while (output.length() < 6) {
             output.insert(0, "0");
         }
-        //return "000000";
-        return output.toString();
+        return "000000";
+        //return output.toString();
     }
 
     public ConfirmationTokenDto createToken(CreateTokenRequest createTokenRequest) {

@@ -2,12 +2,14 @@ package com.rrss.backend.controller;
 
 import com.rrss.backend.dto.InteractionWeightDto;
 import com.rrss.backend.dto.InteractionWeightRequest;
+import com.rrss.backend.dto.ProductDto;
 import com.rrss.backend.service.RecommendationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -22,7 +24,7 @@ public class RecommendationController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('MANAGE_RECOMMENDATION')")
-    public ResponseEntity<List<InteractionWeightDto>> deleteInteractionWeights() {
+    public ResponseEntity<List<InteractionWeightDto>> getInteractionWeights() {
         return ResponseEntity.ok(recommendationService.getInteractionWeights());
     }
 
@@ -44,4 +46,8 @@ public class RecommendationController {
         return new ResponseEntity<>(recommendationService.deleteInteractionWeight(id), HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/recommendations")
+    public ResponseEntity<List<ProductDto>> getRecommendations(Principal currentUser) {
+        return new ResponseEntity<>(recommendationService.getProductRecommendations(currentUser), HttpStatus.OK);
+    }
 }
