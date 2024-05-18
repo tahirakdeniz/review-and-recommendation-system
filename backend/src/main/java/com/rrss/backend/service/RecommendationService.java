@@ -9,6 +9,7 @@ import com.rrss.backend.exception.custom.InteractionWeightNotFoundException;
 import com.rrss.backend.exception.custom.InvalidRequestException;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.InteractionWeightRepository;
+import com.rrss.backend.repository.ProductCategoryRepository;
 import com.rrss.backend.repository.ProductRepository;
 import com.rrss.backend.repository.UserRepository;
 import com.rrss.backend.util.UserUtil;
@@ -25,12 +26,14 @@ public class RecommendationService {
     private final UserUtil userUtil;
     private final InteractionWeightRepository interactionWeightRepository;
     private final ProductRepository productRepository;
+    private final ProductCategoryRepository productCategoryRepository;
 
 
-    public RecommendationService(UserUtil userUtil, InteractionWeightRepository interactionWeightRepository, ProductRepository productRepository) {
+    public RecommendationService(UserUtil userUtil, InteractionWeightRepository interactionWeightRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository) {
         this.userUtil = userUtil;
         this.interactionWeightRepository = interactionWeightRepository;
         this.productRepository = productRepository;
+        this.productCategoryRepository = productCategoryRepository;
     }
 
     public List<InteractionWeightDto> getInteractionWeights() {
@@ -112,7 +115,7 @@ public class RecommendationService {
         for (Purchase purchase : user.getPurchases()) {
             for (PurchaseItem purchaseItem : purchase.getItems()) {
                 ProductCategory prodCategory = purchaseItem.getProduct().getProductCategory();
-                interactionWeights.put(prodCategory, interactionWeightForPurchase + interactionWeights.getOrDefault(prodCategory,0d));
+                interactionWeights.put(prodCategory, (interactionWeightForPurchase * purchaseItem.getQuantity()) + interactionWeights.getOrDefault(prodCategory,0d));
             }
         }
 
@@ -126,6 +129,14 @@ public class RecommendationService {
 
         interactionWeights.replaceAll((k, v) -> v / totalWight);
 
+        if (interactionWeights.isEmpty()) {
+            List<ProductCategory> productCategories = productCategoryRepository.findAll();
+
+            for (ProductCategory prod: productCategories) {
+                interactionWeights.put(prod, 1.0 / productCategories.size());
+            }
+        }
+
         return interactionWeights;
     }
 
@@ -134,18 +145,20 @@ public class RecommendationService {
 
         List<ProductDto> productDtos = new ArrayList<>();
         for (Map.Entry<ProductCategory, Double> interactionWeightEntry : interactionWeights.entrySet()) {
-            Pageable pageable = PageRequest.of(0, (int) Math.round(interactionWeightEntry.getValue()));
-            productDtos.addAll(
-                    productRepository
-                            .findByProductCategoryName(
-                                    interactionWeightEntry
-                                            .getKey()
-                                            .getName(),
-                                    pageable
-                            ).stream()
-                            .map(ProductDto::convert)
-                            .toList()
-            );
+            if (Math.round(interactionWeightEntry.getValue() * 10) >=  1) {
+                Pageable pageable = PageRequest.of(0, (int) Math.round(interactionWeightEntry.getValue() * 10));
+                productDtos.addAll(
+                        productRepository
+                                .findByProductCategoryName(
+                                        interactionWeightEntry
+                                                .getKey()
+                                                .getName(),
+                                        pageable
+                                ).stream()
+                                .map(ProductDto::convert)
+                                .toList()
+                );
+            }
         }
 
         Collections.shuffle(productDtos);
