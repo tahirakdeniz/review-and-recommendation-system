@@ -69,6 +69,10 @@ public class ProductCategoryService {
     }
 
     public String deleteProductCategory(long id) {
+        if (repository.existsWithAssignedProducts(id)) {
+            throw new PermissionDeniedException("You can't delete this product category because there is a product in it.");
+        }
+
         repository.deleteById(id);
         
         return "Deleted product category with id: " + id;

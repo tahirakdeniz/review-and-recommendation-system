@@ -46,7 +46,7 @@ public class RecommendationController {
         return new ResponseEntity<>(recommendationService.deleteInteractionWeight(id), HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/recommendations")
+    @GetMapping("/get")
     public ResponseEntity<List<ProductDto>> getRecommendations(Principal currentUser) {
         return new ResponseEntity<>(recommendationService.getProductRecommendations(currentUser), HttpStatus.OK);
     }

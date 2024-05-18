@@ -62,17 +62,16 @@ public class Runner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         createAuthorities();
         createRoles();
+        saveProductCategories();
+        createCommunityModerator();
+        createMerchantWithRequest();
+        User admin1 = createAdmin();
+        createForumCategories();
         User user1 = createUser();
         createTopicsAndPosts(user1);
         asdf(user1,1L,1);
         asdf(user1,2L,1);
         asdf2(user1);
-        User admin1 = createAdmin();
-        createForumCategories();
-        saveProductCategories();
-        createCommunityModerator();
-        createMerchantWithRequest();
-
     }
 
     private User getUser(String username, String password, String email, String firstName, String lastName, String role) {
@@ -279,8 +278,7 @@ public class Runner implements CommandLineRunner {
     }
 
     private void createTopicsAndPosts(User user1) {
-        List<String> categoryName = new ArrayList<>();
-        categoryName.addAll(Arrays.asList("New Users","Q&A","Meeting Area","Meeting Area","Discussion About Tea","Discussion About Coffee","OTHER 1","OTHER 2"));
+        List<String> categoryName = new ArrayList<>(Arrays.asList("New Users", "Q&A", "Meeting Area", "Meeting Area", "Discussion About Tea", "Discussion About Coffee", "OTHER 1", "OTHER 2"));
 
         for (int i = 0; i < categoryName.size(); i++) {
             Topic topic = getTopic(user1,"Topic"+ String.valueOf(i+1),categoryName.get(i),i%2==0,"Lorem ipsum dolor");
