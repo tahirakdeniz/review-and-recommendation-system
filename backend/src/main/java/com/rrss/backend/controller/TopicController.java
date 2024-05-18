@@ -47,6 +47,4 @@ public class TopicController {
     public ResponseEntity<String> deleteTopic(@PathVariable("topic-id") Long topicId) {
         return ResponseEntity.ok(topicService.deleteTopic(topicId));
     }
-
-
 }
