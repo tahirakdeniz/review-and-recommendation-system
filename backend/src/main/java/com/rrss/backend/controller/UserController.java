@@ -83,10 +83,22 @@ public class UserController {
         return ResponseEntity.ok(userService.banUser(userId));
     }
 
+    @PutMapping("/unban/{user-id}")
+    @PreAuthorize("hasAuthority('BAN_USER')")
+    public ResponseEntity<String> unbanUser(@PathVariable("user-id") String userId) {
+        return ResponseEntity.ok(userService.unbanUser(userId));
+    }
+
     @GetMapping("/banned-users")
     @PreAuthorize("hasAuthority('BAN_USER')")
-    public ResponseEntity<List<UserDto>> searchBannedUsers(@RequestBody SearchBannedUserRequest searchBannedUserRequest) {
-        return ResponseEntity.ok(userService.searchBannedUsers(searchBannedUserRequest));
+    public ResponseEntity<List<UserDto>> bannedUsers() {
+        return ResponseEntity.ok(userService.searchBannedUsers());
+    }
+
+    @GetMapping("/get")
+    @PreAuthorize("hasAuthority('BAN_USER')")
+    public ResponseEntity<List<UserDto>> getAllUsers(@RequestParam(defaultValue = "") String searchKey) {
+        return ResponseEntity.ok(userService.getAllUsers(searchKey));
     }
 
 }

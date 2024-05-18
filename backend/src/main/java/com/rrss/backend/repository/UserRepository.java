@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     boolean existsByEmail(String email);
 
-    //List<User> findByAccountNonLockedFalseAndUsernameContainingIgnoreCase(String username);
-    List<User> findByIsAccountNonLockedFalseAndUsernameContainingIgnoreCase(String username);
+    List<User> findByUsernameContainingIgnoreCase(String username);
+
+    List<User> findByIsAccountNonLockedFalse();
+
 }

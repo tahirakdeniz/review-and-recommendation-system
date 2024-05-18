@@ -119,13 +119,13 @@ public class Runner implements CommandLineRunner {
     }
 
     private void createUser() {
-        userRepository.save(getUser("jon_merchant","securepass","example1@gmail.com","jon","doe","USER"));
+        userRepository.save(getUser("jon_user","securepass","example341@gmail.com","jon","doe","USER"));
     }
 
     private void createMerchantWithRequest() {
         createMerchant("jon_merchant","securepass","example1@gmail.com","jon","doe","USER");
         createMerchant("jon_real_merchant","securepass","example2@gmail.com","jon","doe","USER");
-        createMerchant("jon_real_merchant2","securepass","example7@gmail.com","jon","doe","USER");
+        createMerchant("jon_real_merchant2","securepass","example47@gmail.com","jon","doe","USER");
 
         merchantRequestService.answerRequest("jon_real_merchant", "added from runner", true);
         merchantRequestService.answerRequest("jon_real_merchant2", "added from runner", true);

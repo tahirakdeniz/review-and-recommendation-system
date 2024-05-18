@@ -49,7 +49,8 @@ public class SecurityConfig {
                                         "/api/v1/products/get/**",
                                         "/api/v1/products/category/**",
                                         "/api/v1/topics/get/**",
-                                        "/api/v1/reviews/form"
+                                        "/api/v1/reviews/form",
+                                        "api/v1/forum-categories/get/**"
 
 
                                         )

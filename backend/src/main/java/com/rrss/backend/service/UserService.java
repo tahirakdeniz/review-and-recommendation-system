@@ -359,15 +359,56 @@ public class UserService {
         return "user has been banned successfully";
     }
 
-
-    public List<UserDto> searchBannedUsers(SearchBannedUserRequest searchBannedUserRequest) {
-        return repository.findByIsAccountNonLockedFalseAndUsernameContainingIgnoreCase(
-                    searchBannedUserRequest.searchKey()
-                )
+    public List<UserDto> searchBannedUsers() {
+        return repository.findByIsAccountNonLockedFalse()
                 .stream()
                 .map(UserDto::convert)
                 .toList();
     }
 
+    public String unbanUser(String userId) {
+        var oldUser = repository.findById(userId)
+                .orElseThrow(() -> new PermissionDeniedException("user not found"));
 
+        repository.save(
+                new User(
+                        oldUser.getId(),
+                        oldUser.getUsername(),
+                        oldUser.getPassword(),
+                        oldUser.getEmail(),
+                        oldUser.getDescription(),
+                        true,
+                        true,
+                        true,
+                        true,
+                        oldUser.getFirstName(),
+                        oldUser.getLastName(),
+                        oldUser.getProfilePicture(),
+                        oldUser.getRole(),
+                        oldUser.getDateOfBirth(),
+                        oldUser.getMerchant(),
+                        oldUser.getReviews(),
+                        oldUser.getAccountBalance(),
+                        oldUser.getCart(),
+                        oldUser.getSocialCredit(),
+                        oldUser.getPurchases()
+                )
+        );
+
+        return "user has been unbanned successfully";
+    }
+
+    public List<UserDto> getAllUsers(String searchKey) {
+        if (searchKey.isEmpty() || searchKey.isBlank())
+            return repository
+                    .findAll()
+                    .stream()
+                    .map(UserDto::convert)
+                    .toList();
+
+        return repository.findByUsernameContainingIgnoreCase(searchKey)
+                .stream()
+                .map(UserDto::convert)
+                .toList();
+    }
 }

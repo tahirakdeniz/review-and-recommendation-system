@@ -22,14 +22,12 @@ import java.util.*;
 @Service
 public class RecommendationService {
 
-    private final UserRepository userRepository;
     private final UserUtil userUtil;
     private final InteractionWeightRepository interactionWeightRepository;
     private final ProductRepository productRepository;
 
 
-    public RecommendationService(UserRepository userRepository, UserUtil userUtil, InteractionWeightRepository interactionWeightRepository, ProductRepository productRepository) {
-        this.userRepository = userRepository;
+    public RecommendationService(UserUtil userUtil, InteractionWeightRepository interactionWeightRepository, ProductRepository productRepository) {
         this.userUtil = userUtil;
         this.interactionWeightRepository = interactionWeightRepository;
         this.productRepository = productRepository;
@@ -61,7 +59,6 @@ public class RecommendationService {
                 )
         );
     }
-
 
     public InteractionWeightDto updateInteractionWeight(InteractionWeightRequest interactionWeightRequest, Long id) {
         InteractionWeight interactionWeight = interactionWeightRepository
@@ -154,5 +151,4 @@ public class RecommendationService {
         Collections.shuffle(productDtos);
         return productDtos;
     }
-
 }
