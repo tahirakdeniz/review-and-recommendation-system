@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,4 +76,29 @@ public class UserController {
     public ResponseEntity<String> deleteUser(Principal currentUser) {
         return ResponseEntity.ok(userService.deleteUser(currentUser));
     }
+
+    @PutMapping("/ban/{user-id}")
+    @PreAuthorize("hasAuthority('BAN_USER')")
+    public ResponseEntity<String> banUser(@PathVariable("user-id") String userId) {
+        return ResponseEntity.ok(userService.banUser(userId));
+    }
+
+    @PutMapping("/unban/{user-id}")
+    @PreAuthorize("hasAuthority('BAN_USER')")
+    public ResponseEntity<String> unbanUser(@PathVariable("user-id") String userId) {
+        return ResponseEntity.ok(userService.unbanUser(userId));
+    }
+
+    @GetMapping("/banned-users")
+    @PreAuthorize("hasAuthority('BAN_USER')")
+    public ResponseEntity<List<UserDto>> bannedUsers() {
+        return ResponseEntity.ok(userService.searchBannedUsers());
+    }
+
+    @GetMapping("/get")
+    @PreAuthorize("hasAuthority('BAN_USER')")
+    public ResponseEntity<List<UserDto>> getAllUsers(@RequestParam(defaultValue = "") String searchKey) {
+        return ResponseEntity.ok(userService.getAllUsers(searchKey));
+    }
+
 }

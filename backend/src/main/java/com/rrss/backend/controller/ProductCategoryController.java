@@ -38,7 +38,7 @@ public class ProductCategoryController {
 
     @DeleteMapping("/{product-category-id}")
     @PreAuthorize("hasAuthority('MANAGE_PRODUCT_CATEGORY')")
-    public ResponseEntity<String> updateProductCategory(@PathVariable("product-category-id") long id) {
+    public ResponseEntity<String> deleteProductCategory(@PathVariable("product-category-id") long id) {
         return ResponseEntity.ok(productCategoryService.deleteProductCategory(id));
     }
 }

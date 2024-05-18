@@ -12,5 +12,8 @@ data class ProductCategory @JvmOverloads constructor(
     @Column(unique = true)
     val name: String,
 
-    val description: String
+    val description: String,
+
+    @OneToMany(mappedBy = "productCategory", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    val products: List<Product> = mutableListOf()
 )

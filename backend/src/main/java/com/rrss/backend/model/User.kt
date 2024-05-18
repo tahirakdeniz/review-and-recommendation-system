@@ -65,6 +65,8 @@ data class User @JvmOverloads constructor(
     var purchases: List<Purchase> = mutableListOf()
 
 
+
+
 ) : UserDetails{
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return role.authorities.toMutableSet()

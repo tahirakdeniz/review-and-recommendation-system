@@ -34,6 +34,10 @@ public class ReviewService {
     }
 
     public ReviewFormDto createReviewForm(ReviewFormRequest reviewFormRequest) {
+        if (reviewFormRepository.existsByproductTypeName(reviewFormRequest.productCategoryName())) {
+            throw new PermissionDeniedException("Product category name already exists");
+        }
+
         return ReviewFormDto.convert(
                 reviewFormRepository.save(
                         new ReviewForm(

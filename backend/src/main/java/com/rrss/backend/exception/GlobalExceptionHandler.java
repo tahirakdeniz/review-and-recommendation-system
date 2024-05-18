@@ -17,69 +17,67 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-
     /*
      * CUSTOM EXCEPTIONS
      * */
 
     @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(RoleNotFoundException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(RoleNotFoundException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(OtpTokenNotFoundException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(OtpTokenNotFoundException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(OtpTokenNotFoundException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(OtpTokenExpiredException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(OtpTokenExpiredException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(OtpTokenExpiredException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UsernameIsNotUniqueException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(UsernameIsNotUniqueException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(UsernameIsNotUniqueException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(UserAlreadyExistsException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(UserAlreadyExistsException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ForumCategoryNotFoundException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ForumCategoryNotFoundException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(ForumCategoryNotFoundException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(TopicNotFoundException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(TopicNotFoundException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(TopicNotFoundException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(PostNotFoundException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(PostNotFoundException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(PostNotFoundException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ImageProcessingException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ImageProcessingException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(ImageProcessingException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InsufficientBalanceException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InsufficientBalanceException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(InsufficientBalanceException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InvalidCredentialsException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(InvalidCredentialsException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidOtpTokenException.class)
-    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InvalidOtpTokenException ex) {
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleException(InvalidOtpTokenException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -128,6 +126,25 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(InteractionWeightAlreadyExistException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InteractionWeightAlreadyExistException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InvalidRequestException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InteractionWeightNotFoundException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(InteractionWeightNotFoundException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ProductCategoryAlreadyExistException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ProductCategoryAlreadyExistException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
     /*
      * CUSTOM EXCEPTIONS
      * */
