@@ -13,6 +13,6 @@ data class Wishlist(
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     val user: User,
 
-    @OneToMany(mappedBy = "wishlist", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "wishlist", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     val items: List<WishlistItem> = mutableListOf()
 )
