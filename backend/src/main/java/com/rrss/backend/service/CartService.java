@@ -50,6 +50,7 @@ public class CartService {
                 .map(item -> incrementQuantity(item, request.quantity()))
                 .orElseGet(() -> createNewItem(cart, request));
 
+
         return CartItemDto.convert(cartItemRepository.save(newCartItem));
     }
 
@@ -136,7 +137,8 @@ public class CartService {
                 newAccountBalance,
                 user.getCart(),
                 user.getSocialCredit(),
-                user.getPurchases()
+                user.getPurchases(),
+                user.getWishlist()
         ));
 
         Purchase purchase = new Purchase(null, user, purchaseItems, totalCost, LocalDateTime.now());
