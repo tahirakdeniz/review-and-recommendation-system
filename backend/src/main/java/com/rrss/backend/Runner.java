@@ -1,10 +1,13 @@
 package com.rrss.backend;
 
+import com.rrss.backend.dto.UserPurchaseDto;
+import com.rrss.backend.enums.ForumCategoryHeader;
+import com.rrss.backend.exception.custom.ForumCategoryNotFoundException;
+import com.rrss.backend.exception.custom.InsufficientBalanceException;
+import com.rrss.backend.exception.custom.ProductNotFoundException;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.*;
 import com.rrss.backend.service.MerchantRequestService;
-import com.rrss.backend.service.ProductService;
-import com.rrss.backend.util.ImageUtil;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -12,7 +15,11 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 public class Runner implements CommandLineRunner {
@@ -26,9 +33,14 @@ public class Runner implements CommandLineRunner {
     private final ProductCategoryRepository productCategoryRepository;
     private final MerchantRequestService merchantRequestService;
     private final ProductRepository productRepository;
+    private final ForumCategoryRepository forumCategoryRepository;
+    private final TopicRepository topicRepository;
+    private final PostRepository postRepository;
+    private final CartItemRepository cartItemRepository;
+    private final PurchaseItemRepository purchaseItemRepository;
+    private final PurchaseRepository purchaseRepository;
 
-
-    public Runner(RoleRepository roleRepository, AuthorityRepository authorityRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, MerchantRequestRepository merchantRequestRepository, ProductCategoryRepository productCategoryRepository, MerchantRequestService merchantRequestService, ProductRepository productRepository) {
+    public Runner(RoleRepository roleRepository, AuthorityRepository authorityRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, MerchantRequestRepository merchantRequestRepository, ProductCategoryRepository productCategoryRepository, MerchantRequestService merchantRequestService, ProductRepository productRepository, ForumCategoryRepository forumCategoryRepository, TopicRepository topicRepository, PostRepository postRepository, CartItemRepository cartItemRepository, PurchaseItemRepository purchaseItemRepository, PurchaseRepository purchaseRepository) {
         this.roleRepository = roleRepository;
         this.authorityRepository = authorityRepository;
         this.userRepository = userRepository;
@@ -38,17 +50,29 @@ public class Runner implements CommandLineRunner {
         this.productCategoryRepository = productCategoryRepository;
         this.merchantRequestService = merchantRequestService;
         this.productRepository = productRepository;
+        this.forumCategoryRepository = forumCategoryRepository;
+        this.topicRepository = topicRepository;
+        this.postRepository = postRepository;
+        this.cartItemRepository = cartItemRepository;
+        this.purchaseItemRepository = purchaseItemRepository;
+        this.purchaseRepository = purchaseRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
         createAuthorities();
         createRoles();
-        createUser();
+        User user1 = createUser();
+        createTopicsAndPosts(user1);
+        asdf(user1,1L,1);
+        asdf(user1,2L,1);
+        asdf2(user1);
+        User admin1 = createAdmin();
+        createForumCategories();
         saveProductCategories();
         createCommunityModerator();
         createMerchantWithRequest();
-        createAdmin();
+
     }
 
     private User getUser(String username, String password, String email, String firstName, String lastName, String role) {
@@ -64,6 +88,145 @@ public class Runner implements CommandLineRunner {
                 LocalDate.of(1995, 5, 5),
                 cart
         );
+    }
+
+    private ForumCategory getForumCategory(String name, String description, ForumCategoryHeader header) {
+        return forumCategoryRepository.save(new ForumCategory(
+                name,
+                description,
+                header
+        ));
+    }
+
+    private Topic getTopic(User user, String title, String categoryName, Boolean isAnonymous, String posts) {
+        Topic topic = new Topic(
+                title,
+                user,
+                forumCategoryRepository.findByName(categoryName)
+                        .orElseThrow(() -> new ForumCategoryNotFoundException("Forum Category not found.")),
+                isAnonymous
+        );
+
+        var savedTopic = topicRepository.save(topic);
+
+        Post post = new Post(
+                savedTopic,
+                user,
+                posts,
+                isAnonymous
+        );
+
+        var savedPost = postRepository.save(post);
+
+        savedTopic.getPosts().add(savedPost);
+
+        return topicRepository.save(savedTopic);
+    }
+
+    private Post getPost(User user, Topic topic, Boolean isAnonymous, String posts) {
+        return postRepository.save(new Post(
+                topic,
+                user,
+                posts,
+                isAnonymous
+        ));
+    }
+
+    private Product getProduct(String name, String description, Merchant merchant, String productCategoryName, BigDecimal price) {
+        return productRepository.save(
+                new Product(
+                        name,
+                        description,
+                        merchant,
+                        productCategoryRepository.findByName(productCategoryName).orElseThrow(),
+                        price,
+                        null
+                )
+        );
+    }
+
+    private CartItem incrementQuantity(CartItem item, int additionalQuantity) {
+        return new CartItem(
+                item.getId(),
+                item.getCart(),
+                item.getProduct(),
+                item.getQuantity() + additionalQuantity
+        );
+    }
+
+    private CartItem createNewItem(Cart cart, Long id, int quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+        return new CartItem(null, cart, product, quantity);
+    }
+
+    private PurchaseItem processCartItem(CartItem item) {
+        Product product = item.getProduct();
+        PurchaseItem purchaseItem = new PurchaseItem(null, product, product.getPrice(), item.getQuantity());
+        purchaseItem = purchaseItemRepository.save(purchaseItem);
+
+        return purchaseItem;
+    }
+
+    private void asdf(User user1, Long productId, int quantity) {
+        Cart cart = user1.getCart();
+
+        CartItem newCartItem = cart.getItems()
+                .stream()
+                .filter(item -> Objects.equals(item.getProduct().getId(), productId))
+                .findFirst()
+                .map(item -> incrementQuantity(item, quantity))
+                .orElseGet(() -> createNewItem(cart, productId,quantity));
+
+        cartItemRepository.save(newCartItem);
+    }
+
+    private void asdf2(User user) {
+        Cart cart = user.getCart();
+
+        List<PurchaseItem> purchaseItems = cart.getItems()
+                .stream()
+                .map(this::processCartItem)
+                .collect(Collectors.toList());
+
+        cartItemRepository.deleteAll(cart.getItems());
+        cart.getItems().clear();
+        cartRepository.save(cart);
+
+        BigDecimal totalCost = purchaseItems.stream()
+                .map(purchaseItem -> purchaseItem.getProduct().getPrice().multiply(BigDecimal.valueOf(purchaseItem.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (user.getAccountBalance().compareTo(totalCost) < 0) {
+            throw new InsufficientBalanceException("Can't buy the product due to insufficient balance.");
+        }
+
+        BigDecimal newAccountBalance = user.getAccountBalance().subtract(totalCost);
+        userRepository.save(new User(
+                user.getId(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getEmail(),
+                user.getDescription(),
+                user.isEnabled(),
+                user.isCredentialsNonExpired(),
+                user.isAccountNonExpired(),
+                user.isAccountNonLocked(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getProfilePicture(),
+                user.getRole(),
+                user.getDateOfBirth(),
+                user.getMerchant(),
+                user.getReviews(),
+                newAccountBalance,
+                user.getCart(),
+                user.getSocialCredit(),
+                user.getPurchases()
+        ));
+
+        Purchase purchase = new Purchase(null, user, purchaseItems, totalCost, LocalDateTime.now());
+        purchaseRepository.save(purchase);
     }
 
     private void createAuthorities() {
@@ -103,7 +266,28 @@ public class Runner implements CommandLineRunner {
         Role roleMerchant = roleRepository.save(new Role("MERCHANT"));
         roleMerchant.getAuthorities().add(authorityRepository.findByName("MANAGE_PRODUCT").orElseThrow());
         roleRepository.save(roleMerchant);
+    }
 
+    private void createForumCategories(){
+        getForumCategory("Q&A","Q&A description",ForumCategoryHeader.Q_A);
+        getForumCategory("New Users","New Users description",ForumCategoryHeader.GENERAL_FIELD);
+        getForumCategory("Meeting Area","Meeting Area description",ForumCategoryHeader.GENERAL_FIELD);
+        getForumCategory("Discussion About Tea","Discussion About Tea description",ForumCategoryHeader.DISCUSSION);
+        getForumCategory("Discussion About Coffee","Discussion About Coffee description",ForumCategoryHeader.DISCUSSION);
+        getForumCategory("OTHER 1","OTHER 1 description",ForumCategoryHeader.OTHERS);
+        getForumCategory("OTHER 2","OTHER 2 description",ForumCategoryHeader.OTHERS);
+    }
+
+    private void createTopicsAndPosts(User user1) {
+        List<String> categoryName = new ArrayList<>();
+        categoryName.addAll(Arrays.asList("New Users","Q&A","Meeting Area","Meeting Area","Discussion About Tea","Discussion About Coffee","OTHER 1","OTHER 2"));
+
+        for (int i = 0; i < categoryName.size(); i++) {
+            Topic topic = getTopic(user1,"Topic"+ String.valueOf(i+1),categoryName.get(i),i%2==0,"Lorem ipsum dolor");
+            for(int j = 0; j < 5; j++) {
+                getPost(user1,topic,i+j%2==0,"Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet");
+            }
+        }
     }
 
     private void createCommunityModerator() {
@@ -118,8 +302,8 @@ public class Runner implements CommandLineRunner {
         productCategoryRepository.save(new ProductCategory("coffee equipments", "just a coffee equipment"));
     }
 
-    private void createUser() {
-        userRepository.save(getUser("jon_user","securepass","example341@gmail.com","jon","doe","USER"));
+    private User createUser() {
+        return userRepository.save(getUser("jon_user","securepass","example341@gmail.com","jon","doe","USER"));
     }
 
     private void createMerchantWithRequest() {
@@ -133,12 +317,12 @@ public class Runner implements CommandLineRunner {
         Merchant merchant = userRepository.findByUsername("jon_real_merchant").get().getMerchant();
         Merchant merchant2 = userRepository.findByUsername("jon_real_merchant2").get().getMerchant();
 
-        createProduct("black tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        createProduct("green tea","very very good taste",merchant2,"tea",BigDecimal.valueOf(10));
-        createProduct("white tea","very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        createProduct("oolong tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        createProduct("panama","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
-        createProduct("guetemala","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("black tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
+        getProduct("green tea","very very good taste",merchant2,"tea",BigDecimal.valueOf(10));
+        getProduct("white tea","very good taste",merchant,"tea",BigDecimal.valueOf(10));
+        getProduct("oolong tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
+        getProduct("panama","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("guetemala","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
 
     }
 
@@ -148,22 +332,7 @@ public class Runner implements CommandLineRunner {
         merchantRequestRepository.save(new MerchantRequest(newMerchant));
     }
 
-    private void createProduct(String name, String description, Merchant merchant, String productCategoryName, BigDecimal price) {
-        productRepository.save(
-                new Product(
-                    name,
-                    description,
-                    merchant,
-                    productCategoryRepository.findByName(productCategoryName).orElseThrow(),
-                    price,
-                    null
-                )
-        );
-    }
-
-
-    private void createAdmin() {
-        User admin = getUser("jon_admin","securepass","example3@gmail.com","jon","doe","ADMIN");
-        userRepository.save(admin);
+    private User createAdmin() {
+        return userRepository.save(getUser("jon_admin","securepass","example3@gmail.com","jon","doe","ADMIN"));
     }
 }
