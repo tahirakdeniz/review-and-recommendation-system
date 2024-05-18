@@ -30,6 +30,7 @@ const signupSlice = createSlice({
         setFields(state, action: PayloadAction<{ field: keyof IUserRegistrationData; value: string }[]>) {
             action.payload.forEach(({ field, value }) => {
                 state.userRegistrationData[field] = value;
+                console.log(state.userRegistrationData[field])
             });
         },
         setStep(state, action: PayloadAction<SignupState['step']>) {

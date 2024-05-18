@@ -18,7 +18,7 @@ import {
 } from "antd";
 import {HeartOutlined, ShoppingCartOutlined, StarOutlined} from '@ant-design/icons';
 import {useEffect, useState} from "react";
-import {ProductDto, ProductReviewReviewDto} from "@/lib/entity/product";
+import {ProductDto, ProductReviewReviewDto} from "@/lib/dto";
 import {useRole} from "@/lib/useRole";
 import {useImmer} from "use-immer";
 import {baseURL} from "@/lib/const";

@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import SignupFormHeader from "@/components/SignupFormHeader";
 import {Form, Input, Button, Checkbox} from "antd";
 import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
@@ -11,6 +11,7 @@ import {useRouter} from "next/navigation";
 import {RootState} from "@/lib/redux/store";
 
 export default function Signup1() {
+    const [isMerchant, setIsMerchant] = useState<boolean>(true);
     const dispatch = useDispatch();
     const router = useRouter()
     const step = useSelector((state: RootState) => state.signup.step);
@@ -19,13 +20,14 @@ export default function Signup1() {
         if (step !== 0) router.push(`/signup/${step + 1}`); // Redirect to the correct step if the user has already completed this step
     }, [router, step]);
 
-    const onFinish = ({username, password, email, isMerchant}: any) => {
+    const onFinish = ({username, password, email}: any) => {
         dispatch(setFields([
             {field: 'username', value: username},
             {field: 'password', value: password},
             {field: 'email', value: email},
             {field: 'role', value: isMerchant ? 'MERCHANT' : 'USER'}
         ]));
+        alert(isMerchant)
         dispatch(setStep(1));
     };
 
@@ -97,7 +99,7 @@ export default function Signup1() {
                 <Form.Item
                     name='isMerchant'
                 >
-                    <Checkbox> I want to be merchant</Checkbox>
+                    <Checkbox onChange={(e) => setIsMerchant(e.target.checked)}> I want to be merchant</Checkbox>
                 </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit" className="signup-form-button" block>

@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Modal, Typography} from "antd";
 import TextArea from "antd/es/input/TextArea";
-import {ProductReviewReviewDto} from "@/lib/entity/product";
+import {ProductReviewReviewDto} from "@/lib/dto";
 
 const {Title} = Typography;
 interface ReplyModalProps {

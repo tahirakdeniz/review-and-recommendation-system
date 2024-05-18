@@ -81,14 +81,14 @@ public class UserService {
                 cart
         );
 
-        if (registrationRequest.role().equals("MERCHANT")) {
-            merchantRequestRepository.save(new MerchantRequest(user));
-        }
-
         var savedUser = repository.save(user);
 
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        if (registrationRequest.role().equals("MERCHANT")) {
+            merchantRequestRepository.save(new MerchantRequest(savedUser));
+        }
+
+        var jwtToken = jwtService.generateToken(savedUser);
+        var refreshToken = jwtService.generateRefreshToken(savedUser);
 
         saveUserToken(jwtToken, savedUser);
         return new LoginResponse(jwtToken, refreshToken, registrationRequest.role());

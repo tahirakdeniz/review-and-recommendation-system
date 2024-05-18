@@ -1,4 +1,4 @@
-import {ProductDto} from "@/lib/entity/product";
+import {ProductDto} from "@/lib/dto";
 import {Button, Card, Carousel, Col, Empty, Grid, Image, message, Row, Tooltip, Typography} from "antd";
 import {HeartOutlined, ShoppingCartOutlined} from "@ant-design/icons";
 import React from "react";
