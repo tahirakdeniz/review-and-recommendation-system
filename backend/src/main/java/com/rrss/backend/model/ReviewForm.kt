@@ -11,7 +11,7 @@ data class ReviewForm @JvmOverloads constructor(
     val id: Long? = null,
 
     @OneToOne
-    @JoinColumn(name = "product_type_id", nullable = false)
+    @JoinColumn(name = "product_type_id", nullable = false, unique = true)
     val productType: ProductCategory,
 
     @OneToMany

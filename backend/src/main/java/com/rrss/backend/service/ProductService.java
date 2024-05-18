@@ -210,7 +210,7 @@ public class ProductService {
     }
 
     public List<ProductDto> getAllProducts(String searchKey) {
-        if (searchKey.isEmpty())
+        if (searchKey.isEmpty() || searchKey.isBlank())
             return getAllProducts();
 
         return repository
