@@ -7,6 +7,7 @@ import com.rrss.backend.exception.custom.*;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.MerchantRequestRepository;
 import com.rrss.backend.repository.UserRepository;
+import com.rrss.backend.repository.WishlistRepository;
 import com.rrss.backend.util.ImageUtil;
 import com.rrss.backend.util.UserUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
@@ -42,9 +42,10 @@ public class UserService {
     private final CartService cartService;
     private final MerchantService merchantService;
     private final UserUtil userUtil;
+    private final WishlistRepository wishlistRepository;
 
 
-    public UserService(UserRepository repository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, RoleService roleService, ConfirmationService confirmationService, MerchantRequestRepository merchantRequestRepository, CartService cartService, MerchantService merchantService, UserUtil userUtil) {
+    public UserService(UserRepository repository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, RoleService roleService, ConfirmationService confirmationService, MerchantRequestRepository merchantRequestRepository, CartService cartService, MerchantService merchantService, UserUtil userUtil, WishlistRepository wishlistRepository) {
         this.repository = repository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
@@ -56,6 +57,7 @@ public class UserService {
         this.cartService = cartService;
         this.merchantService = merchantService;
         this.userUtil = userUtil;
+        this.wishlistRepository = wishlistRepository;
     }
 
     public LoginResponse createUser(RegistrationRequest registrationRequest) {
@@ -67,6 +69,7 @@ public class UserService {
             throw new UsernameIsNotUniqueException("Username is not unique");
 
         Cart cart = cartService.createCart();
+        Wishlist wishlist = wishlistRepository.save(new Wishlist());
 
         User user = new User(
                 registrationRequest.username(),
@@ -76,7 +79,8 @@ public class UserService {
                 registrationRequest.lastName(),
                 roleService.findRoleByName("USER"),
                 registrationRequest.dateOfBirth(),
-                cart
+                cart,
+                wishlist
         );
 
         var savedUser = repository.save(user);
@@ -187,7 +191,8 @@ public class UserService {
                 user.getAccountBalance(),
                 user.getCart(),
                 user.getSocialCredit(),
-                user.getPurchases()
+                user.getPurchases(),
+                user.getWishlist()
         );
 
         repository.save(newUser);
@@ -245,7 +250,8 @@ public class UserService {
                 newRole,
                 user.getDateOfBirth(),
                 merchant,
-                user.getCart()
+                user.getCart(),
+                user.getWishlist()
         );
 
         repository.save(newUser);
@@ -279,7 +285,8 @@ public class UserService {
                 user.getAccountBalance(),
                 user.getCart(),
                 user.getSocialCredit(),
-                user.getPurchases()
+                user.getPurchases(),
+                user.getWishlist()
         );
 
 
@@ -308,7 +315,8 @@ public class UserService {
                 user.getRole(),
                 user.getDateOfBirth(),
                 user.getMerchant(),
-                user.getCart()
+                user.getCart(),
+                user.getWishlist()
         );
         repository.save(newUser);
         return "password updated successfully";
@@ -352,7 +360,8 @@ public class UserService {
                         oldUser.getAccountBalance(),
                         oldUser.getCart(),
                         oldUser.getSocialCredit(),
-                        oldUser.getPurchases()
+                        oldUser.getPurchases(),
+                        oldUser.getWishlist()
                 )
         );
 
@@ -391,7 +400,8 @@ public class UserService {
                         oldUser.getAccountBalance(),
                         oldUser.getCart(),
                         oldUser.getSocialCredit(),
-                        oldUser.getPurchases()
+                        oldUser.getPurchases(),
+                        oldUser.getWishlist()
                 )
         );
 

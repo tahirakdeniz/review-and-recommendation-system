@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/reviews")
@@ -29,6 +30,12 @@ public class ReviewController {
     @GetMapping("/form")
     public ResponseEntity<ReviewFormDto> getReviewForm(@RequestParam String productCategoryName) {
         return ResponseEntity.ok(reviewService.getReviewForm(productCategoryName));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('MANAGE_REVIEW')")
+    public ResponseEntity<List<ReviewFormDto>> getAllReviewForms() {
+        return ResponseEntity.ok(reviewService.getAllReviewForms());
     }
 
     @PutMapping("/{id}")

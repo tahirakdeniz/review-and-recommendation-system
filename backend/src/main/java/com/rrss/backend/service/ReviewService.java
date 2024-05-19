@@ -169,4 +169,12 @@ public class ReviewService {
 
         return ReviewDto.convert(reviewWithFields);
     }
+
+    public List<ReviewFormDto> getAllReviewForms() {
+        return reviewFormRepository
+                .findAll()
+                .stream()
+                .map(ReviewFormDto::convert)
+                .toList();
+    }
 }

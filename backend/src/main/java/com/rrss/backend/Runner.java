@@ -1,6 +1,5 @@
 package com.rrss.backend;
 
-import com.rrss.backend.dto.UserPurchaseDto;
 import com.rrss.backend.enums.ForumCategoryHeader;
 import com.rrss.backend.exception.custom.ForumCategoryNotFoundException;
 import com.rrss.backend.exception.custom.InsufficientBalanceException;
@@ -39,8 +38,9 @@ public class Runner implements CommandLineRunner {
     private final CartItemRepository cartItemRepository;
     private final PurchaseItemRepository purchaseItemRepository;
     private final PurchaseRepository purchaseRepository;
+    private final WishlistRepository wishlistRepository;
 
-    public Runner(RoleRepository roleRepository, AuthorityRepository authorityRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, MerchantRequestRepository merchantRequestRepository, ProductCategoryRepository productCategoryRepository, MerchantRequestService merchantRequestService, ProductRepository productRepository, ForumCategoryRepository forumCategoryRepository, TopicRepository topicRepository, PostRepository postRepository, CartItemRepository cartItemRepository, PurchaseItemRepository purchaseItemRepository, PurchaseRepository purchaseRepository) {
+    public Runner(RoleRepository roleRepository, AuthorityRepository authorityRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, MerchantRequestRepository merchantRequestRepository, ProductCategoryRepository productCategoryRepository, MerchantRequestService merchantRequestService, ProductRepository productRepository, ForumCategoryRepository forumCategoryRepository, TopicRepository topicRepository, PostRepository postRepository, CartItemRepository cartItemRepository, PurchaseItemRepository purchaseItemRepository, PurchaseRepository purchaseRepository, WishlistRepository wishlistRepository) {
         this.roleRepository = roleRepository;
         this.authorityRepository = authorityRepository;
         this.userRepository = userRepository;
@@ -56,6 +56,7 @@ public class Runner implements CommandLineRunner {
         this.cartItemRepository = cartItemRepository;
         this.purchaseItemRepository = purchaseItemRepository;
         this.purchaseRepository = purchaseRepository;
+        this.wishlistRepository = wishlistRepository;
     }
 
     @Override
@@ -76,6 +77,7 @@ public class Runner implements CommandLineRunner {
 
     private User getUser(String username, String password, String email, String firstName, String lastName, String role) {
         Cart cart =  cartRepository.save(new Cart());
+        Wishlist wishlist = wishlistRepository.save(new Wishlist());
         return new User(
                 username,
                 passwordEncoder.encode(password),
@@ -85,7 +87,9 @@ public class Runner implements CommandLineRunner {
                 roleRepository.findByName(role)
                         .orElseThrow(),
                 LocalDate.of(1995, 5, 5),
-                cart
+                cart,
+                wishlist
+
         );
     }
 
@@ -221,7 +225,8 @@ public class Runner implements CommandLineRunner {
                 newAccountBalance,
                 user.getCart(),
                 user.getSocialCredit(),
-                user.getPurchases()
+                user.getPurchases(),
+                user.getWishlist()
         ));
 
         Purchase purchase = new Purchase(null, user, purchaseItems, totalCost, LocalDateTime.now());
@@ -239,6 +244,7 @@ public class Runner implements CommandLineRunner {
         authorityRepository.save(new Authority("MANAGE_TOPIC"));
         authorityRepository.save(new Authority("MANAGE_FORUM_CATEGORY"));
         authorityRepository.save(new Authority("BAN_USER"));
+        authorityRepository.save(new Authority("REVIEW_REPLY"));
     }
 
     private void createRoles() {
@@ -264,6 +270,7 @@ public class Runner implements CommandLineRunner {
 
         Role roleMerchant = roleRepository.save(new Role("MERCHANT"));
         roleMerchant.getAuthorities().add(authorityRepository.findByName("MANAGE_PRODUCT").orElseThrow());
+        roleMerchant.getAuthorities().add(authorityRepository.findByName("REVIEW_REPLY").orElseThrow());
         roleRepository.save(roleMerchant);
     }
 
@@ -321,7 +328,24 @@ public class Runner implements CommandLineRunner {
         getProduct("oolong tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
         getProduct("panama","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
         getProduct("guetemala","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
-
+        getProduct("black2 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
+        getProduct("green2 tea","very very good taste",merchant2,"tea",BigDecimal.valueOf(10));
+        getProduct("white2 tea","very good taste",merchant,"tea",BigDecimal.valueOf(10));
+        getProduct("oolong2 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
+        getProduct("black3 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
+        getProduct("green3 tea","very very good taste",merchant2,"tea",BigDecimal.valueOf(10));
+        getProduct("white3 tea","very good taste",merchant,"tea",BigDecimal.valueOf(10));
+        getProduct("oolong3 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
+        getProduct("etiyopya","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("brezilya","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("etiyopya2","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("brezilya2","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("kenya","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("kenya2","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("panama2","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("guetemala2","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("panama3","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
+        getProduct("guetemala3","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
     }
 
     private void createMerchant(String username, String password, String email, String firstName, String lastName, String role) {

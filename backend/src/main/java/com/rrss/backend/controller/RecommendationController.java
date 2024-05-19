@@ -30,13 +30,13 @@ public class RecommendationController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('MANAGE_RECOMMENDATION')")
-    public ResponseEntity<InteractionWeightDto> addInteractionWeight(InteractionWeightRequest interactionWeightRequest) {
+    public ResponseEntity<InteractionWeightDto> addInteractionWeight(@RequestBody InteractionWeightRequest interactionWeightRequest) {
         return new ResponseEntity<>(recommendationService.addInteractionWeight(interactionWeightRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('MANAGE_RECOMMENDATION')")
-    public ResponseEntity<InteractionWeightDto> updateInteractionWeight(@PathVariable("id") Long id, InteractionWeightRequest interactionWeightRequest) {
+    public ResponseEntity<InteractionWeightDto> updateInteractionWeight(@PathVariable("id") Long id, @RequestBody InteractionWeightRequest interactionWeightRequest) {
         return ResponseEntity.ok(recommendationService.updateInteractionWeight(interactionWeightRequest, id));
     }
 

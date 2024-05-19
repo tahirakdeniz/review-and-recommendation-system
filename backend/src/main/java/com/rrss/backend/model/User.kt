@@ -62,9 +62,11 @@ data class User @JvmOverloads constructor(
     var socialCredit: BigDecimal = BigDecimal.ZERO,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    var purchases: List<Purchase> = mutableListOf()
+    var purchases: List<Purchase> = mutableListOf(),
 
-
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @JoinColumn(name = "wishlist_id", nullable = true)
+    var wishlist: Wishlist
 
 
 ) : UserDetails{
