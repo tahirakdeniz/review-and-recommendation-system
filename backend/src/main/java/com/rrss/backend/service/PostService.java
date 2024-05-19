@@ -2,6 +2,7 @@ package com.rrss.backend.service;
 
 import com.rrss.backend.dto.AddPostRequest;
 import com.rrss.backend.dto.PostDto;
+import com.rrss.backend.dto.UpdatePostRequest;
 import com.rrss.backend.exception.custom.PermissionDeniedException;
 import com.rrss.backend.exception.custom.PostNotFoundException;
 import com.rrss.backend.exception.custom.TopicNotFoundException;
@@ -55,7 +56,7 @@ public class PostService {
                 .toList();
     }
 
-    public PostDto updatePost(Principal currentUser, AddPostRequest addPostRequest, Long postId) {
+    public PostDto updatePost(Principal currentUser, UpdatePostRequest updatePostRequest, Long postId) {
         User user = userUtil.extractUser(currentUser);
 
         Post post = repository.findById(postId).orElseThrow(() -> new PostNotFoundException("Post not found."));
@@ -68,8 +69,8 @@ public class PostService {
                 post.getId(),
                 post.getTopic(),
                 post.getCreatedBy(),
-                addPostRequest.content(),
-                addPostRequest.isAnonymous()
+                updatePostRequest.content(),
+                updatePostRequest.isAnonymous()
         );
 
         return PostDto.convert(repository.save(newPost));

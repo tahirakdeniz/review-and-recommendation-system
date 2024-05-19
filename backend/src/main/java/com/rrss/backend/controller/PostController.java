@@ -3,6 +3,7 @@ package com.rrss.backend.controller;
 
 import com.rrss.backend.dto.AddPostRequest;
 import com.rrss.backend.dto.PostDto;
+import com.rrss.backend.dto.UpdatePostRequest;
 import com.rrss.backend.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +34,8 @@ public class PostController {
     }
 
     @PutMapping("/{post-id}")
-    public ResponseEntity<PostDto> updatePost(Principal currentUser, @RequestBody AddPostRequest addPostRequest, @PathVariable("post-id") Long postId) {
-        return ResponseEntity.ok(postService.updatePost(currentUser,addPostRequest,postId));
+    public ResponseEntity<PostDto> updatePost(Principal currentUser, @RequestBody UpdatePostRequest updatePostRequest, @PathVariable("post-id") Long postId) {
+        return ResponseEntity.ok(postService.updatePost(currentUser,updatePostRequest,postId));
     }
 
     @DeleteMapping("/{post-id}")
