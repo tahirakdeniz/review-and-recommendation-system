@@ -42,7 +42,7 @@ public class TopicController {
         return ResponseEntity.ok(topicService.deleteTopicByOwner(currentUser,topicId));
     }
 
-    @DeleteMapping("/topic-id")
+    @DeleteMapping("/admin/{topic-id}")
     @PreAuthorize("hasAnyAuthority('MANAGE_TOPIC')")
     public ResponseEntity<String> deleteTopic(@PathVariable("topic-id") Long topicId) {
         return ResponseEntity.ok(topicService.deleteTopic(topicId));

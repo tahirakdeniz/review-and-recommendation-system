@@ -4,6 +4,7 @@ import com.rrss.backend.dto.AddForumCategoryRequest;
 import com.rrss.backend.dto.ForumCategoryDto;
 import com.rrss.backend.enums.ForumCategoryHeader;
 import com.rrss.backend.exception.custom.ForumCategoryNotFoundException;
+import com.rrss.backend.exception.custom.PermissionDeniedException;
 import com.rrss.backend.model.ForumCategory;
 import com.rrss.backend.repository.ForumCategoryRepository;
 import org.springframework.stereotype.Service;
@@ -67,4 +68,12 @@ public class ForumCategoryService {
         return "Forum Category deleted successfully";
     }
 
+    public ForumCategoryDto getForumCategoryById(Long id) {
+        return ForumCategoryDto.convert(
+                repository.findById(id)
+                        .orElseThrow(
+                                () -> new PermissionDeniedException("forum category not found")
+                        )
+        );
+    }
 }
