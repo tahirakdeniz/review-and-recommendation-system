@@ -41,7 +41,7 @@ public class TopicService {
         Topic topic = new Topic(
                 addTopicRequest.title(),
                 user,
-                forumCategoryRepository.findByName(addTopicRequest.categoryName())
+                forumCategoryRepository.findById(addTopicRequest.categoryId())
                         .orElseThrow(() -> new ForumCategoryNotFoundException("Forum Category not found.")),
                 addTopicRequest.isAnonymous()
         );
