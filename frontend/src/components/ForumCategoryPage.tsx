@@ -213,7 +213,7 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({ categoryId }) => 
                                     <Meta
                                         avatar={<Avatar src={`url-of-the-avatar-${topic.userDto.username}`} size={32} />}
                                         title={<strong>{topic.userDto.username}</strong>}
-                                        description={topic.postDtos[0].content.length > 50 ? topic.postDtos[0].content.substring(0, 50) + "..." : topic.postDtos[0].content}
+                                        description={topic.postDtos[0]?.content.length > 50 ? topic.postDtos[0]?.content.substring(0, 50) + "..." : topic.postDtos[0]?.content}
                                     />
                                 </Col>
                                 <Col span={8}>
