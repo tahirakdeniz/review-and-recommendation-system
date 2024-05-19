@@ -119,6 +119,6 @@ public class TopicService {
     }
 
     public TopicDto getTopic(Long id) {
-        return TopicDto.convert(repository.getById(id));
+        return TopicDto.convert(repository.findById(id).orElseThrow(() -> new TopicNotFoundException("Topic not found")));
     }
 }
