@@ -5,7 +5,7 @@ import {useRouter} from "next/navigation";
 import {useSelector} from "react-redux";
 import {RootState} from "@/lib/redux/store";
 import Link from "next/link";
-import {Roles} from "@/lib/roles";
+import {Roles} from "@/lib/enums";
 
 export default function Home() {
     const { user, loading, error } = useSelector((state: RootState) => state.user);

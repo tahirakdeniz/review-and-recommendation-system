@@ -97,4 +97,25 @@ export type MerchantRequestDto = {
 }
 
 
+export type ForumCategoryTopicDto = {
+    id: number;
+    title: string;
+    userDto: BasicUserDto;
+    creationDate: string;
+    isAnonymous: boolean;
+}
+
+export type ForumCategoryHeader = "GENERAL_FIELD" | "Q_A" | "DISCUSSION" | "OTHERS";
+
+export interface ForumCategoryDto {
+    id: number;
+    name: string;
+    description: string;
+    topicDtos: ForumCategoryTopicDto[];
+    forumCategoryHeader: ForumCategoryHeader;
+    topicCount: number;
+    messageCount: number;
+}
+
+
 

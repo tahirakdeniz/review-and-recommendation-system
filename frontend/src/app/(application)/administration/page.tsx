@@ -3,7 +3,7 @@ import React from 'react';
 import {AdministrationMerchantRequestSection} from "@/components/AdministrationMerchantRequestSection";
 import {AdministrationReviewFormSection} from "@/components/AdministrationReviewFormSection";
 import {AdministrationBannedUsersSection} from "@/components/AdministrationBannedUsersSection";
-import {Roles} from "@/lib/roles";
+import {Roles} from "@/lib/enums";
 import Result403 from "@/components/Result403";
 
 export default function Administration() {
