@@ -170,7 +170,7 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({ categoryId }) => 
     useEffect(() => {
         fetchCategoryDetails();
         fetchTopics();
-    }, [fetchCategoryDetails, fetchTopics]);
+    }, []);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
