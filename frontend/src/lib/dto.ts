@@ -143,6 +143,13 @@ export type TopicDto = {
     messageCount: number;
 }
 
+export type PostDto = {
+    id: number;
+    content: string;
+    creationDate: string; // Use string for ISO date format
+    userDto: BasicUserDto;
+}
+
 
 
 
