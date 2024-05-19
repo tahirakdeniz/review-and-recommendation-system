@@ -1,106 +1,30 @@
 'use client'
 
-import {Avatar, Button, Card, Col, Form, Input, Modal, Pagination, Row, Space, message, Spin, Checkbox} from "antd";
-import { CloseCircleOutlined } from '@ant-design/icons';
-import Meta from "antd/es/card/Meta";
-import TextArea from "antd/es/input/TextArea";
-import { useEffect, useState } from "react";
+import {Avatar, Button, Card, Col, message, Pagination, Row, Spin} from "antd";
+import {CloseCircleOutlined} from '@ant-design/icons';
+import {useEffect, useState} from "react";
 import axios from 'axios';
-import { baseURL } from "@/lib/const";
-import {TopicDto, TopicPostDto} from "@/lib/dto";
-import {headers} from "next/headers"; // Make sure this import matches your type definitions
+import {baseURL} from "@/lib/const";
+import {PostDto, TopicDto} from "@/lib/dto";
+import {Roles} from "@/lib/enums";
+import {ForumTopicAddNewMessageModal} from "@/components/ForumTopicAddNewMessageModal";
 
 interface ForumTopicPageProps {
-    topicId: string
-}
-
-interface AddNewMessageModalProps {
-    isModalOpen: boolean;
-    setIsModalOpen: (open: boolean) => void;
     topicId: string;
-    refreshPosts: () => void;
 }
 
-const AddNewMessageModal: React.FC<AddNewMessageModalProps> = ({ isModalOpen, setIsModalOpen, topicId, refreshPosts }) => {
-    const [form] = Form.useForm();
-    const [loading, setLoading] = useState(false);
-    const [messageApi, contextHolder] = message.useMessage();
 
-    const handleOk = () => {
-        form.validateFields().then(addNewMessage).catch(info => {
-            console.log('Validate Failed:', info);
-        });
-    };
-
-    const addNewMessage = async (values: { content: string; isAnonymous: boolean }) => {
-        setLoading(true);
-        const accessToken = localStorage.getItem('accessToken');
-        try {
-            const response = await axios.post(`${baseURL}/posts`, {
-                content: values.content,
-                isAnonymous: values.isAnonymous,
-                topicId: topicId,
-            }, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                messageApi.success('Message posted successfully');
-                setIsModalOpen(false);
-                refreshPosts();
-                form.resetFields();
-            } else {
-                messageApi.error('Failed to post message');
-            }
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                messageApi.error(`Axios error: ${error.response?.data.message || error.message}`);
-            } else {
-                messageApi.error(`Runtime error: ${error}`);
-            }
-            console.error('Error posting message:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleCancel = () => {
-        setIsModalOpen(false);
-        form.resetFields();
-    }
-
-    return (
-        <Modal title="Write a Message" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} confirmLoading={loading}>
-            {contextHolder}
-            <Form form={form} layout="vertical">
-                <Form.Item
-                    label="Message"
-                    name="content"
-                    rules={[{ required: true, message: 'Please input the message content!' }]}
-                >
-                    <TextArea rows={12} />
-                </Form.Item>
-                <Form.Item
-                    name="isAnonymous"
-                    valuePropName="checked"
-                >
-                    <Checkbox>Post as Anonymous</Checkbox>
-                </Form.Item>
-            </Form>
-        </Modal>
-    );
-};
 
 const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [posts, setPosts] = useState<TopicPostDto[]>([]);
+    const [posts, setPosts] = useState<PostDto[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [topicTitle, setTopicTitle] = useState<string>("");
     const pageSize = 4;
+    const role = localStorage.getItem('role');
+    const username = localStorage.getItem('username');
 
     const showModal = () => {
         setIsModalOpen(true);
@@ -110,12 +34,11 @@ const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get<TopicPostDto[]>(`${baseURL}/posts/get/${topicId}`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-                    }
+            const response = await axios.get<PostDto[]>(`${baseURL}/posts/get/${topicId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
                 }
-            );
+            });
             setPosts(response.data);
         } catch (err) {
             if (axios.isAxiosError(err)) {
@@ -154,6 +77,32 @@ const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
         fetchTopicDetails();
     }, [topicId]);
 
+    const handleDeletePost = async (postId: number) => {
+        setLoading(true);
+        setError(null);
+        const accessToken = localStorage.getItem('accessToken');
+        const isAdminOrModerator = role === Roles.ADMIN || role === Roles.COMMUNITY_MODERATOR;
+        const url = isAdminOrModerator ? `${baseURL}/posts/admin/${postId}` : `${baseURL}/posts/${postId}`;
+        try {
+            await axios.delete(url, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+            message.success('Post deleted successfully');
+            fetchPosts();
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                message.error(`Axios error: ${error.response?.data.message || error.message}`);
+            } else {
+                message.error(`Runtime error: ${error}`);
+            }
+            console.error('Error deleting post:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
@@ -177,6 +126,9 @@ const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
                             <Button
                                 style={{ position: 'absolute', top: 8, right: 8, backgroundColor: 'transparent', border: 'none' }}
                                 icon={<CloseCircleOutlined style={{ color: 'red' }} />}
+                                onClick={() => handleDeletePost(post.id)}
+                                disabled={loading}
+                                hidden={!((role === Roles.ADMIN || role === Roles.COMMUNITY_MODERATOR) || post.userDto.username === username)}
                             />
                             <Row gutter={16}>
                                 <Col span={5}>
@@ -184,7 +136,7 @@ const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
                                         <Row>
                                             <div style={{ padding: 4, textAlign: 'center' }}>
                                                 <Avatar size={86} />
-                                                <p>{post.isAnonymous ? 'Anonymous' : post.userDto.username}</p>
+                                                <p>{post.userDto.username}</p>
                                                 <p>{new Date(post.creationDate).toLocaleDateString()}</p>
                                             </div>
                                         </Row>
@@ -209,7 +161,7 @@ const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
                     />
                 </div>
             </Card>
-            <AddNewMessageModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} topicId={topicId} refreshPosts={fetchPosts} />
+            <ForumTopicAddNewMessageModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} topicId={topicId} refreshPosts={fetchPosts} />
         </div>
     )
 }
