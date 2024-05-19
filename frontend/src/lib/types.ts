@@ -5,7 +5,7 @@ export interface UserInfo {
     avatar: string;
 }
 
-// types.ts
+// dto.ts
 export interface CarouselDataItem {
     image: string;
     thumbnail: string;

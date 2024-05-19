@@ -1,4 +1,4 @@
-import {ForumSection} from "@/app/components/ForumSection";
+import {ForumSection} from "@/components/ForumSection";
 
 export default function Forum(){
     return (

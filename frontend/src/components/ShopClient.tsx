@@ -5,7 +5,7 @@ import {useRouter, useSearchParams} from 'next/navigation'
 import ShopCategory from "@/components/ShopCategory";
 import axios from "axios";
 import {baseURL} from "@/lib/const";
-import {ProductDto} from "@/lib/entity/product";
+import {ProductDto} from "@/lib/dto";
 import ShopCategoryRecommendedProducts from "@/components/ShopCategoryRecommendedProducts";
 import {nameFormatter} from "@/lib/utils";
 

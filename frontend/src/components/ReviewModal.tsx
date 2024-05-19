@@ -1,5 +1,5 @@
 import { useImmer } from "use-immer";
-import { FieldScoreDto, ProductReviewReviewDto, ReviewFieldDto } from "@/lib/entity/product";
+import { FieldScoreDto, ProductReviewReviewDto, ReviewFieldDto } from "@/lib/dto";
 import { useState } from "react";
 import { Modal, Rate, Typography, message } from "antd";
 import TextArea from "antd/es/input/TextArea";

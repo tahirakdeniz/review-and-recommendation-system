@@ -1,0 +1,36 @@
+.scrollable-container {
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+/* Firefox */
+.scrollable-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 2px solid #f1f1f1;
+}
+
+/* Chrome, Edge, and Safari */
+.scrollable-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+    border: 2px solid #f1f1f1;
+}

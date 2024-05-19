@@ -1,6 +1,6 @@
 import ShopCategory from "@/components/ShopCategory";
 import {useEffect, useState} from "react";
-import {ProductDto} from "@/lib/entity/product";
+import {ProductDto} from "@/lib/dto";
 
 export default function ShopCategoryRecommendedProducts(){
     const [data, setData] = useState<ProductDto[]>([]);

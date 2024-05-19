@@ -1,82 +1,6 @@
-// RoleDto.ts
-export type RoleDto = {
-    id: number;
-    name: string;
-    authorityDtos: AuthorityDto[];
-};
+import {ProductDto} from "@/lib/dto";
 
-// AuthorityDto.ts
-export type AuthorityDto = {
-    id: number;
-    name: string;
-};
-
-// ReviewFieldDto.ts
-export type ReviewFieldDto = {
-    id: number;
-    label: string;
-    minScore: number;
-    maxScore: number;
-};
-
-// FieldScoreDto.ts
-export type FieldScoreDto = {
-    reviewFieldDto: ReviewFieldDto;
-    score: number;
-};
-
-// ReviewUserDto.ts
-export type ReviewUserDto = {
-    id: string;
-    username: string;
-    roleDto: RoleDto;
-};
-
-// ReviewReplyDto.ts
-export type ReviewReplyDto = {
-    id: number;
-    content: string;
-};
-
-// ProductReviewReviewDto.ts
-export type ProductReviewReviewDto = {
-    id: number;
-    userDto: ReviewUserDto;
-    fieldScoreDtos: FieldScoreDto[];
-    reviewReplyDto?: ReviewReplyDto;
-    comment: string;
-};
-
-// ProductReviewDto.ts
-export type ProductReviewDto = {
-    reviews: ProductReviewReviewDto[];
-    averageScore: number;
-    fieldAverageScore: Record<string, number>;
-};
-
-// BasicUserDto.ts
-export type BasicUserDto = {
-    id: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    role: RoleDto;
-};
-
-// ProductDto.ts
-export type ProductDto = {
-    id: number;
-    name: string;
-    description: string;
-    topicUserDto: BasicUserDto;
-    productCategoryName: string;
-    price: number;
-    photo: Uint8Array;  // Using Uint8Array for binary data
-    reviewDto: ProductReviewDto;
-};
-
-// Example instantiation
-export const productExample: ProductDto = {
+export const productDto: ProductDto = {
     id: 101,
     name: "Super Gadget",
     description: "The latest in gadget technology, offering unmatched performance.",
@@ -89,8 +13,8 @@ export const productExample: ProductDto = {
             id: 1,
             name: "Admin",
             authorityDtos: [
-                { id: 1, name: "Manage Products" },
-                { id: 2, name: "View Orders" }
+                {id: 1, name: "Manage Products"},
+                {id: 2, name: "View Orders"}
             ]
         }
     },
@@ -112,15 +36,15 @@ export const productExample: ProductDto = {
                 },
                 fieldScoreDtos: [
                     {
-                        reviewFieldDto: { id: 1, label: "Design", minScore: 1, maxScore: 10 },
+                        reviewFieldDto: {id: 1, label: "Design", minScore: 1, maxScore: 10},
                         score: 9
                     },
                     {
-                        reviewFieldDto: { id: 2, label: "Performance", minScore: 1, maxScore: 10 },
+                        reviewFieldDto: {id: 2, label: "Performance", minScore: 1, maxScore: 10},
                         score: 8
                     },
                     {
-                        reviewFieldDto: { id: 3, label: "Value for Money", minScore: 1, maxScore: 10 },
+                        reviewFieldDto: {id: 3, label: "Value for Money", minScore: 1, maxScore: 10},
                         score: 7
                     }
                 ],
@@ -143,15 +67,15 @@ export const productExample: ProductDto = {
                 },
                 fieldScoreDtos: [
                     {
-                        reviewFieldDto: { id: 1, label: "Design", minScore: 1, maxScore: 10 },
+                        reviewFieldDto: {id: 1, label: "Design", minScore: 1, maxScore: 10},
                         score: 8
                     },
                     {
-                        reviewFieldDto: { id: 2, label: "Performance", minScore: 1, maxScore: 10 },
+                        reviewFieldDto: {id: 2, label: "Performance", minScore: 1, maxScore: 10},
                         score: 9
                     },
                     {
-                        reviewFieldDto: { id: 3, label: "Value for Money", minScore: 1, maxScore: 10 },
+                        reviewFieldDto: {id: 3, label: "Value for Money", minScore: 1, maxScore: 10},
                         score: 8
                     }
                 ],
@@ -170,6 +94,3 @@ export const productExample: ProductDto = {
         }
     }
 };
-
-
-

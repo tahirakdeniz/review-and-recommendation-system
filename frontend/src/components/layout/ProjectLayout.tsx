@@ -16,11 +16,11 @@ export function ProjectLayout(props: { children: React.ReactNode }) {
                         {props.children}
                     </div>
                 </Layout.Content>
-                <Layout.Footer>
-                    <div className={'container mx-auto'}>
-                        <Footer/>
-                    </div>
-                </Layout.Footer>
+                {/*<Layout.Footer>*/}
+                {/*    <div className={'container mx-auto'}>*/}
+                {/*        <Footer/>*/}
+                {/*    </div>*/}
+                {/*</Layout.Footer>*/}
             </Layout>
         // </StyleProvider>
     );
