@@ -118,4 +118,7 @@ public class TopicService {
         return "Topic deleted successfully";
     }
 
+    public TopicDto getTopic(Long id) {
+        return TopicDto.convert(repository.getById(id));
+    }
 }
