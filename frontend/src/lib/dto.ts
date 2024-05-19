@@ -119,3 +119,30 @@ export interface ForumCategoryDto {
 
 
 
+
+export type TopicPostDto = {
+    id: number;
+    content: string;
+    creationDate: string; // Use string for ISO date format
+}
+
+export type TopicForumCategoryDto = {
+    id: number;
+    name: string;
+    description: string;
+}
+
+export type TopicDto = {
+    id: number;
+    title: string;
+    userDto: BasicUserDto;
+    creationDate: string; // Use string for ISO date format
+    postDtos: TopicPostDto[];
+    forumCategoryDto: TopicForumCategoryDto;
+    isAnonymous: boolean;
+    messageCount: number;
+}
+
+
+
+

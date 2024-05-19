@@ -120,7 +120,7 @@ export default function ForumSectionCategory({ title, subcategories, refreshCate
                     <Card key={index} type="inner" style={{ marginBottom: 5 }}>
                         <Row align="middle">
                             <Col span={1}><div style={{ fontSize: '24px' }}><CommentOutlined /></div></Col>
-                            <Col span={12}><Link href={"/forum/" + subcategory.name}><strong>{subcategory.name}</strong></Link></Col>
+                            <Col span={12}><Link href={"/forum/" + subcategory.id}><strong>{subcategory.name}</strong></Link></Col>
                             <Col span={4}><div>Topic: {subcategory.topicCount}</div></Col>
                             <Col span={4}><div>Messages: {subcategory.messageCount}</div></Col>
                             <Col span={3}>
