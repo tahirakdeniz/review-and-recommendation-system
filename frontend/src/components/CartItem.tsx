@@ -2,6 +2,7 @@ import {Badge, Button, Card, message, Rate} from 'antd';
 import {DeleteOutlined, PlusOutlined} from '@ant-design/icons';
 import {useDispatch} from "@/lib/redux/store";
 import {addProductToCart, removeProduct} from "@/lib/redux/features/cart/cartSlice";
+import { useRouter } from 'next/navigation';
 
 
 interface CartItemProps {
@@ -16,6 +17,11 @@ interface CartItemProps {
 export default function CartItem({name, image, rating, price, count, id}: CartItemProps) {
     const dispatch = useDispatch();
     const [messageApi, contextHolder] = message.useMessage();
+    const router = useRouter();
+
+    const stopPropagation = (e: React.MouseEvent) => {
+        e.stopPropagation();
+    };
 
     return (
         <Badge count={count}>
@@ -23,12 +29,14 @@ export default function CartItem({name, image, rating, price, count, id}: CartIt
             <Card
                 type="inner"
                 hoverable
+                onClick={() => router.push(`/shop/product/${id}`)}
                 style={{ width: '100%', textAlign: 'center' }}
                 cover={
                     <img alt={name} src={image} style={{ padding: '10px' }} />
                 }
                 actions={[
-                    <Button key='delete' type="primary" danger icon={<DeleteOutlined />} size="small" onClick={async () => {
+                    <Button key='delete' type="primary" danger icon={<DeleteOutlined />} size="small" onClick={async (e) => {
+                        stopPropagation(e);
                         if(id) {
                             const res = await dispatch(removeProduct(Number(id)))
                             if(res.meta.requestStatus == "fulfilled"){
@@ -36,7 +44,8 @@ export default function CartItem({name, image, rating, price, count, id}: CartIt
                             }
                         }
                     }}>Delete</Button>,
-                    <Button key='add' type="primary" icon={<PlusOutlined />} size="small" onClick={async () => {
+                    <Button key='add' type="primary" icon={<PlusOutlined />} size="small" onClick={async (e) => {
+                        stopPropagation(e);
                         if(id) {
                             const res = await dispatch(addProductToCart(id))
                             if(res.meta.requestStatus == "fulfilled"){
