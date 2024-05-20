@@ -9,13 +9,11 @@ import Link from "next/link";
 import axios from 'axios';
 import {baseURL} from "@/lib/const";
 import {TopicDto} from "@/lib/dto";
-import {Roles} from "@/lib/enums"; // Make sure this import matches your type definitions
+import {Roles} from "@/lib/enums";
 
 interface ForumCategoryPageProps {
     categoryId: string;
 }
-
- // Make sure this import matches your type definitions
 
 interface AddNewTopicModalProps {
     isModalOpen: boolean;
@@ -30,7 +28,12 @@ interface FormValues {
     isAnonymous: boolean;
 }
 
-const ForumCategoryPageAddNewTopicModal: React.FC<AddNewTopicModalProps> = ({ isModalOpen, setIsModalOpen, categoryId, refreshTopics }) => {
+const ForumCategoryPageAddNewTopicModal: React.FC<AddNewTopicModalProps> = ({
+                                                                                isModalOpen,
+                                                                                setIsModalOpen,
+                                                                                categoryId,
+                                                                                refreshTopics
+                                                                            }) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
@@ -82,22 +85,23 @@ const ForumCategoryPageAddNewTopicModal: React.FC<AddNewTopicModalProps> = ({ is
     }
 
     return (
-        <Modal title="Add New Topic" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} confirmLoading={loading}>
+        <Modal title="Add New Topic" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}
+               confirmLoading={loading}>
             {contextHolder}
             <Form form={form} layout="vertical">
                 <Form.Item
                     label="Topic Name"
                     name="title"
-                    rules={[{ required: true, message: 'Please input the topic title!' }]}
+                    rules={[{required: true, message: 'Please input the topic title!'}]}
                 >
-                    <Input />
+                    <Input/>
                 </Form.Item>
                 <Form.Item
                     label="Post"
                     name="post"
-                    rules={[{ required: true, message: 'Please input the first topic post!' }]}
+                    rules={[{required: true, message: 'Please input the first topic post!'}]}
                 >
-                    <TextArea rows={10} />
+                    <TextArea rows={10}/>
                 </Form.Item>
                 <Form.Item
                     name="isAnonymous"
@@ -110,7 +114,7 @@ const ForumCategoryPageAddNewTopicModal: React.FC<AddNewTopicModalProps> = ({ is
     );
 };
 
-const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({ categoryId }) => {
+const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [topics, setTopics] = useState<TopicDto[]>([]);
@@ -119,8 +123,11 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({ categoryId }) => 
     const [categoryTitle, setCategoryTitle] = useState<string>("");
     const pageSize = 4;
 
-    const isAdmin = localStorage.getItem('role') === Roles.ADMIN;
-    const isCommunityModerator = localStorage.getItem('role') === Roles.COMMUNITY_MODERATOR;
+    const role = localStorage.getItem('role');
+    const username = localStorage.getItem('username');
+
+    const isAdmin = role === Roles.ADMIN;
+    const isCommunityModerator = role === Roles.COMMUNITY_MODERATOR;
 
     const showModal = () => {
         setIsModalOpen(true);
@@ -130,9 +137,9 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({ categoryId }) => 
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`${baseURL}/forum-categories`, { // TODO add access token
+            const response = await axios.get(`${baseURL}/forum-categories`, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}` // Add this line
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
                 },
                 params: {
                     id: categoryId
@@ -167,10 +174,47 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({ categoryId }) => 
         }
     };
 
+    const handleDeleteTopic = async (topicId: number) => {
+        setLoading(true);
+        setError(null);
+        const accessToken = localStorage.getItem('accessToken');
+        const isAdminOrModerator = isAdmin || isCommunityModerator;
+        const url = isAdminOrModerator ? `${baseURL}/topics/admin/${topicId}` : `${baseURL}/topics/${topicId}`;
+        try {
+            await axios.delete(url, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+            message.success('Topic deleted successfully');
+            fetchTopics();
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                message.error(`Axios error: ${error.response?.data.message || error.message}`);
+            } else {
+                message.error(`Runtime error: ${error}`);
+            }
+            console.error('Error deleting topic:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const confirmDeleteTopic = (topicId: number) => {
+        Modal.confirm({
+            title: 'Are you sure you want to delete this topic?',
+            onOk: () => handleDeleteTopic(topicId),
+            okButtonProps: {danger: true},
+            okText: 'Yes, delete',
+            cancelText: 'Cancel',
+        });
+    };
+
+
     useEffect(() => {
         fetchCategoryDetails();
         fetchTopics();
-    }, []);
+    }, [categoryId]);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -182,45 +226,45 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({ categoryId }) => 
 
     return (
         <div>
-            <Card title={categoryTitle} style={{ height: 630 }} extra={
+            <Card title={categoryTitle} style={{height: 630}} extra={
                 <Button type="primary" onClick={showModal} disabled={loading}>Create New Topic</Button>}>
                 {loading ? (
                     <Spin tip="Loading...">
-                        <div style={{height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center' }} />
+                        <div style={{height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center'}}/>
                     </Spin>
                 ) : error ? (
-                    <div style={{ color: 'red', textAlign: 'center', marginTop: 20 }}>{error}</div>
+                    <div style={{color: 'red', textAlign: 'center', marginTop: 20}}>{error}</div>
                 ) : (
                     paginatedTopics.map((topic, index) => (
-                        <Card key={topic.id} style={{ marginBottom: 16 }}>
-
-                            {(isAdmin || isCommunityModerator) && <Button
-                                style={{
-                                    position: 'absolute',
-                                    top: 8,
-                                    right: 8,
-                                    backgroundColor: 'transparent',
-                                    border: 'none'
-                                }}
-                                icon={<CloseCircleOutlined style={{color: 'red'}}
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                }}
-                                />}
-                            />}
+                        <Card key={topic.id} style={{marginBottom: 16}}>
+                            {((isAdmin || isCommunityModerator) || topic.userDto.username === username) && (
+                                <Button
+                                    style={{
+                                        position: 'absolute',
+                                        top: 8,
+                                        right: 8,
+                                        backgroundColor: 'transparent',
+                                        border: 'none'
+                                    }}
+                                    icon={<CloseCircleOutlined style={{color: 'red'}}/>}
+                                    onClick={() => confirmDeleteTopic(topic.id)}
+                                    disabled={loading}
+                                />
+                            )}
                             <Row>
                                 <Col span={8}>
                                     <Meta
-                                        avatar={<Avatar src={`url-of-the-avatar-${topic.userDto.username}`} size={32} />}
+                                        avatar={<Avatar src={`url-of-the-avatar-${topic.userDto.username}`} size={32}/>}
                                         title={<strong>{topic.userDto.username}</strong>}
                                         description={topic.postDtos[0]?.content.length > 50 ? topic.postDtos[0]?.content.substring(0, 50) + "..." : topic.postDtos[0]?.content}
                                     />
                                 </Col>
                                 <Col span={8}>
-                                    <Link key={index} href={"/forum/topic/" + topic.id}><p><strong>{topic.title}</strong></p></Link>
+                                    <Link key={index} href={"/forum/topic/" + topic.id}><p>
+                                        <strong>{topic.title}</strong></p></Link>
                                 </Col>
                                 <Col span={4}>
-                                    <p>Messages: {topic.messageCount}</p> {/* Replace topic.id with actual message count if available */}
+                                    <p>Messages: {topic.messageCount}</p>
                                 </Col>
                                 <Col span={4}>
                                     <p>{new Date(topic.creationDate).toLocaleDateString()}</p>
@@ -229,7 +273,7 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({ categoryId }) => 
                         </Card>
                     ))
                 )}
-                <div style={{ position: 'absolute', right: 32, bottom: 32 }}>
+                <div style={{position: 'absolute', right: 32, bottom: 32}}>
                     <Pagination
                         current={currentPage}
                         pageSize={pageSize}
@@ -238,12 +282,10 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({ categoryId }) => 
                     />
                 </div>
             </Card>
-            <ForumCategoryPageAddNewTopicModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} categoryId={categoryId} refreshTopics={fetchTopics} />
+            <ForumCategoryPageAddNewTopicModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}
+                                               categoryId={categoryId} refreshTopics={fetchTopics}/>
         </div>
     )
 }
 
-export default ForumCategoryPage
-
-
-
+export default ForumCategoryPage;
