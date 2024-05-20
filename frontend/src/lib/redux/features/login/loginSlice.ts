@@ -3,6 +3,7 @@ import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import axios, {AxiosError} from 'axios';
 import {baseURL} from "@/lib/const";
 import {ErrorResponse} from "@/lib/types";
+import {messageFormatter} from "@/lib/utils";
 
 interface LoginState {
     role: string;
@@ -36,7 +37,8 @@ export const loginUser = createAsyncThunk(
                 const serverError = error as AxiosError<ErrorResponse>;
                 if (serverError && serverError.response) {
                     const value = serverError.response.data
-                    return rejectWithValue(value || "Undefined Server Error");
+                    const errorMessages = value.errors.map((error) => messageFormatter(error.message)).join(", ")
+                    return rejectWithValue(errorMessages || "Undefined Server Error");
                 } else {
                     return rejectWithValue("An unknown error occurred");
                 }
