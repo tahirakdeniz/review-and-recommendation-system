@@ -1,10 +1,13 @@
 import {ProductDto} from "@/lib/dto";
 import {Card, Col, Empty, Image, message, Row, Tooltip} from "antd";
 import {HeartOutlined, ShoppingCartOutlined} from "@ant-design/icons";
-import React from "react";
+import React, { useEffect } from "react";
 import {nameFormatter} from "@/lib/utils";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
+import { RootState, useDispatch } from "@/lib/redux/store";
+import { useSelector } from "react-redux";
+import {addProductToCart} from "@/lib/redux/features/cart/cartSlice";
 
 type ShopCategoryProps = {
     title: string;
@@ -15,7 +18,9 @@ type ShopCategoryProps = {
 
 export default function ShopCategory({title, data, categoryName, full = false} :ShopCategoryProps){
     const [messageApi, contextHolder] = message.useMessage();
+    const {loading: addToCartLoading, error: addToCartError} = useSelector((state: RootState) => state.cart);
     const router = useRouter();
+    const dispatch = useDispatch();
 
     const stopPropagation = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -23,6 +28,19 @@ export default function ShopCategory({title, data, categoryName, full = false} :
 
     const displayedData = full ? data : data.slice(0, 6);
     const categoryTargetLabel = `/shop?category=${categoryName}`
+
+    async function handleAddToCart(productId:number) {
+        const res = await dispatch(addProductToCart(productId));
+        if (res.meta.requestStatus === 'fulfilled') {
+            message.success('Product added to cart successfully');
+        }
+    }
+
+    useEffect(() => {
+        if (addToCartError) {
+            message.error('Failed to add product to cart');
+        }
+    }, [addToCartError]);
 
     return (
         <>
@@ -56,7 +74,7 @@ export default function ShopCategory({title, data, categoryName, full = false} :
                                         <ShoppingCartOutlined
                                             onClick={(e) => {
                                                 stopPropagation(e);
-                                                messageApi.success("Added to Cart Successfully");
+                                                handleAddToCart(item.id)
                                             }}
                                         />
                                     </Tooltip>,
