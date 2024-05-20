@@ -102,7 +102,7 @@ const Navbar = () => {
                         <Button shape="circle" icon={<PoweroffOutlined />} size={'large'} onClick={() => logOut()}/>
                     </Tooltip>)}
                     <Tooltip title="Wishlist">
-                        <Button shape="circle" icon={<HeartOutlined/>} size={'large'} />
+                        <Button shape="circle" icon={<HeartOutlined/>} size={'large'} onClick={() => router.push('/wishlist')}/>
                     </Tooltip>
                     <Tooltip title="Shopping Cart">
                         <Button shape="circle" icon={<ShoppingCartOutlined/>} onClick={() => router.push('/cart')} size={'large'} />

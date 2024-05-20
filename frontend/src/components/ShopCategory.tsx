@@ -5,6 +5,8 @@ import React from "react";
 import {nameFormatter} from "@/lib/utils";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
+import {useDispatch} from "@/lib/redux/store";
+import {addProductToWishlist} from "@/lib/redux/features/wishlist/wishlistSlice";
 
 type ShopCategoryProps = {
     title: string;
@@ -15,6 +17,7 @@ type ShopCategoryProps = {
 
 export default function ShopCategory({title, data, categoryName, full = false} :ShopCategoryProps){
     const [messageApi, contextHolder] = message.useMessage();
+    const dispatch = useDispatch();
     const router = useRouter();
 
     const stopPropagation = (e: React.MouseEvent) => {
@@ -23,6 +26,26 @@ export default function ShopCategory({title, data, categoryName, full = false} :
 
     const displayedData = full ? data : data.slice(0, 6);
     const categoryTargetLabel = `/shop?category=${categoryName}`
+
+    const addToCart = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+
+    }
+
+    const addToWishlist = async (e: React.MouseEvent, productId: number) => {
+        e.stopPropagation();
+        try {
+            const res = await dispatch(addProductToWishlist({productId}));
+            if (res.meta.requestStatus === 'fulfilled') {
+                messageApi.success("Added to Wishlist Successfully");
+            } else {
+                messageApi.error(`Failed to add to Wishlist: ${res.payload}`);
+            }
+        } catch (error) {
+            messageApi.error("Failed to add to Wishlist");
+        }
+    }
+
 
     return (
         <>
@@ -62,12 +85,10 @@ export default function ShopCategory({title, data, categoryName, full = false} :
                                     </Tooltip>,
                                     <Tooltip title="Add to Wishlist" key="wishlist">
                                         <HeartOutlined
-                                            onClick={(e) => {
-                                                stopPropagation(e);
-                                                messageApi.success("Added to Wishlist Successfully");
-                                            }}
+                                            onClick={(e) => addToWishlist(e, item.id)} // Call addToWishlist function
                                         />
-                                    </Tooltip>,
+                                    </Tooltip>
+
                                 ]}
                                 hoverable
                                 onClick={() => router.push(`/shop/product/${item.id}`)} // TODO if no child that has on click, run this.
