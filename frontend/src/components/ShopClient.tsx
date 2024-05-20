@@ -135,6 +135,7 @@ const ShopClient: React.FC = () => {
                         title={nameFormatter(categoryItem.name)}
                         data={categoryItem.products}
                         full={showFull}
+                        categoryName={categoryItem.name}
                     />
                 );
             })}
