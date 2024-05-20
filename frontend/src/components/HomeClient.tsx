@@ -23,7 +23,7 @@ export default function Home() {
     ];
 
     const adminMenus = [
-        { key: 'admin', label: 'Admin', description: 'Manage users, products, and other site content.', link: '/administator'},
+        { key: 'admin', label: 'Admin', description: 'Manage users, products, and other site content.', link: '/administration'},
     ]
 
     return (
@@ -68,7 +68,7 @@ export default function Home() {
                         renderItem={(item, index) => (
                             <List.Item>
                                 <List.Item.Meta
-                                    title={<a href="https://ant.design">{item.label}</a>}
+                                    title={<Link href={item.link}>{item.label}</Link>}
                                     description={item.description}
                                 />
                             </List.Item>
@@ -84,7 +84,7 @@ export default function Home() {
                         renderItem={(item, index) => (
                             <List.Item>
                                 <List.Item.Meta
-                                    title={<a href="https://ant.design">{item.label}</a>}
+                                    title={<Link href={item.link}>{item.label}</Link>}
                                     description={item.description}
                                 />
                             </List.Item>

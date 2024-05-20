@@ -16,6 +16,7 @@ import {usePathname, useRouter} from "next/navigation";
 import {RootState, useDispatch} from "@/lib/redux/store";
 import {fetchUser} from "@/lib/redux/features/user/userSlice";
 import {useSelector} from "react-redux";
+import {Roles} from "@/lib/enums";
 
 
 const defaultAvatar = '/path/to/default/avatar.jpg'; // Path to your default avatar image
@@ -28,13 +29,15 @@ const user = {
 
 const Navbar = () => {
     const dispatch = useDispatch();
-    const accessToken = localStorage.getItem('accessToken');
-    const role = localStorage.getItem('role');
     const pathname = usePathname();
-    const {user} = useSelector((state: RootState) => state.user);
+    const {user, error} = useSelector((state: RootState) => state.user);
     const router = useRouter();
     const [search, setSearch] = useState('');
 
+    const accessToken = localStorage.getItem('accessToken');
+    const role = user?.role;
+    const firstPath = pathname.split('/')[1];
+    const hasLoggedIn = accessToken!==null && user!==null;
 
     useEffect(() => {
         dispatch(fetchUser())
@@ -61,28 +64,28 @@ const Navbar = () => {
                 />
             </div>
             <div>
-                <Menu mode="horizontal" selectedKeys={[pathname]} className={'bg-inherit'}>
-                    <Menu.Item key="/forum" icon={<FormOutlined />}>
+                <Menu mode="horizontal" selectedKeys={[firstPath]} className={'bg-inherit'}>
+                    <Menu.Item key="forum" icon={<FormOutlined />}>
                         <Link href="/forum">Forum</Link>
                     </Menu.Item>
-                    <Menu.Item key="/shop" icon={<ShopOutlined />}>
+                    <Menu.Item key="shop" icon={<ShopOutlined />}>
                         <Link href="/shop">Shop</Link>
                     </Menu.Item>
                     {/*<Menu.Item key="/scshop" icon={<ShopOutlined />}>*/}
                     {/*    <Link href="/scshop">SC Shop</Link>*/}
                     {/*</Menu.Item>*/}
-                    <Menu.Item key="/account" icon={<UserOutlined />}>
+                    <Menu.Item key="account" icon={<UserOutlined />}>
                         <Link href="/account">Profile</Link>
                     </Menu.Item>
-                    {role == 'MERCHANT' && <Menu.Item key="/merchant" icon={<ShoppingCartOutlined/>}>
+                    {role == Roles.COMMUNITY_MODERATOR && <Menu.Item key="merchant" icon={<ShoppingCartOutlined/>}>
                         <Link href="/merchant">My Products</Link>
                     </Menu.Item>}
-                    {role == 'ADMINISTRATION' && <Menu.Item key="/administration" icon={<SettingOutlined/>}> {/*TODO check role for administraion*/}
+                    {role == Roles.ADMIN && <Menu.Item key="administration" icon={<SettingOutlined/>}>
                         <Link href="/administration">Administrator</Link>
                     </Menu.Item>}
                 </Menu>
             </div>
-            {accessToken ?
+            {hasLoggedIn ?
                 (<div className={'flex-auto'}>
                     {/*<Avatar size={32} icon={<UserOutlined/>}*/}
                     <span style={{marginLeft: '8px'}}>{user?.firstName} {user?.lastName}</span>
@@ -95,7 +98,7 @@ const Navbar = () => {
 
             <div className={'h-17 grid content-center'}>
                 <Flex wrap="wrap" gap="middle">
-                    {accessToken && (<Tooltip title="Log Out">
+                    {hasLoggedIn && (<Tooltip title="Log Out">
                         <Button shape="circle" icon={<PoweroffOutlined />} size={'large'} onClick={() => logOut()}/>
                     </Tooltip>)}
                     <Tooltip title="Wishlist">
