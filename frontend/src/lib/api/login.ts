@@ -2,10 +2,6 @@ interface Login {
 
 }
 
-interface LoginParams {
-
-}
-
 
 
 

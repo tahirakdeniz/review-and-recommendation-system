@@ -1,5 +1,5 @@
-import { List, Rate } from 'antd';
-import { Comment } from '@ant-design/compatible';
+import {List} from 'antd';
+import {Comment} from '@ant-design/compatible';
 
 interface Review {
     author: string;

@@ -1,10 +1,10 @@
 'use client';
 import ProductPage from "@/components/ProductPage";
-import { baseURL } from "@/lib/const";
-import { ProductDto } from "@/lib/dto";
-import { useEffect, useState } from "react";
+import {baseURL} from "@/lib/const";
+import {ProductDto} from "@/lib/dto";
+import {useEffect, useState} from "react";
 import axios from "axios";
-import {Skeleton, message, Spin} from "antd";
+import {Spin} from "antd";
 
 interface ProductProps {
     params: { productId: string };

@@ -1,7 +1,6 @@
 'use client';
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import axios from 'axios';
-import {act} from "react-dom/test-utils";
 
 export interface Product {
     id?: string;
@@ -31,7 +30,7 @@ const initialState: ProductsState = {
     error: null
 };
 
-export const fetchProducts = createAsyncThunk<Product[]>('products/fetchProducts', async (_, { rejectWithValue }) => {
+export const fetchProducts = createAsyncThunk<Product[]>('products/fetchProducts', async (_, {rejectWithValue}) => {
     try {
         const token = localStorage.getItem('accessToken');
         if (!token) {
@@ -54,12 +53,11 @@ export const fetchProducts = createAsyncThunk<Product[]>('products/fetchProducts
     }
 });
 
-export const addProduct = createAsyncThunk<Product, Partial<Product>>('products/addProduct', async (productData, { rejectWithValue }) => {
+export const addProduct = createAsyncThunk<Product, Partial<Product>>('products/addProduct', async (productData, {rejectWithValue}) => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
         return rejectWithValue('No access token found');
     }
-
 
 
     if (productData.name && productData.description && productData.productCategoryName && productData.price) {
@@ -90,12 +88,12 @@ export const addProduct = createAsyncThunk<Product, Partial<Product>>('products/
     }
 });
 
-export const updateProduct = createAsyncThunk<Product, Product>('products/updateProduct', async (productData, { rejectWithValue }) => {
+export const updateProduct = createAsyncThunk<Product, Product>('products/updateProduct', async (productData, {rejectWithValue}) => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
         return rejectWithValue('No access token found');
     }
-    
+
     const response = axios.put
     // const formData = new FormData();
     // if (productData.name && productData.description && productData.productCategoryName && productData.price) {
@@ -142,10 +140,9 @@ export const updateProduct = createAsyncThunk<Product, Product>('products/update
 });
 
 
-
 export const deleteProduct = createAsyncThunk(
     'products/deleteProduct',
-    async (productId: string, { rejectWithValue }) => {
+    async (productId: string, {rejectWithValue}) => {
         try {
             const token = localStorage.getItem('accessToken');
             if (!token) {
@@ -251,7 +248,13 @@ const productsSlice = createSlice({
     }
 });
 
-export const { setProductField, clearEditingProduct, setEditingProduct, setNewModalOpen, setEditModalOpen} = productsSlice.actions;
+export const {
+    setProductField,
+    clearEditingProduct,
+    setEditingProduct,
+    setNewModalOpen,
+    setEditModalOpen
+} = productsSlice.actions;
 export default productsSlice.reducer;
 
 

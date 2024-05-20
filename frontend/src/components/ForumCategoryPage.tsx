@@ -1,14 +1,14 @@
 'use client'
 
-import {Avatar, Button, Card, Col, Modal, Pagination, Row, Space, message, Spin, Input, Form, Checkbox} from "antd";
-import { CloseCircleOutlined } from '@ant-design/icons';
+import {Avatar, Button, Card, Checkbox, Col, Form, Input, message, Modal, Pagination, Row, Spin} from "antd";
+import {CloseCircleOutlined} from '@ant-design/icons';
 import Meta from "antd/es/card/Meta";
 import TextArea from "antd/es/input/TextArea";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
 import axios from 'axios';
-import { baseURL } from "@/lib/const";
-import {ForumCategoryTopicDto, TopicDto, TopicForumCategoryDto} from "@/lib/dto";
+import {baseURL} from "@/lib/const";
+import {TopicDto} from "@/lib/dto";
 import {Roles} from "@/lib/enums"; // Make sure this import matches your type definitions
 
 interface ForumCategoryPageProps {

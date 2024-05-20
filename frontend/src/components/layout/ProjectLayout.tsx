@@ -1,7 +1,6 @@
 'use client'
-import {Card, Layout} from "antd";
+import {Layout} from "antd";
 import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 
 
 export function ProjectLayout(props: { children: React.ReactNode }) {

@@ -3,14 +3,11 @@
 import {Button, Card, Col, Empty, message, Modal, Row} from "antd";
 import CartItem from "@/components/CartItem";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
-import {useGetCartItemsQuery} from "@/lib/redux/features/cart/cartApi";
 import {useEffect, useState} from "react";
 import {RootState, useDispatch} from "@/lib/redux/store";
 import {buyProduct, fetchCart} from "@/lib/redux/features/cart/cartSlice";
 import {useSelector} from "react-redux";
-import {Product} from "@/lib/types";
 import {ICartItem} from "@/lib/entity/CartItem";
-import {Simulate} from "react-dom/test-utils";
 
 
 export default function CartSection(){

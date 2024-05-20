@@ -1,7 +1,7 @@
-import { Select, message } from "antd";
-import { useState, useEffect } from "react";
+import {message, Select} from "antd";
+import {useEffect, useState} from "react";
 import axios from "axios";
-import { baseURL } from "@/lib/const";
+import {baseURL} from "@/lib/const";
 
 interface MerchantProductCategoryProps {
     onChange: (value: string) => void;

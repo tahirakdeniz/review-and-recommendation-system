@@ -1,5 +1,5 @@
 'use client';
-import { Carousel } from 'antd';
+import {Carousel} from 'antd';
 
 const FeaturedCarousel = () => (
     <Carousel autoplay className={'-mt-4'}>

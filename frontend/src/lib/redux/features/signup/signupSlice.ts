@@ -1,6 +1,6 @@
 'use client'
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SignupState, IUserRegistrationData } from '@/lib/types';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {IUserRegistrationData, SignupState} from '@/lib/types';
 import {confirmUser, registerUser} from "@/lib/redux/features/signup/signupThunks";
 
 const initialState: SignupState = {

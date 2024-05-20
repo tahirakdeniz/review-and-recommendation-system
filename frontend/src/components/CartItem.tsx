@@ -1,4 +1,4 @@
-import {Card, Rate, Button, Badge, message} from 'antd';
+import {Badge, Button, Card, message, Rate} from 'antd';
 import {DeleteOutlined, PlusOutlined} from '@ant-design/icons';
 import {useDispatch} from "@/lib/redux/store";
 import {addProductToCart, removeProduct} from "@/lib/redux/features/cart/cartSlice";

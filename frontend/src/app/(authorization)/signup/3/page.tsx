@@ -1,14 +1,13 @@
 'use client';
 import React, {useEffect} from "react";
-import {Button, Form, GetProp, Input, message} from "antd";
+import {Button, Form, Input, message} from "antd";
 import SignupFormHeader from "@/components/SignupFormHeader";
 import SignupStepper from "@/components/SignupStepper";
 import {useSelector} from "react-redux";
 import {RootState, useDispatch} from "@/lib/redux/store";
 import {useRouter} from "next/navigation";
-import {resetSignup, setFields} from "@/lib/redux/features/signup/signupSlice";
+import {setFields} from "@/lib/redux/features/signup/signupSlice";
 import {confirmUser, registerUser} from "@/lib/redux/features/signup/signupThunks";
-import {loginUser} from "@/lib/redux/features/login/loginSlice";
 
 const OTPInputLength = 6;
 

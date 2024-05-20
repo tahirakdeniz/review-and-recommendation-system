@@ -1,6 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
-import {Card, Button, Typography, Divider, List, Flex, Space} from 'antd';
+import {Button, Card, Divider, Flex, List, Typography} from 'antd';
 import {useRouter} from "next/navigation";
 import {useSelector} from "react-redux";
 import {RootState} from "@/lib/redux/store";

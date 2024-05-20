@@ -1,8 +1,7 @@
 'use client';
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import axios, { AxiosError } from 'axios';
-import { RootState } from '@/lib/redux/store';
-import { baseURL } from "@/lib/const";
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import axios, {AxiosError} from 'axios';
+import {baseURL} from "@/lib/const";
 import {ErrorResponse} from "@/lib/types";
 
 interface LoginState {

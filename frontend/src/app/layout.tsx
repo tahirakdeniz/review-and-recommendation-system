@@ -1,9 +1,6 @@
 import type {Metadata} from "next";
 import {AntdRegistry} from "@ant-design/nextjs-registry";
-import {StyleProvider} from '@ant-design/cssinjs';
-import {ProjectLayout} from "@/components/layout/ProjectLayout";
 import './globals.css'
-import Head from "next/head";
 import {ConfigProvider} from "antd";
 import {theme} from "@/lib/theme";
 import ReduxProvider from "@/components/Redux/ReduxProvider";

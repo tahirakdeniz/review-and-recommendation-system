@@ -1,12 +1,6 @@
 import React from 'react';
-import {Button, Dropdown, Menu, message, Space} from 'antd';
-import {
-    MailOutlined,
-    AppstoreOutlined,
-    SettingOutlined,
-    UserOutlined,
-    GlobalOutlined, DownOutlined,
-} from '@ant-design/icons';
+import {Button, Dropdown, message, Space} from 'antd';
+import {DownOutlined, UserOutlined,} from '@ant-design/icons';
 import {MenuProps} from "antd/lib";
 
 // Define the items using the structure required by Ant Design 5.15.3

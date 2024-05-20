@@ -1,6 +1,6 @@
 'use client'
 
-import {Button, GetProp, Input, message, Modal, Rate, Space, Table, TableColumnType, Upload} from "antd";
+import {Button, Input, message, Modal, Space, Table, TableColumnType} from "antd";
 import {DeleteOutlined, EditOutlined, EyeOutlined, LoadingOutlined, PlusOutlined} from "@ant-design/icons";
 import {useEffect, useState} from "react";
 import {RootState, useDispatch} from "@/lib/redux/store";
@@ -8,14 +8,17 @@ import {
     addProduct,
     deleteProduct,
     fetchProducts,
-    Product, setEditingProduct, setEditModalOpen, setNewModalOpen, updateProduct
+    Product,
+    setEditingProduct,
+    setEditModalOpen,
+    setNewModalOpen,
+    updateProduct
 } from "@/lib/redux/features/productManagment/productManagmentSlice";
 import {useSelector} from "react-redux";
 import TextArea from "antd/es/input/TextArea";
 import {useRouter} from "next/navigation";
 import {UploadChangeParam} from "antd/es/upload";
 import {MerchantProductCategorySelect} from "@/components/MerchantProductCategory";
-import {setStep} from "@/lib/redux/features/signup/signupSlice";
 
 type FileType = File;
 

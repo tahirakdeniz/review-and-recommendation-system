@@ -1,14 +1,13 @@
 'use client';
-import { Form, Input, Button, Checkbox, Typography, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import {Button, Form, Input, message, Typography} from 'antd';
+import {LockOutlined, UserOutlined} from '@ant-design/icons';
 import Image from "next/image";
 import Coffee from "@/assets/images/coffee1.svg";
 import {useSelector} from 'react-redux';
-import { loginUser, clearError } from '@/lib/redux/features/login/loginSlice';
+import {loginUser} from '@/lib/redux/features/login/loginSlice';
 import {RootState, useDispatch} from '@/lib/redux/store';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import {setStep} from "@/lib/redux/features/signup/signupSlice";
+import {useEffect} from 'react';
+import {useRouter} from 'next/navigation';
 
 const { Title, Text } = Typography;
 

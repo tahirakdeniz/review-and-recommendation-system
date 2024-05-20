@@ -93,7 +93,7 @@ const ShopClient: React.FC = () => {
 
         if(selectedCategory) {
             queryParams.append('category', selectedCategory);
-        };
+        }
 
         const url = `/shop?${queryParams.toString()}`;
 

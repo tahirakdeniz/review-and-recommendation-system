@@ -1,7 +1,6 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios, { AxiosError } from 'axios';
-import { registerSuccess} from './signupSlice';
-import { baseURL } from "@/lib/const";
+import {createAsyncThunk} from '@reduxjs/toolkit';
+import axios, {AxiosError} from 'axios';
+import {baseURL} from "@/lib/const";
 import {RootState} from "@/lib/redux/store";
 import {ErrorResponse} from "@/lib/types";
 

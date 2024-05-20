@@ -1,7 +1,6 @@
 import React from "react";
 import ImageSide from "@/components/ImageSide";
 import cafeImage from "@/assets/images/cafe.png";
-import LoginForm from "@/components/LoginForm";
 
 export default function Layout({children} : {children: React.ReactNode}){
     return (

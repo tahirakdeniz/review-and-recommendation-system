@@ -1,10 +1,6 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import { cartApi } from './cartApi';
 import {ICartItem} from "@/lib/entity/CartItem";
 import axios from "axios";
-import {
-    Product,
-} from "@/lib/redux/features/productManagment/productManagmentSlice";
 
 interface CartState {
     cart: Cart | null;

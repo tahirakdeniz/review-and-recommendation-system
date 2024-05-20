@@ -1,13 +1,11 @@
 'use client';
 import React, {useEffect, useState} from 'react';
-import {Modal, Form, Input, Upload, Button, message, DatePicker} from 'antd';
-import { UserInfo } from '@/lib/types';
-import { UploadChangeParam } from 'antd/es/upload';
-import { PlusOutlined } from '@ant-design/icons';
+import {Button, Form, Input, message, Modal} from 'antd';
+import {UserInfo} from '@/lib/types';
+import {UploadChangeParam} from 'antd/es/upload';
 import {RootState, useDispatch} from "@/lib/redux/store";
 import {useSelector} from "react-redux";
-import {updateUser, User} from "@/lib/redux/features/user/userSlice";
-import {setStep} from "@/lib/redux/features/signup/signupSlice";
+import {updateUser} from "@/lib/redux/features/user/userSlice";
 
 interface EditProfileModalProps {
   isModalVisible: boolean;

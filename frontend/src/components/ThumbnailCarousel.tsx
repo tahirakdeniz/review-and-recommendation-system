@@ -1,6 +1,6 @@
 // ThumbnailCarousel.tsx
 'use client';
-import { Carousel } from 'antd';
+import {Carousel} from 'antd';
 import {CarouselDataItem} from "@/lib/types";
 
 interface ThumbnailCarouselProps {

@@ -1,5 +1,5 @@
 'use client';
-import { configureStore } from '@reduxjs/toolkit';
+import {configureStore} from '@reduxjs/toolkit';
 import {cartApi} from "@/lib/redux/features/cart/cartApi";
 import cartReducer from "@/lib/redux/features/cart/cartSlice";
 import signupReducer from "@/lib/redux/features/signup/signupSlice";

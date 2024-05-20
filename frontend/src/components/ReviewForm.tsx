@@ -1,4 +1,4 @@
-import { Form, Input, Button, Rate } from 'antd';
+import {Button, Form, Input, Rate} from 'antd';
 
 const ReviewForm = () => {
     const onFinish = (values:any) => { // TODO replace any with the correct type

@@ -1,7 +1,5 @@
-import ProductCard from './ProductCard';
 import {Product} from "@/lib/types";
 import {Carousel} from "antd";
-import CustomCarousel from "@/components/CustomCarousel";
 
 export const ProductCarousel = () => {
     const products: Product[] = [

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import {useState} from 'react';
 import FeaturedCarousel from './FeaturedCarousel';
 import ThumbnailCarousel from './ThumbnailCarousel';
 import {CarouselDataItem} from "@/lib/types";

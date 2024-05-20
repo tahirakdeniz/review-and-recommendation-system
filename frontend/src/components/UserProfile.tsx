@@ -1,11 +1,11 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { useSelector, } from 'react-redux';
-import {Card, Avatar, Button, Row, Col, message, List, Space, Badge} from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+import React, {useEffect, useState} from 'react';
+import {useSelector,} from 'react-redux';
+import {Badge, Button, Card, Col, List, message, Row, Space} from 'antd';
+import {EditOutlined} from '@ant-design/icons';
 import EditProfileModal from './EditProfileModal';
-import {fetchUser, updateUser, deleteUser, User} from '@/lib/redux/features/user/userSlice'; // Correct path
-import { RootState, useDispatch } from '@/lib/redux/store'; // Assuming RootState correctly reflects store structure
+import {deleteUser, fetchUser, updateUser, User} from '@/lib/redux/features/user/userSlice'; // Correct path
+import {RootState, useDispatch} from '@/lib/redux/store'; // Assuming RootState correctly reflects store structure
 
 
 const UserProfilePage: React.FC = () => {

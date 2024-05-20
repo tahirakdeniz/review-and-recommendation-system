@@ -1,4 +1,4 @@
-import { Card } from 'antd';
+import {Card} from 'antd';
 import {Product} from "@/lib/types";
 
 

@@ -2,8 +2,8 @@
 
 import React, {useEffect, useState} from "react";
 import SignupFormHeader from "@/components/SignupFormHeader";
-import {Form, Input, Button, Checkbox} from "antd";
-import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
+import {Button, Checkbox, Form, Input} from "antd";
+import {LockOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import SignupStepper from "@/components/SignupStepper";
 import {useDispatch, useSelector} from "react-redux";
 import {setFields, setStep} from "@/lib/redux/features/signup/signupSlice";

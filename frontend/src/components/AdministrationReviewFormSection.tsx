@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Button, Card, Col, Modal, Row, Typography, Form, Input } from "antd";
-import { reviewFormDtosExample } from "@/lib/examples/reviewFormDtosExample";
+import React, {useState} from "react";
+import {Button, Card, Col, Form, Input, Modal, Row, Typography} from "antd";
+import {reviewFormDtosExample} from "@/lib/examples/reviewFormDtosExample";
 import AdministrationReviewForm from "@/components/AdministrationReviewForm";
 import "@/styles/ReviewFields.css";
-import { ReviewFormDto } from "@/lib/dto";
-import { useImmer } from "use-immer";
+import {ReviewFormDto} from "@/lib/dto";
+import {useImmer} from "use-immer";
 
 export const AdministrationReviewFormSection = () => {
     const [reviewFormDtos, setReviewFormDtos] = useImmer<ReviewFormDto[]>([]);

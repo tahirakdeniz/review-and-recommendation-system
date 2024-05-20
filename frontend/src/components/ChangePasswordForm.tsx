@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Form, Input, Button, message } from 'antd';
+import {Button, Form, Input, message} from 'antd';
 
 const ChangePasswordForm: React.FC = () => {
   const onFinish = (values: any) => {

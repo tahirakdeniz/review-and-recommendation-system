@@ -1,5 +1,5 @@
 import {ProductDto} from "@/lib/dto";
-import {Button, Card, Carousel, Col, Empty, Grid, Image, message, Row, Tooltip, Typography} from "antd";
+import {Card, Col, Empty, Image, message, Row, Tooltip} from "antd";
 import {HeartOutlined, ShoppingCartOutlined} from "@ant-design/icons";
 import React from "react";
 import {nameFormatter} from "@/lib/utils";

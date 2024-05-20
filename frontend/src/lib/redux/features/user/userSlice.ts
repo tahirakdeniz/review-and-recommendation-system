@@ -1,9 +1,8 @@
 'use client';
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import axios, {AxiosError} from 'axios';
 import {ErrorResponse} from "@/lib/types";
 import {Product} from "@/lib/redux/features/productManagment/productManagmentSlice";
-import {step} from "next/dist/experimental/testmode/playwright/step";
 
 
 export interface User {
@@ -129,7 +128,7 @@ export const deleteUser = createAsyncThunk(
                 }
             } else {
                 return rejectWithValue("An error occurred that wasn't an Axios error");
-            };
+            }
         }
     }
 );

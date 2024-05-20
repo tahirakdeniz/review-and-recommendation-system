@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Coffee from "@/assets/images/coffee1.svg";
 import {Typography} from "antd";
+
 const { Title , Text} = Typography;
 export default function SignupFormHeader(){
     return (

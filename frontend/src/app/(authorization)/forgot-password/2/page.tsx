@@ -1,16 +1,14 @@
 'use client';
 
 import React from 'react';
-import {Form, Input, Button, message} from 'antd';
-import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/navigation';
+import {Button, Form, Input, message, Typography} from 'antd';
+import {LockOutlined} from '@ant-design/icons';
+import {useRouter} from 'next/navigation';
 import Image from "next/image";
 import Coffee from "@/assets/images/coffee1.svg";
-import { Typography } from "antd";
-import ImageSide from "@/components/ImageSide";
-import cafeImage from "@/assets/images/cafe.png";
 import axios from "axios";
 import {baseURL} from "@/lib/const";
+
 const { Title, Text } = Typography;
 
 // Define an interface for the form data

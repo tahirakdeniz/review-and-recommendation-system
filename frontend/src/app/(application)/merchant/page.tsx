@@ -1,4 +1,3 @@
-
 import MerchantProductTable from "@/components/MerchantProductTable";
 
 export default function Merchant(){

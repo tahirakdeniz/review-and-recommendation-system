@@ -1,11 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react';
-import { Input, Menu, Avatar, Space, Tooltip, Button, Flex } from 'antd';
-import {UserOutlined, ShoppingCartOutlined, FormOutlined, HeartOutlined, ShopOutlined, SettingOutlined} from '@ant-design/icons';
+import {useEffect, useState} from 'react';
+import {Button, Flex, Input, Menu, Tooltip} from 'antd';
+import {
+    FormOutlined,
+    HeartOutlined,
+    PoweroffOutlined,
+    SettingOutlined,
+    ShopOutlined,
+    ShoppingCartOutlined,
+    UserOutlined
+} from '@ant-design/icons';
 import Link from 'next/link';
 import {usePathname, useRouter} from "next/navigation";
-import {PoweroffOutlined} from "@ant-design/icons";
 import {RootState, useDispatch} from "@/lib/redux/store";
 import {fetchUser} from "@/lib/redux/features/user/userSlice";
 import {useSelector} from "react-redux";

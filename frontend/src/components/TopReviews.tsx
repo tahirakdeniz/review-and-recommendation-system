@@ -1,5 +1,5 @@
 'use client';
-import { Card } from 'antd';
+import {Card} from 'antd';
 
 const TopReviews = () => (
     <div>

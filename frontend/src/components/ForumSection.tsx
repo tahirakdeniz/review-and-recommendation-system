@@ -1,11 +1,11 @@
 'use client'
 import ForumSectionCategory from "@/components/ForumSectionCategory";
-import { ForumCategoryDto, ForumCategoryHeader } from "@/lib/dto";
-import { useEffect, useState } from "react";
+import {ForumCategoryDto, ForumCategoryHeader} from "@/lib/dto";
+import {useEffect, useState} from "react";
 import axios from "axios";
-import { baseURL } from "@/lib/const";
+import {baseURL} from "@/lib/const";
 import {Button, Form, Input, message, Modal, Select, Space} from "antd";
-import { CategoryHeaders, Roles } from "@/lib/enums";
+import {CategoryHeaders, Roles} from "@/lib/enums";
 
 const splitCategoriesByHeader = (categories: ForumCategoryDto[]) => {
     const categoryMap: Record<string, ForumCategoryDto[]> = {};
