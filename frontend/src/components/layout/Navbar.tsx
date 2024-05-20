@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useState} from 'react';
-import {Button, Flex, Input, Menu, Tooltip} from 'antd';
+import {Button, Flex, Input, Menu, Tooltip, Image} from 'antd';
 import {
     FormOutlined,
     HeartOutlined,
@@ -17,6 +17,7 @@ import {RootState, useDispatch} from "@/lib/redux/store";
 import {fetchUser} from "@/lib/redux/features/user/userSlice";
 import {useSelector} from "react-redux";
 import {Roles} from "@/lib/enums";
+import Logo from "@/assets/images/logo.png";
 
 
 const defaultAvatar = '/path/to/default/avatar.jpg'; // Path to your default avatar image
@@ -54,16 +55,23 @@ const Navbar = () => {
     }
 
     return (
-        <div className={'bg-inherit flex gap-4 justify-between'}>
+        <div className={'bg-inherit flex gap-4 justify-items-stretch'}>
             <div>
-                <Link href="/">Logo</Link> {/* Removed inline styling for Link */}
+                <Link href="/"> 
+                        <Image
+                            preview={false}
+                            width={50}
+                            src={Logo.src}
+                            alt={"Homepage"}
+                        />
+                </Link> {/* Removed inline styling for Link */}
             </div>
             <div className={'h-17 grid content-center'}>
                 <Input.Search placeholder="Search..."
                               onSearch={handleSearch}
                 />
             </div>
-            <div>
+            <div className='flex-auto'>
                 <Menu mode="horizontal" selectedKeys={[firstPath]} className={'bg-inherit'}>
                     <Menu.Item key="forum" icon={<FormOutlined />}>
                         <Link href="/forum">Forum</Link>
@@ -74,10 +82,10 @@ const Navbar = () => {
                     {/*<Menu.Item key="/scshop" icon={<ShopOutlined />}>*/}
                     {/*    <Link href="/scshop">SC Shop</Link>*/}
                     {/*</Menu.Item>*/}
-                    <Menu.Item key="account" icon={<UserOutlined />}>
+                    {hasLoggedIn && <Menu.Item key="account" icon={<UserOutlined />}>
                         <Link href="/account">Profile</Link>
-                    </Menu.Item>
-                    {role == Roles.COMMUNITY_MODERATOR && <Menu.Item key="merchant" icon={<ShoppingCartOutlined/>}>
+                    </Menu.Item>}
+                    {role == Roles.MERCHANT && <Menu.Item key="merchant" icon={<ShoppingCartOutlined/>}>
                         <Link href="/merchant">My Products</Link>
                     </Menu.Item>}
                     {role == Roles.ADMIN && <Menu.Item key="administration" icon={<SettingOutlined/>}>
@@ -86,16 +94,17 @@ const Navbar = () => {
                 </Menu>
             </div>
             {hasLoggedIn ?
-                (<div className={'flex-auto'}>
+                (<div className={'flex'}>
                     {/*<Avatar size={32} icon={<UserOutlined/>}*/}
                     <span style={{marginLeft: '8px'}}>{user?.firstName} {user?.lastName}</span>
                 </div>)
                 :
-                (<div className={'flex-auto'}>
+                (<div className={'flex-end'}>
                     <Link href={'/signup'}>Sign up</Link> or <Link href={'/login'}>Log in</Link>
                 </div>)
             }
 
+            {hasLoggedIn &&
             <div className={'h-17 grid content-center'}>
                 <Flex wrap="wrap" gap="middle">
                     {hasLoggedIn && (<Tooltip title="Log Out">
@@ -109,7 +118,7 @@ const Navbar = () => {
                     </Tooltip>
 
                 </Flex>
-            </div>
+            </div>}
         </div>
     );
 };
