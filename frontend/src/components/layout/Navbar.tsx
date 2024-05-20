@@ -29,14 +29,15 @@ const user = {
 
 const Navbar = () => {
     const dispatch = useDispatch();
-    const accessToken = localStorage.getItem('accessToken');
-    const role = localStorage.getItem('role');
     const pathname = usePathname();
-    const {user} = useSelector((state: RootState) => state.user);
+    const {user, error} = useSelector((state: RootState) => state.user);
     const router = useRouter();
     const [search, setSearch] = useState('');
+
+    const accessToken = localStorage.getItem('accessToken');
+    const role = user?.role;
     const firstPath = pathname.split('/')[1];
-    console.log(firstPath)
+    const hasLoggedIn = accessToken!==null && user!==null;
 
     useEffect(() => {
         dispatch(fetchUser())
@@ -84,7 +85,7 @@ const Navbar = () => {
                     </Menu.Item>}
                 </Menu>
             </div>
-            {accessToken ?
+            {hasLoggedIn ?
                 (<div className={'flex-auto'}>
                     {/*<Avatar size={32} icon={<UserOutlined/>}*/}
                     <span style={{marginLeft: '8px'}}>{user?.firstName} {user?.lastName}</span>
@@ -97,7 +98,7 @@ const Navbar = () => {
 
             <div className={'h-17 grid content-center'}>
                 <Flex wrap="wrap" gap="middle">
-                    {accessToken && (<Tooltip title="Log Out">
+                    {hasLoggedIn && (<Tooltip title="Log Out">
                         <Button shape="circle" icon={<PoweroffOutlined />} size={'large'} onClick={() => logOut()}/>
                     </Tooltip>)}
                     <Tooltip title="Wishlist">
