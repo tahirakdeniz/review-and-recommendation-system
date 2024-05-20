@@ -1,9 +1,8 @@
 'use client';
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import axios, {AxiosError} from 'axios';
+import axios from 'axios';
 import {baseURL} from "@/lib/const";
-import {ErrorResponse} from "@/lib/types";
-import {messageFormatter} from "@/lib/utils";
+import {errorHandler} from "@/lib/utils";
 
 interface LoginState {
     role: string;
@@ -21,6 +20,7 @@ const initialState: LoginState = {
     error: null
 };
 
+
 export const loginUser = createAsyncThunk(
     'login/loginUser',
     async (credentials: { username: string; password: string }, { rejectWithValue }) => {
@@ -32,19 +32,8 @@ export const loginUser = createAsyncThunk(
             localStorage.setItem("role", data.role)
             return response.data;
         } catch (error) {
-            console.error(`An Error Occured In Login User ${error}`)
-            if (axios.isAxiosError(error)) {
-                const serverError = error as AxiosError<ErrorResponse>;
-                if (serverError && serverError.response) {
-                    const value = serverError.response.data
-                    const errorMessages = value.errors.map((error) => messageFormatter(error.message)).join(", ")
-                    return rejectWithValue(errorMessages || "Undefined Server Error");
-                } else {
-                    return rejectWithValue("An unknown error occurred");
-                }
-            } else {
-                return rejectWithValue("An error occurred that wasn't an Axios error");
-            }
+            const errorMessage = errorHandler(error, "Login User")
+            return rejectWithValue(errorMessage)
         }
     }
 );
