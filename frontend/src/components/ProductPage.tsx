@@ -1,6 +1,5 @@
 'use client';
 import {
-    Avatar,
     Button,
     Card,
     Col,
@@ -13,7 +12,8 @@ import {
     Modal,
     Rate,
     Row,
-    Space, Spin,
+    Space,
+    Spin,
     Typography
 } from "antd";
 import {HeartOutlined, LoadingOutlined, ShoppingCartOutlined, StarOutlined} from '@ant-design/icons';
@@ -28,14 +28,15 @@ import {RootState, useDispatch} from "@/lib/redux/store";
 import {addProductToCart} from "@/lib/redux/features/cart/cartSlice";
 import {useSelector} from "react-redux";
 import axios from "axios";
-import ProductImageView from "@/components/ProductImageView";
 import {useProductImage} from "@/lib/useProductImage";
+import {ProductReview} from "@/components/ProductReview";
 
 const {Text, Title} = Typography;
 
 interface ProductPageProps {
     product: ProductDto;
 }
+
 
 const ProductPage: React.FC<ProductPageProps> = ({product}) => {
     const [productState, updateProduct] = useImmer<ProductDto>(product);
@@ -230,56 +231,59 @@ const ProductPage: React.FC<ProductPageProps> = ({product}) => {
                             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No reviews found."}/>}
                         {
                             productState.reviewDto.reviews.map((review, index) => (
-                                <Card key={index} style={{marginBottom: '10px'}}
-                                      extra={
-                                          <Space>
-                                              {isMerchant && productState.topicUserDto.username === localStorage.getItem('username') && (
-                                                  <Typography.Link onClick={() => {
-                                                      setSelectedReview(review);
-                                                      setOpenReplyModal(true);
-                                                  }}>Reply</Typography.Link>
-                                              )}
-                                              {isAdmin && (
-                                                  <Typography.Link
-                                                      onClick={() => confirmDelete(review)}>Delete</Typography.Link>
-                                              )}
-                                          </Space>
-                                      }
-                                      title={<Space><Avatar>{review.userDto.username[0]}</Avatar><Text
-                                          strong>{review.userDto.username}</Text></Space>}
-                                >
-                                    <Space direction="vertical" style={{width: '100%'}}>
-                                        <Space>
-                                            <Rate disabled
-                                                  defaultValue={review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length}/>
-                                            <span>{review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length}</span>
-                                        </Space>
-                                        <Space direction="horizontal">
-                                            {review.fieldScoreDtos.map((field, index) => (
-                                                <div key={index}>
-                                                    <strong>{field.reviewFieldDto.label}:</strong> {field.score}
-                                                </div>
-                                            ))}
-                                        </Space>
-                                        <Space>
-                                            {review.comment}
-                                        </Space>
-                                        <Divider/>
-                                        {review.reviewReplyDto && (
-                                            <Space direction={'vertical'} style={{width: '100%'}}>
-                                                <Card>
-                                                    <Space>
-                                                        <Avatar>{productState.topicUserDto.username[0]}</Avatar>
-                                                        <Text strong>{productState.topicUserDto.username}:</Text>
-                                                        <Space>
-                                                            {review.reviewReplyDto.content}
-                                                        </Space>
-                                                    </Space>
-                                                </Card>
-                                            </Space>
-                                        )}
-                                    </Space>
-                                </Card>
+                                <ProductReview key={index} review={review} productState={productState}
+                                               confirmDelete={confirmDelete} setSelectedReview={setSelectedReview}
+                                               setOpenReplyModal={setOpenReplyModal} isMerchant={isMerchant} isAdmin={isAdmin}/>
+                                // <Card key={index} style={{marginBottom: '10px'}}
+                                //       extra={
+                                //           <Space>
+                                //               {isMerchant && productState.topicUserDto.username === localStorage.getItem('username') && (
+                                //                   <Typography.Link onClick={() => {
+                                //                       setSelectedReview(review);
+                                //                       setOpenReplyModal(true);
+                                //                   }}>Reply</Typography.Link>
+                                //               )}
+                                //               {isAdmin && (
+                                //                   <Typography.Link
+                                //                       onClick={() => confirmDelete(review)}>Delete</Typography.Link>
+                                //               )}
+                                //           </Space>
+                                //       }
+                                //       title={<Space><Avatar>{review.userDto.username[0]}</Avatar><Text
+                                //           strong>{review.userDto.username}</Text></Space>}
+                                // >
+                                //     <Space direction="vertical" style={{width: '100%'}}>
+                                //         <Space>
+                                //             <Rate disabled
+                                //                   defaultValue={review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length}/>
+                                //             <span>{review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length}</span>
+                                //         </Space>
+                                //         <Space direction="horizontal">
+                                //             {review.fieldScoreDtos.map((field, index) => (
+                                //                 <div key={index}>
+                                //                     <strong>{field.reviewFieldDto.label}:</strong> {field.score}
+                                //                 </div>
+                                //             ))}
+                                //         </Space>
+                                //         <Space>
+                                //             {review.comment}
+                                //         </Space>
+                                //         <Divider/>
+                                //         {review.reviewReplyDto && (
+                                //             <Space direction={'vertical'} style={{width: '100%'}}>
+                                //                 <Card>
+                                //                     <Space>
+                                //                         <Avatar>{productState.topicUserDto.username[0]}</Avatar>
+                                //                         <Text strong>{productState.topicUserDto.username}:</Text>
+                                //                         <Space>
+                                //                             {review.reviewReplyDto.content}
+                                //                         </Space>
+                                //                     </Space>
+                                //                 </Card>
+                                //             </Space>
+                                //         )}
+                                //     </Space>
+                                // </Card>
                             ))
                         }
                     </Card>
