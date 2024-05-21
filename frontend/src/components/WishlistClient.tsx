@@ -43,18 +43,16 @@ export function WishlistClient() {
     };
 
     const handleRemoveProduct = async (productId: number) => {
-        throw new Error('Not implemented');
-        // TODO: Implement remove product from wishlist
-        // try {
-        //     const res = await dispatch(removeProductFromWishlist({id: productId}));
-        //     if(res.meta.requestStatus === 'fulfilled')
-        //         messageApi.success('Product removed from wishlist');
-        //     else {
-        //         messageApi.error('Failed to remove product from wishlist');
-        //     }
-        // } catch (error) {
-        //     messageApi.error(error.toString());
-        // }
+        try {
+            const res = await dispatch(removeProductFromWishlist({id: productId}));
+            if(res.meta.requestStatus === 'fulfilled')
+                messageApi.success('Product removed from wishlist');
+            else {
+                messageApi.error('Failed to remove product from wishlist');
+            }
+        } catch (error) {
+            messageApi.error(error.toString());
+        }
     };
 
     return (
@@ -73,7 +71,7 @@ export function WishlistClient() {
                                 <Card
                                     cover={<img alt={wishlistItem.productDto.name} src={'https://cdn.pixabay.com/photo/2016/03/30/21/59/coffee-beans-1291656_1280.jpg'} />}
                                     actions={[
-                                        <Button key="Remove" type="link" danger onClick={() => confirmRemove(wishlistItem.id)}>Remove</Button>,
+                                        <Button key="Remove" type="link" danger onClick={() => confirmRemove(wishlistItem.productDto.id)}>Remove</Button>,
                                     ]}
                                 >
                                     <Card.Meta

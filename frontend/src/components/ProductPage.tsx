@@ -158,6 +158,10 @@ const ProductPage: React.FC<ProductPageProps> = ({product}) => {
         }
     }
 
+    function handleAddToWishlist(e : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        addToWishlist(e, product.id);
+    }
+
     return (
         <>
             {contextHolder}
@@ -237,7 +241,7 @@ const ProductPage: React.FC<ProductPageProps> = ({product}) => {
                         <Space>
                             <Button type="primary" icon={<ShoppingCartOutlined/>} onClick={handleAddToCart}
                                     loading={addToCartLoading} disabled={addToCartLoading}>Add to Cart</Button>
-                            <Button type="default" icon={<HeartOutlined/>}>Add to Wishlist</Button>
+                            <Button type="default" icon={<HeartOutlined/>} onClick={handleAddToWishlist}>Add to Wishlist</Button>
                             {isUser && (
                                 <Button type="default" icon={<StarOutlined/>}
                                         onClick={() => setOpenRateModal(true)}>Rate</Button>

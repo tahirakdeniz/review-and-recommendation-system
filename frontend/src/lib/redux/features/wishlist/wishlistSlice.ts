@@ -114,7 +114,7 @@ const wishlistSlice = createSlice({
             .addCase(removeProductFromWishlist.fulfilled, (state, action: PayloadAction<number>) => {
                 state.loading = false;
                 if (state.wishlist) {
-                    state.wishlist.wishListItemDtoList = state.wishlist.wishListItemDtoList.filter(item => item.id !== action.payload);
+                    state.wishlist.wishListItemDtoList = state.wishlist.wishListItemDtoList.filter(item => item.productDto.id !== action.payload);
                 }
             })
             .addCase(removeProductFromWishlist.rejected, (state, action) => {
