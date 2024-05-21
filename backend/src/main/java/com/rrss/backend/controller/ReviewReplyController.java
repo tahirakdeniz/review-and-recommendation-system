@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@RestController("/api/v1/review-reply")
+@RestController
+@RequestMapping("/api/v1/review-reply")
 public class ReviewReplyController {
 
     private final ReviewReplyService reviewReplyService;

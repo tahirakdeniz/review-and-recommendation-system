@@ -86,7 +86,7 @@ public class ProductController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(defaultValue = "") String searchKey) {
+    public  ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(defaultValue = "") String searchKey) {
         return ResponseEntity.ok(productService.getAllProducts(searchKey));
     }
 

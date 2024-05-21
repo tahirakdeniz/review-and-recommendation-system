@@ -16,6 +16,7 @@ import com.rrss.backend.util.UserUtil;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.Objects;
 
 @Service
 public class WishlistService {
@@ -63,9 +64,12 @@ public class WishlistService {
 
         boolean flag = false;
         for(WishlistItem ele: wishlist.getItems()) {
-            if (ele.getProduct().getId().equals(removeProductFromWishlist.id())) {
-                wishlistItemRepository.delete(ele);
+            if (Objects.equals(ele.getProduct().getId(), removeProductFromWishlist.id())) {
+                wishlist.getItems().remove(ele);
+                wishlistItemRepository.deleteById(ele.getId());
+                repository.save(wishlist);
                 flag = true;
+                break;
             }
         }
 
