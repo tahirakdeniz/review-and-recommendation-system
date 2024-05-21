@@ -135,7 +135,7 @@ const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
                                     <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'lightyellow' }}>
                                         <Row>
                                             <div style={{ padding: 4, textAlign: 'center' }}>
-                                                <Avatar size={86} />
+                                                {/*<Avatar size={86} />*/}
                                                 <p>{post.userDto.username}</p>
                                                 <p>{new Date(post.creationDate).toLocaleDateString()}</p>
                                             </div>
