@@ -61,7 +61,7 @@ export type ProductDto = {
     topicUserDto: BasicUserDto;
     productCategoryName: string;
     price: number;
-    photo: Uint8Array;  // TODO replace with actual type
+    photo: Uint8Array; // todo change this to THE RIGHT TYPE
     reviewDto: ProductReviewDto;
 };
 

@@ -72,6 +72,14 @@ public class UserController {
                 .body(imageData);
     }
 
+    @GetMapping("/picture/{user-id}")
+    public ResponseEntity<byte[]> downloadProfilePictureById(@PathVariable("user-id") String id) {
+        byte[] imageData = userService.downloadProfilePictureById(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.valueOf(IMAGE_PNG_VALUE))
+                .body(imageData);
+    }
+
     @DeleteMapping
     public ResponseEntity<String> deleteUser(Principal currentUser) {
         return ResponseEntity.ok(userService.deleteUser(currentUser));

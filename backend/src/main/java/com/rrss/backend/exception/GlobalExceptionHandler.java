@@ -145,6 +145,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ProductCategoryAlreadyExistException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(UserNotFoundException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
     /*
      * CUSTOM EXCEPTIONS
      * */
