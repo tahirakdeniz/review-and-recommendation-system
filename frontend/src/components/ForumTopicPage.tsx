@@ -1,18 +1,17 @@
 'use client'
 
-import {Avatar, Button, Card, Col, message, Pagination, Row, Spin} from "antd";
-import {CloseCircleOutlined} from '@ant-design/icons';
+import {Button, Card, message, Pagination, Spin} from "antd";
 import {useEffect, useState} from "react";
 import axios from 'axios';
 import {baseURL} from "@/lib/const";
 import {PostDto, TopicDto} from "@/lib/dto";
 import {Roles} from "@/lib/enums";
 import {ForumTopicAddNewMessageModal} from "@/components/ForumTopicAddNewMessageModal";
+import {ForumPost} from "@/components/ForumPost";
 
 interface ForumTopicPageProps {
     topicId: string;
 }
-
 
 
 const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
@@ -122,31 +121,8 @@ const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
                     <div style={{ color: 'red', textAlign: 'center', marginTop: 20 }}>{error}</div>
                 ) : (
                     paginatedPosts.map(post => (
-                        <Card key={post.id} style={{ marginBottom: 12, minHeight: 60 }}>
-                            <Button
-                                style={{ position: 'absolute', top: 8, right: 8, backgroundColor: 'transparent', border: 'none' }}
-                                icon={<CloseCircleOutlined style={{ color: 'red' }} />}
-                                onClick={() => handleDeletePost(post.id)}
-                                disabled={loading}
-                                hidden={!((role === Roles.ADMIN || role === Roles.COMMUNITY_MODERATOR) || post.userDto.username === username)}
-                            />
-                            <Row gutter={16}>
-                                <Col span={5}>
-                                    <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'lightyellow' }}>
-                                        <Row>
-                                            <div style={{ padding: 4, textAlign: 'center' }}>
-                                                {/*<Avatar size={86} />*/}
-                                                <p>{post.userDto.username}</p>
-                                                <p>{new Date(post.creationDate).toLocaleDateString()}</p>
-                                            </div>
-                                        </Row>
-                                    </Card>
-                                </Col>
-                                <Col span={14}>
-                                    <p>{post.content}</p>
-                                </Col>
-                            </Row>
-                        </Card>
+                        <ForumPost key={post.id} onClick={() => handleDeletePost(post.id)} disabled={loading}
+                                   post={post} />
                     ))
                 )}
                 <div style={{ position: 'relative', left: 16 }}>
