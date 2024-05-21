@@ -141,6 +141,7 @@ const AdministrationReviewForm = ({ data, onChange, onDelete, fetchReviewForms}:
                           </Tooltip>
                       </div>
                   }
+                  style={{height: '300px'}}
             >
                 <div className="scrollable-container">
                     <List
