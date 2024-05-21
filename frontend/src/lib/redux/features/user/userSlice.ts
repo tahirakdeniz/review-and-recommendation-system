@@ -31,15 +31,55 @@ interface UserState {
     user: User | null;
     loading: boolean;
     error: string | null;
+    image: string | undefined;
+    imageLoading: boolean;
+    imageError: string | null;
 }
 
 const initialState: UserState = {
     user: null,
     loading: false,
-    error: null
+    error: null,
+    image: undefined,
+    imageLoading: false,
+    imageError: null
 };
 
 const baseURL = 'http://localhost:8081/api/v1/users';
+
+export const fetchUserImage = createAsyncThunk(
+    'user/fetchUserImage',
+    async (_, { rejectWithValue }) => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            return rejectWithValue('No access token found');
+        }
+
+        try {
+            const response = await axios.get(`${baseURL}/picture`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                responseType: 'arraybuffer'
+            });
+            const imageBlob = new Blob([response.data], { type: 'image/png' });
+            const imageUrl = URL.createObjectURL(imageBlob);
+            return imageUrl;
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const serverError = error as AxiosError<ErrorResponse>;
+                if (serverError && serverError.response) {
+                    return rejectWithValue(serverError.response.data.errors[0]?.message);
+                } else {
+                    return rejectWithValue("An unknown error occurred");
+                }
+            } else {
+                return rejectWithValue("An error occurred that wasn't an Axios error");
+            }
+        }
+    }
+);
+
 
 export const fetchUser = createAsyncThunk(
     'user/fetchUser',
@@ -136,7 +176,12 @@ export const deleteUser = createAsyncThunk(
 const userSlice = createSlice({
     name: 'user',
     initialState,
-    reducers: {},
+    reducers: {
+        setImage: (state, action) => {
+            state.image = action.payload;
+            console.log(state.image)
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchUser.pending, (state) => {
@@ -184,8 +229,21 @@ const userSlice = createSlice({
             .addCase(deleteUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+            .addCase(fetchUserImage.pending, (state, action) => {
+                state.imageLoading = true;
+                state.imageError = null;
+            })
+            .addCase(fetchUserImage.fulfilled, (state, action) => {
+                state.imageLoading = false;
+                state.image = action.payload;
+                state.imageError = null;
+            })
+            .addCase(fetchUserImage.rejected, (state, action) => {
+                state.imageLoading = false;
+                state.imageError = action.payload as string;
             });
     }
 });
-
+export const { setImage } = userSlice.actions;
 export default userSlice.reducer;

@@ -14,7 +14,7 @@ import {
 import Link from 'next/link';
 import {usePathname, useRouter} from "next/navigation";
 import {RootState, useDispatch} from "@/lib/redux/store";
-import {fetchUser} from "@/lib/redux/features/user/userSlice";
+import {fetchUser, fetchUserImage} from "@/lib/redux/features/user/userSlice";
 import {useSelector} from "react-redux";
 import {Roles} from "@/lib/enums";
 import Logo from "@/assets/images/logo.png";
@@ -43,6 +43,7 @@ const Navbar = () => {
 
     useEffect(() => {
         dispatch(fetchUser())
+        dispatch(fetchUserImage())
     }, [dispatch]);
 
     const logOut = () => {

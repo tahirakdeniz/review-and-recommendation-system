@@ -5,7 +5,8 @@ import {Badge, Button, Card, Col, List, message, Row, Space} from 'antd';
 import {EditOutlined} from '@ant-design/icons';
 import EditProfileModal from './EditProfileModal';
 import {deleteUser, fetchUser, updateUser, User} from '@/lib/redux/features/user/userSlice'; // Correct path
-import {RootState, useDispatch} from '@/lib/redux/store'; // Assuming RootState correctly reflects store structure
+import {RootState, useDispatch} from '@/lib/redux/store';
+import UserAvatar from "@/components/UserAvatar"; // Assuming RootState correctly reflects store structure
 
 
 const UserProfilePage: React.FC = () => {
@@ -51,11 +52,9 @@ const UserProfilePage: React.FC = () => {
             {contextHolder}
             <Card style={{ maxWidth: 1500, width: '100%' }}>
                 <Row gutter={16}>
-                    {/*}
                     <Col span={6}>
-                         <Avatar size={164} src={user?.avatar || 'default-avatar-url'} />
+                        <UserAvatar size={150} />
                     </Col>
-                    {*/}
                     <Col span={18}>
                         <div><strong>Name:</strong> {user.firstName} {user.lastName}</div>
                         <div><strong>Email:</strong> {user.email}</div>
