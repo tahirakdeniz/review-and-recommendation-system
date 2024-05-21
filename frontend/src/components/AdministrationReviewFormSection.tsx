@@ -27,7 +27,6 @@ export const AdministrationReviewFormSection = () => {
                 }
             });
             setReviewFormDtos(response.data);
-            messageApi.success("Review forms fetched successfully");
         } catch (error) {
             const errorMessage = errorHandler(error, 'Get Review Forms');
             messageApi.error(errorMessage);
@@ -125,6 +124,10 @@ export const AdministrationReviewFormSection = () => {
             },
         });
     };
+
+    if (loading) {
+        return <Spin fullscreen={true}/>;
+    }
 
     return (
         <>
