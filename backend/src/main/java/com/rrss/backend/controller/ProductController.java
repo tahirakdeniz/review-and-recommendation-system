@@ -43,7 +43,7 @@ public class ProductController {
     }
 
     //add product image
-    @PutMapping("/{productId}/image")
+    @PostMapping("/{productId}/image")
     @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
     public ResponseEntity<ProductDto> addProductPicture(Principal currentUser, @PathVariable long productId, @RequestParam("image") MultipartFile file) throws IOException {
         return new ResponseEntity<>(productService.addProductImage(currentUser, productId, file), HttpStatus.CREATED);

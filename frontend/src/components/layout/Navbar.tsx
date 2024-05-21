@@ -14,10 +14,11 @@ import {
 import Link from 'next/link';
 import {usePathname, useRouter} from "next/navigation";
 import {RootState, useDispatch} from "@/lib/redux/store";
-import {fetchUser} from "@/lib/redux/features/user/userSlice";
+import {fetchUser, fetchUserImage} from "@/lib/redux/features/user/userSlice";
 import {useSelector} from "react-redux";
 import {Roles} from "@/lib/enums";
 import Logo from "@/assets/images/logo.png";
+import UserAvatar from "@/components/UserAvatar";
 
 
 const defaultAvatar = '/path/to/default/avatar.jpg'; // Path to your default avatar image
@@ -42,6 +43,7 @@ const Navbar = () => {
 
     useEffect(() => {
         dispatch(fetchUser())
+        dispatch(fetchUserImage())
     }, [dispatch]);
 
     const logOut = () => {
@@ -95,7 +97,9 @@ const Navbar = () => {
             </div>
             {hasLoggedIn ?
                 (<div className={'flex'}>
-                    {/*<Avatar size={32} icon={<UserOutlined/>}*/}
+                    <Flex align={'center'} justify={'center'}>
+                        <UserAvatar size={40} />
+                    </Flex>
                     <span style={{marginLeft: '8px'}}>{user?.firstName} {user?.lastName}</span>
                 </div>)
                 :
