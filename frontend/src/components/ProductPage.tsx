@@ -1,5 +1,6 @@
 'use client';
 import {
+    Avatar,
     Button,
     Card,
     Col,
@@ -28,6 +29,8 @@ import {RootState, useDispatch} from "@/lib/redux/store";
 import {addProductToCart} from "@/lib/redux/features/cart/cartSlice";
 import {useSelector} from "react-redux";
 import axios from "axios";
+import {addProductToWishlist} from "@/lib/redux/features/wishlist/wishlistSlice";
+import ProductImageView from "@/components/ProductImageView";
 import {useProductImage} from "@/lib/useProductImage";
 import {ProductReview} from "@/components/ProductReview";
 
@@ -45,6 +48,7 @@ const ProductPage: React.FC<ProductPageProps> = ({product}) => {
     const [selectedReview, setSelectedReview] = useState<ProductReviewReviewDto | null>(null);
     const dispatch = useDispatch();
     const {loading: addToCartLoading, error: addToCartError} = useSelector((state: RootState) => state.cart);
+    const [messageApi, contextHolder] = message.useMessage();
     const {image, loading, error, noImage} = useProductImage(product.id);
 
     const {isAuthorized: isMerchant} = useRole({role: 'MERCHANT'});
@@ -141,8 +145,26 @@ const ProductPage: React.FC<ProductPageProps> = ({product}) => {
         }
     }
 
+    const addToWishlist = async (e: React.MouseEvent, productId: number) => {
+        try {
+            const res = await dispatch(addProductToWishlist({productId}));
+            if (res.meta.requestStatus === 'fulfilled') {
+                messageApi.success("Added to Wishlist Successfully");
+            } else {
+                messageApi.error(`Failed to add to Wishlist: ${res.payload}`);
+            }
+        } catch (error) {
+            messageApi.error("Failed to add to Wishlist");
+        }
+    }
+
+    function handleAddToWishlist(e : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        addToWishlist(e, product.id);
+    }
+
     return (
         <>
+            {contextHolder}
             <ReviewModal
                 open={openRateModal}
                 onClose={() => setOpenRateModal(false)}
@@ -219,7 +241,7 @@ const ProductPage: React.FC<ProductPageProps> = ({product}) => {
                         <Space>
                             <Button type="primary" icon={<ShoppingCartOutlined/>} onClick={handleAddToCart}
                                     loading={addToCartLoading} disabled={addToCartLoading}>Add to Cart</Button>
-                            <Button type="default" icon={<HeartOutlined/>}>Add to Wishlist</Button>
+                            <Button type="default" icon={<HeartOutlined/>} onClick={handleAddToWishlist}>Add to Wishlist</Button>
                             {isUser && (
                                 <Button type="default" icon={<StarOutlined/>}
                                         onClick={() => setOpenRateModal(true)}>Rate</Button>

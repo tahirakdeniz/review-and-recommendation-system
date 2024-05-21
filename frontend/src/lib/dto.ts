@@ -150,6 +150,26 @@ export type PostDto = {
     userDto: BasicUserDto;
 }
 
+export type WishListItemDto = {
+    id: number;
+    productDto: ProductDto;
+    addedOn: string;
+}
+
+export type WishlistDto = {
+    id: number;
+    wishListItemDtoList: WishListItemDto[];
+}
+
+
+export type AddProductToWishlistRequest = {
+    productId: number;
+}
+
+export type RemoveProductFromWishlistRequest = {
+    id: number;
+}
+
 
 
 

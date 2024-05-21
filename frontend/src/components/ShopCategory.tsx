@@ -1,7 +1,7 @@
 import {ProductDto} from "@/lib/dto";
-import {Card, Col, Empty, Image, message, Row, Spin, Tooltip} from "antd";
-import {HeartOutlined, LoadingOutlined, ShoppingCartOutlined} from "@ant-design/icons";
-import React, { useEffect } from "react";
+import {Card, Col, Empty, Image, message, Row, Tooltip, Spin} from "antd";
+import {HeartOutlined, ShoppingCartOutlined, LoadingOutlined} from "@ant-design/icons";
+import React from "react";
 import {nameFormatter} from "@/lib/utils";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
@@ -10,6 +10,7 @@ import {useProductImage} from "@/lib/useProductImage";
 import { RootState, useDispatch } from "@/lib/redux/store";
 import { useSelector } from "react-redux";
 import {addProductToCart} from "@/lib/redux/features/cart/cartSlice";
+import {addProductToWishlist} from "@/lib/redux/features/wishlist/wishlistSlice";
 
 type ShopCategoryProps = {
     title: string;
@@ -33,6 +34,20 @@ export function ShopItem({item}: ShopItemProps){
         const res = await dispatch(addProductToCart(productId));
         if (res.meta.requestStatus === 'fulfilled') {
             message.success('Product added to cart successfully');
+        }
+    }
+
+    const addToWishlist = async (e: React.MouseEvent, productId: number) => {
+        e.stopPropagation();
+        try {
+            const res = await dispatch(addProductToWishlist({productId}));
+            if (res.meta.requestStatus === 'fulfilled') {
+                messageApi.success("Added to Wishlist Successfully");
+            } else {
+                messageApi.error(`Failed to add to Wishlist: ${res.payload}`);
+            }
+        } catch (error) {
+            messageApi.error("Failed to add to Wishlist");
         }
     }
 
@@ -69,10 +84,7 @@ export function ShopItem({item}: ShopItemProps){
                     </Tooltip>,
                     <Tooltip title="Add to Wishlist" key="wishlist">
                         <HeartOutlined
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                messageApi.success("Added to Wishlist Successfully");
-                            }}
+                            onClick={(e) => addToWishlist(e, item.id)}
                         />
                     </Tooltip>,
                 ]}
