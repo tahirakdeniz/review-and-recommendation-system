@@ -1,12 +1,15 @@
 import {ProductDto} from "@/lib/dto";
 import {Card, Col, Empty, Image, message, Row, Spin, Tooltip} from "antd";
 import {HeartOutlined, LoadingOutlined, ShoppingCartOutlined} from "@ant-design/icons";
-import React from "react";
+import React, { useEffect } from "react";
 import {nameFormatter} from "@/lib/utils";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import ProductImageView from "@/components/ProductImageView";
 import {useProductImage} from "@/lib/useProductImage";
+import { RootState, useDispatch } from "@/lib/redux/store";
+import { useSelector } from "react-redux";
+import {addProductToCart} from "@/lib/redux/features/cart/cartSlice";
 
 type ShopCategoryProps = {
     title: string;
@@ -23,6 +26,16 @@ export function ShopItem({item}: ShopItemProps){
     const router = useRouter();
     const [messageApi, contextHolder] = message.useMessage();
     const {image, loading, error, noImage} = useProductImage(item.id);
+    const {loading: addToCartLoading, error: addToCartError} = useSelector((state: RootState) => state.cart);
+    const dispatch = useDispatch();
+
+    async function handleAddToCart(productId:number) {
+        const res = await dispatch(addProductToCart(productId));
+        if (res.meta.requestStatus === 'fulfilled') {
+            message.success('Product added to cart successfully');
+        }
+    }
+
     return (
         <Col key={item.id} xs={24} sm={12} md={8} lg={6} xl={4}>
             {contextHolder}
@@ -50,6 +63,7 @@ export function ShopItem({item}: ShopItemProps){
                             onClick={(e) => {
                                 e.stopPropagation()
                                 messageApi.success("Added to Cart Successfully");
+                                handleAddToCart(item.id)
                             }}
                         />
                     </Tooltip>,
