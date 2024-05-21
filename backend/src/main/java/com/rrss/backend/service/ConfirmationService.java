@@ -85,4 +85,10 @@ public class ConfirmationService {
             throw new InvalidOtpTokenException("You have written wrong otp.");
         }
     }
+
+    protected void delete(String email) {
+        repository.delete(repository.findByEmail(email)
+                .orElseThrow(() -> new PermissionDeniedException("email cant found so deletion wont work"))
+        );
+    }
 }

@@ -68,6 +68,8 @@ public class UserService {
         if (repository.findByUsername(registrationRequest.username()).isPresent())
             throw new UsernameIsNotUniqueException("Username is not unique");
 
+        confirmationService.delete(registrationRequest.email());
+
         Cart cart = cartService.createCart();
         Wishlist wishlist = wishlistRepository.save(new Wishlist());
 

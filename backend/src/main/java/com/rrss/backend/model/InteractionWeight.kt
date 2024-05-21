@@ -11,7 +11,7 @@ data class InteractionWeight @JvmOverloads constructor(
     val id: Long? = 0,
 
     @Column(nullable = false, unique = true)
-    val interactionType: InteractionWeightType, // E.g., "Purchase", "Review", "View"
+    val interactionType: InteractionWeightType, // E.g., "Purchase", "Review"
 
     @Column(nullable = false)
     var weight: Int // This can be updated by the administrator

@@ -1,5 +1,6 @@
 package com.rrss.backend;
 
+import com.rrss.backend.dto.ProductCategoryRequest;
 import com.rrss.backend.enums.ForumCategoryHeader;
 import com.rrss.backend.exception.custom.ForumCategoryNotFoundException;
 import com.rrss.backend.exception.custom.InsufficientBalanceException;
@@ -7,6 +8,7 @@ import com.rrss.backend.exception.custom.ProductNotFoundException;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.*;
 import com.rrss.backend.service.MerchantRequestService;
+import com.rrss.backend.service.ProductCategoryService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -39,8 +41,9 @@ public class Runner implements CommandLineRunner {
     private final PurchaseItemRepository purchaseItemRepository;
     private final PurchaseRepository purchaseRepository;
     private final WishlistRepository wishlistRepository;
+    private final ProductCategoryService productCategoryService;
 
-    public Runner(RoleRepository roleRepository, AuthorityRepository authorityRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, MerchantRequestRepository merchantRequestRepository, ProductCategoryRepository productCategoryRepository, MerchantRequestService merchantRequestService, ProductRepository productRepository, ForumCategoryRepository forumCategoryRepository, TopicRepository topicRepository, PostRepository postRepository, CartItemRepository cartItemRepository, PurchaseItemRepository purchaseItemRepository, PurchaseRepository purchaseRepository, WishlistRepository wishlistRepository) {
+    public Runner(RoleRepository roleRepository, AuthorityRepository authorityRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, MerchantRequestRepository merchantRequestRepository, ProductCategoryRepository productCategoryRepository, MerchantRequestService merchantRequestService, ProductRepository productRepository, ForumCategoryRepository forumCategoryRepository, TopicRepository topicRepository, PostRepository postRepository, CartItemRepository cartItemRepository, PurchaseItemRepository purchaseItemRepository, PurchaseRepository purchaseRepository, WishlistRepository wishlistRepository, ProductCategoryService productCategoryService) {
         this.roleRepository = roleRepository;
         this.authorityRepository = authorityRepository;
         this.userRepository = userRepository;
@@ -57,6 +60,7 @@ public class Runner implements CommandLineRunner {
         this.purchaseItemRepository = purchaseItemRepository;
         this.purchaseRepository = purchaseRepository;
         this.wishlistRepository = wishlistRepository;
+        this.productCategoryService = productCategoryService;
     }
 
     @Override
@@ -301,10 +305,10 @@ public class Runner implements CommandLineRunner {
     }
 
     private void saveProductCategories() {
-        productCategoryRepository.save(new ProductCategory("coffee bean", "just a coffee beans"));
-        productCategoryRepository.save(new ProductCategory("tea", "只是一杯茶，我爱约翰-塞纳"));
-        productCategoryRepository.save(new ProductCategory("tea equipment", "只是一杯茶，我爱约翰-塞纳"));
-        productCategoryRepository.save(new ProductCategory("coffee equipments", "just a coffee equipment"));
+        productCategoryService.addProductCategory(new ProductCategoryRequest("coffee bean", "just a coffee beans"));
+        productCategoryService.addProductCategory(new ProductCategoryRequest("tea", "只是一杯茶，我爱约翰-塞纳"));
+        productCategoryService.addProductCategory(new ProductCategoryRequest("tea equipment", "只是一杯茶，我爱约翰-塞纳"));
+        productCategoryService.addProductCategory(new ProductCategoryRequest("coffee equipments", "just a coffee equipment"));
     }
 
     private User createUser() {

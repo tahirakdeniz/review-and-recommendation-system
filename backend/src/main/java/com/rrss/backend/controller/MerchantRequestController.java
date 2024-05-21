@@ -37,6 +37,7 @@ public class MerchantRequestController {
         return ResponseEntity.ok(merchantRequestService.getApprovedRequests());
     }
 
+    @Deprecated
     @GetMapping("/rejected")
     @PreAuthorize("hasAuthority('SEE_MERCHANT_REQUEST')")
     public ResponseEntity<List<MerchantRequestDto>> getRejectedRequests() {

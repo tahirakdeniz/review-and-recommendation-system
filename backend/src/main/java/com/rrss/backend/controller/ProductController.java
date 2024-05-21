@@ -63,8 +63,6 @@ public class ProductController {
         return new ResponseEntity<>(productService.updateProduct(currentUser, productId, updateProductRequest), HttpStatus.OK);
     }
 
-    //todo product fotografi update
-
     @DeleteMapping("/{productId}")
     @PreAuthorize("hasAuthority('MANAGE_PRODUCT')")
     public ResponseEntity<ProductDto> deleteProduct(Principal currentUser, @PathVariable Long productId) {

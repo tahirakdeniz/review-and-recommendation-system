@@ -32,21 +32,21 @@ public class MerchantRequestService {
 
         User oldUser = request.getUser();
 
-        if (isApproved)
+        if (isApproved) {
             userService.changeUserRole(oldUser, "MERCHANT");
-
-        repository.save(
-                new MerchantRequest(
-                        request.getId(),
-                        oldUser,
-                        request.getRequestDate(),
-                        LocalDateTime.now(),
-                        message,
-                        (isApproved) ? MerchantRequestStatus.APPROVED : MerchantRequestStatus.REJECTED
-                )
-        );
-
-
+            repository.save(
+                    new MerchantRequest(
+                            request.getId(),
+                            oldUser,
+                            request.getRequestDate(),
+                            LocalDateTime.now(),
+                            message,
+                            MerchantRequestStatus.APPROVED
+                    )
+            );
+        } else {
+            repository.delete(request);
+        }
 
         return "Request has been " + ((isApproved) ? "approved" : "rejected") + " successfully";
     }

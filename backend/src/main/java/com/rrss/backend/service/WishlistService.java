@@ -46,7 +46,7 @@ public class WishlistService {
         Wishlist wishlist = userUtil.extractUser(currentUser).getWishlist();
 
         for(WishlistItem ele: wishlist.getItems()) {
-            if (ele.getProduct().getId().equals(addProductToWishlistRequest.productId()))
+            if (Objects.equals(ele.getProduct().getId(), addProductToWishlistRequest.productId()))
                 throw new PermissionDeniedException("Product already in wishlist");
         }
 
@@ -69,15 +69,15 @@ public class WishlistService {
                 .stream()
                 .filter(item -> Objects.equals(item.getProduct().getId(), removeProductFromWishlist.id()))
                 .findFirst()
-                .map(cartItem -> removeItem(wishlist, cartItem))
-                .orElse("Product not found in cart");
+                .map(wishlistItem -> removeItem(wishlist, wishlistItem))
+                .orElse("Product not found in wishlist");
 
     }
 
-    private String removeItem(Wishlist wishlist, WishlistItem cartItem) {
-        wishlist.getItems().removeIf(e -> Objects.equals(e.getId() , cartItem.getId()));
+    private String removeItem(Wishlist wishlist, WishlistItem item) {
+        wishlist.getItems().removeIf(e -> Objects.equals(e.getId() , item.getId()));
         repository.save(wishlist);
-        wishlistItemRepository.delete(cartItem);
+        wishlistItemRepository.delete(item);
 
         return "Product removed from wishlist";
     }

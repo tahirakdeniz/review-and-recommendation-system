@@ -125,8 +125,6 @@ public class RecommendationService {
                 .mapToDouble(Double::doubleValue)
                 .sum();
 
-        //TODO YENİ USER GELİNCE ALGORİTMA SAPITIYOR DELLENİYOR FITTIRIYOR NEŞTER ÇIKARTIYOR DİKKATLİ OLMAK ŞART!!
-
         interactionWeights.replaceAll((k, v) -> v / totalWight);
 
         if (interactionWeights.isEmpty()) {

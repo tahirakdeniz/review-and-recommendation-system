@@ -20,6 +20,4 @@ data class Role @JvmOverloads constructor(
         inverseJoinColumns = [JoinColumn(name = "permission_id")]
     )
     val authorities: Set<Authority> = mutableSetOf()
-) {
-
-}
+)
