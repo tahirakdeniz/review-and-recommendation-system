@@ -27,7 +27,6 @@ export const AdministrationReviewFormSection = () => {
                 }
             });
             setReviewFormDtos(response.data);
-            messageApi.success("Review forms fetched successfully");
         } catch (error) {
             const errorMessage = errorHandler(error, 'Get Review Forms');
             messageApi.error(errorMessage);
@@ -126,12 +125,16 @@ export const AdministrationReviewFormSection = () => {
         });
     };
 
+    if (loading) {
+        return <Spin fullscreen={true}/>;
+    }
+
     return (
         <>
             {contextHolder}
             <Card
                 title={<Typography.Title level={3}>Review Forms</Typography.Title>}
-                extra={<Button type="primary" onClick={showAddModal}>Add New Form</Button>}
+                // extra={<Button type="primary" onClick={showAddModal}>Add New Form</Button>}
             >
                 <Spin spinning={loading}>
                     <Row gutter={16}>

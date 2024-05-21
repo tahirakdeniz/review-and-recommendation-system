@@ -133,14 +133,15 @@ const AdministrationReviewForm = ({ data, onChange, onDelete, fetchReviewForms}:
             <Card type="inner" title={nameFormatter(data.productCategoryDto.name)}
                   extra={
                       <div>
-                          <Tooltip key="delete" title="Delete">
-                              <Button type="text" icon={<DeleteOutlined />} onClick={() => onDelete(data.id)}/>
-                          </Tooltip>
+                          {/*<Tooltip key="delete" title="Delete">*/}
+                          {/*    <Button type="text" icon={<DeleteOutlined />} onClick={() => onDelete(data.id)}/>*/}
+                          {/*</Tooltip>*/}
                           <Tooltip key="add" title="Add New Field">
                               <Button type="text" icon={<PlusCircleOutlined />} onClick={showAddModal}/>
                           </Tooltip>
                       </div>
                   }
+                  style={{height: '300px'}}
             >
                 <div className="scrollable-container">
                     <List
