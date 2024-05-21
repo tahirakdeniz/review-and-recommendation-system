@@ -6,6 +6,7 @@ import com.rrss.backend.dto.WishListItemDto;
 import com.rrss.backend.dto.WishlistDto;
 import com.rrss.backend.exception.custom.PermissionDeniedException;
 import com.rrss.backend.exception.custom.ProductNotFoundException;
+import com.rrss.backend.model.CartItem;
 import com.rrss.backend.model.User;
 import com.rrss.backend.model.Wishlist;
 import com.rrss.backend.model.WishlistItem;
@@ -62,21 +63,22 @@ public class WishlistService {
         User user = userUtil.extractUser(currentUser);
         Wishlist wishlist = user.getWishlist();
 
-        boolean flag = false;
-        for(WishlistItem ele: wishlist.getItems()) {
-            if (Objects.equals(ele.getProduct().getId(), removeProductFromWishlist.id())) {
-                wishlist.getItems().remove(ele);
-                wishlistItemRepository.deleteById(ele.getId());
-                repository.save(wishlist);
-                flag = true;
-                break;
-            }
-        }
 
-        if (!flag) {
-            throw new PermissionDeniedException("Product not in your wishlist");
-        }
+        return wishlist
+                .getItems()
+                .stream()
+                .filter(item -> Objects.equals(item.getProduct().getId(), removeProductFromWishlist.id()))
+                .findFirst()
+                .map(cartItem -> removeItem(wishlist, cartItem))
+                .orElse("Product not found in cart");
 
-        return "Product successfully deleted in your wishlist";
+    }
+
+    private String removeItem(Wishlist wishlist, WishlistItem cartItem) {
+        wishlist.getItems().removeIf(e -> Objects.equals(e.getId() , cartItem.getId()));
+        repository.save(wishlist);
+        wishlistItemRepository.delete(cartItem);
+
+        return "Product removed from wishlist";
     }
 }
