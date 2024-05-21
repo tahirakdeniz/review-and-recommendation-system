@@ -5,6 +5,8 @@ import {baseURL} from "@/lib/const";
 import {errorHandler} from "@/lib/utils";
 import {Avatar, Card, Divider, Rate, Space, Typography} from "antd";
 import {UserOutlined} from "@ant-design/icons";
+import {ProductReviewReply} from "@/components/ProductReviewReply";
+
 const {Text, Title} = Typography;
 type ProductReviewProps = {
     review: ProductReviewReviewDto;
@@ -15,6 +17,7 @@ type ProductReviewProps = {
     isMerchant: boolean;
     isAdmin: boolean;
 }
+
 export const ProductReview = ({
                                   review,
                                   productState,
@@ -91,17 +94,8 @@ export const ProductReview = ({
                 </Space>
                 <Divider/>
                 {review.reviewReplyDto && (
-                    <Space direction={'vertical'} style={{width: '100%'}}>
-                        <Card>
-                            <Space>
-                                <Avatar>{productState.topicUserDto.username[0]}</Avatar>
-                                <Text strong>{productState.topicUserDto.username}:</Text>
-                                <Space>
-                                    {review.reviewReplyDto.content}
-                                </Space>
-                            </Space>
-                        </Card>
-                    </Space>
+                    <ProductReviewReply topicUserDto={productState.topicUserDto}
+                                        reviewReplyDto={review.reviewReplyDto}/>
                 )}
             </Space>
         </Card>
