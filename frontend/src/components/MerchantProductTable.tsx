@@ -43,9 +43,9 @@ export default function MerchantProductTable() {
         {
             title: "Image",
             key: "image",
-            render: (record) => {
+            render: (_, record) => {
                 return (
-                    <ProductImageView product={record} key={record.id} height={100}/>
+                    <ProductImageView productId={Number(record.id)} key={record.id} height={100}/>
                 )
             }
         },

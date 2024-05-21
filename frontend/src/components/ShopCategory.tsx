@@ -1,10 +1,12 @@
 import {ProductDto} from "@/lib/dto";
-import {Card, Col, Empty, Image, message, Row, Tooltip} from "antd";
-import {HeartOutlined, ShoppingCartOutlined} from "@ant-design/icons";
+import {Card, Col, Empty, Image, message, Row, Spin, Tooltip} from "antd";
+import {HeartOutlined, LoadingOutlined, ShoppingCartOutlined} from "@ant-design/icons";
 import React from "react";
 import {nameFormatter} from "@/lib/utils";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
+import ProductImageView from "@/components/ProductImageView";
+import {useProductImage} from "@/lib/useProductImage";
 
 type ShopCategoryProps = {
     title: string;
@@ -13,9 +15,68 @@ type ShopCategoryProps = {
     categoryName?: string;
 }
 
+type ShopItemProps = {
+    item: ProductDto;
+}
+
+export function ShopItem({item}: ShopItemProps){
+    const router = useRouter();
+    const [messageApi, contextHolder] = message.useMessage();
+    const {image, loading, error, noImage} = useProductImage(item.id);
+    return (
+        <Col key={item.id} xs={24} sm={12} md={8} lg={6} xl={4}>
+            {contextHolder}
+            <Card
+                type={'inner'}
+                size={'small'}
+                cover={
+                    <div onClick={(e) => e.stopPropagation()} style={{overflow: "hidden", height: "150px"}}>
+                        {loading ? (<div className={`flex items-center justify-center w-full h-full`}>
+                            <Spin indicator={<LoadingOutlined style={{fontSize: 24}} spin/>}/>
+                        </div>) :
+                            (<Image
+                            src={image || noImage}
+                            alt={item.name}
+                            style={{padding: '10px', height: "100%"}}
+                            onClick={(e) => e.stopPropagation()}
+                            preview={false}
+                            loading={'lazy'}
+                        />)}
+                    </div>
+                }
+                actions={[
+                    <Tooltip title="Add to Cart" key="cart">
+                        <ShoppingCartOutlined
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                messageApi.success("Added to Cart Successfully");
+                            }}
+                        />
+                    </Tooltip>,
+                    <Tooltip title="Add to Wishlist" key="wishlist">
+                        <HeartOutlined
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                messageApi.success("Added to Wishlist Successfully");
+                            }}
+                        />
+                    </Tooltip>,
+                ]}
+                hoverable
+                onClick={() => router.push(`/shop/product/${item.id}`)} // TODO if no child that has on click, run this.
+            >
+                <Card.Meta
+                    description={`$${item.price}`}
+                    title={
+                        nameFormatter(item.name)}
+                />
+            </Card>
+        </Col>
+    )
+}
+
 export default function ShopCategory({title, data, categoryName, full = false} :ShopCategoryProps){
     const [messageApi, contextHolder] = message.useMessage();
-    const [image, setImage] = React.useState<string>('');
     const router = useRouter();
 
     const stopPropagation = (e: React.MouseEvent) => {
@@ -24,47 +85,6 @@ export default function ShopCategory({title, data, categoryName, full = false} :
 
     const displayedData = full ? data : data.slice(0, 6);
     const categoryTargetLabel = `/shop?category=${categoryName}`
-
-    const getProfileImage = async () => {
-        try {
-            const accessToken = localStorage.getItem('accessToken');
-            if (!accessToken) {
-                throw new Error('Access token is missing');
-            }
-            const response = await fetch('http://localhost:8081/api/v1/products/23/picture', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`, // Include the access token in the "Authorization" header
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                console.log(error);
-                throw new Error('Failed to fetch profile Image');
-            }
-
-            const imageArrayBuffer = await response.arrayBuffer();
-            const imageData = new Uint8Array(imageArrayBuffer);
-            const imageBlob = new Blob([imageData], {type: 'image/png'});
-            const imageUrl = URL.createObjectURL(imageBlob);
-            setImage(imageUrl)
-        } catch (error) {
-            console.error('Error fetching images:', error);
-        }
-
-    }
-
-    const getImage = (index: number) => {
-        const imageBlob = new Blob([data[index].photo], {type: 'image/png'});
-        const imageUrl = URL.createObjectURL(imageBlob);
-        return imageUrl;
-    }
-
-    React.useEffect(() => {
-        getProfileImage()
-    }, []);
 
     return (
         <>
@@ -78,49 +98,7 @@ export default function ShopCategory({title, data, categoryName, full = false} :
                 {data.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No products found."}/>}
                 <Row gutter={[16, 16]}>
                     {displayedData.map((item, index) => (
-                        <Col key={item.id} xs={24} sm={12} md={8} lg={6} xl={4}>
-                            <Card
-                                type={'inner'}
-                                size={'small'}
-                                cover={
-                                    <div onClick={stopPropagation}>
-                                        <Image
-                                            src={getImage(index)}
-                                            alt={item.name}
-                                            style={{ padding: '10px' }}
-                                            onClick={stopPropagation}
-                                        />
-                                    </div>
-                                }
-
-                                actions={[
-                                    <Tooltip title="Add to Cart" key="cart">
-                                        <ShoppingCartOutlined
-                                            onClick={(e) => {
-                                                stopPropagation(e);
-                                                messageApi.success("Added to Cart Successfully");
-                                            }}
-                                        />
-                                    </Tooltip>,
-                                    <Tooltip title="Add to Wishlist" key="wishlist">
-                                        <HeartOutlined
-                                            onClick={(e) => {
-                                                stopPropagation(e);
-                                                messageApi.success("Added to Wishlist Successfully");
-                                            }}
-                                        />
-                                    </Tooltip>,
-                                ]}
-                                hoverable
-                                onClick={() => router.push(`/shop/product/${item.id}`)} // TODO if no child that has on click, run this.
-                            >
-                                <Card.Meta
-                                    description={`$${item.price}`}
-                                    title={
-                                    nameFormatter(item.name)}
-                                />
-                            </Card>
-                        </Col>
+                        <ShopItem key={index} item={item}/>
                     ))}
                 </Row>
             </Card>

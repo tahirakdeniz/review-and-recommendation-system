@@ -7,12 +7,12 @@ import NoPhoto from "@/assets/images/no-photos.png";
 import {LoadingOutlined} from "@ant-design/icons";
 
 type MerchantProductTableImageViewProps = {
-    product: Product;
+    productId: number;
     width?: number;
     height?: number;
 }
 
-export default function ProductImageView({product, width, height} :MerchantProductTableImageViewProps){
+export default function ProductImageView({productId, width, height} :MerchantProductTableImageViewProps){
     const [loading, setLoading] = useState(true);
     const [image, setImage] = useState<string | null>(null);
     const [messageApi, contextHolder] = message.useMessage();
@@ -21,8 +21,8 @@ export default function ProductImageView({product, width, height} :MerchantProdu
         setLoading(true)
         try {
             const accessToken = localStorage.getItem('accessToken');
-            console.log(product.id)
-            const response = await axios.get(`http://localhost:8081/api/v1/products/${product.id}/picture`, {
+            console.log(productId)
+            const response = await axios.get(`http://localhost:8081/api/v1/products/${productId}/picture`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export default function ProductImageView({product, width, height} :MerchantProdu
 
     useEffect(() => {
         getImage();
-    }, [product]);
+    }, [productId]);
 
     if(loading){
         return (
@@ -54,9 +54,9 @@ export default function ProductImageView({product, width, height} :MerchantProdu
     return (
         <div className={`flex items-center justify-center w-full h-[${height}px]`}>
             <Image
-                key={product.id}
+                key={productId}
                 src={image ? image : NoPhoto.src}
-                alt={product.name}
+                alt={productId.toString()}
                 width={width}
                 height={height}
                 preview={!!image}

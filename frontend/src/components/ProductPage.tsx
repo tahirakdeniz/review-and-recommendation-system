@@ -28,6 +28,7 @@ import {RootState, useDispatch} from "@/lib/redux/store";
 import {addProductToCart} from "@/lib/redux/features/cart/cartSlice";
 import {useSelector} from "react-redux";
 import axios from "axios";
+import ProductImageView from "@/components/ProductImageView";
 
 const {Text, Title} = Typography;
 
@@ -164,10 +165,7 @@ const ProductPage: React.FC<ProductPageProps> = ({product}) => {
                         <Row gutter={[16, 16]} justify="center" align="top">
                             <Col xs={24} lg={12}>
                                 <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
-                                    <Image
-                                        src={"https://cdn.pixabay.com/photo/2017/03/17/10/29/coffee-2151200_1280.jpg"}
-                                        alt={productState.name}
-                                    />
+                                    <ProductImageView productId={product.id} />
                                 </div>
                             </Col>
                             <Col xs={24} lg={12}>
