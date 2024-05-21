@@ -1,9 +1,52 @@
 import React from "react";
-import {MerchantRequestDto} from "@/lib/dto";
+import {MerchantRequestAnswer, MerchantRequestDto} from "@/lib/dto";
+import {message} from "antd";
+import axios from "axios";
+import {baseURL} from "@/lib/const";
+import {errorHandler} from "@/lib/utils";
 
-export const AdministrationMerchantRequestTable = ({merchantRequest}: { merchantRequest: MerchantRequestDto[] }) => {
+export const AdministrationMerchantRequestTable = ({merchantRequests, fetchData}: { merchantRequests: MerchantRequestDto[], fetchData: () => void}) => {
+
+    const [messageApi, contextHolder] = message.useMessage();
+    const [loading, setLoading] = React.useState(false);
+
+    const answerMerchantRequest = async (request: MerchantRequestDto, isApproved: boolean) => {
+        setLoading(true);
+        const accessToken = localStorage.getItem('accessToken');
+        try {
+            const response = await axios.put(
+                `${baseURL}/merchant-requests/answer/${request.merchantRequestUserDto.username}`,
+                {
+                    message: isApproved ? "Request approved" : "Request rejected",
+                    isApproved: isApproved,
+                } as MerchantRequestAnswer,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                }
+            );
+            messageApi.success(response.data);
+        } catch (error) {
+            const errorMessage = errorHandler(error, 'Answer Merchant Request');
+            messageApi.error(errorMessage);
+        } finally {
+            setLoading(false);
+            fetchData();
+        }
+    };
+
+    const approveMerchantRequest = async (request: MerchantRequestDto) => {
+        await answerMerchantRequest(request, true);
+    };
+
+    const rejectMerchantRequest = async (request: MerchantRequestDto) => {
+        await answerMerchantRequest(request, false);
+    };
+
     return (
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            {contextHolder}
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                 <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                     <table className="min-w-full divide-y divide-gray-200 table-fixed">
@@ -28,7 +71,7 @@ export const AdministrationMerchantRequestTable = ({merchantRequest}: { merchant
                         </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                        {merchantRequest.length === 0 &&
+                        {merchantRequests.length === 0 &&
                             <tr>
                                 <td colSpan={4}
                                     className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
@@ -37,7 +80,7 @@ export const AdministrationMerchantRequestTable = ({merchantRequest}: { merchant
                             </tr>
                         }
 
-                        {merchantRequest.map((merchantRequest, index) => (
+                        {merchantRequests.map((merchantRequest, index) => (
                             <tr key={index}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                     {merchantRequest.merchantRequestUserDto.firstName} {merchantRequest.merchantRequestUserDto.lastName}
@@ -59,9 +102,9 @@ export const AdministrationMerchantRequestTable = ({merchantRequest}: { merchant
                                                 Pending:
                                             </span>
                                             <a className="text-indigo-600 hover:text-indigo-900 ml-4"
-                                               onClick={() => console.log("Accept")}>Accept</a>
+                                               onClick={() => approveMerchantRequest(merchantRequest)}>Accept</a>
                                             <a className="ml-4 text-red-600 hover:text-red-900"
-                                               onClick={() => console.log("Declined")}>Decline</a>
+                                               onClick={() => rejectMerchantRequest(merchantRequest)}>Decline</a>
                                         </>
                                     )}
                                     {merchantRequest.status === 'APPROVED' && (
