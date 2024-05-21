@@ -27,7 +27,7 @@ export function useProductImage(productId: number) {
             setImage(imageUrl);
         } catch (error) {
             const errorMessage = errorHandler(error, 'Error fetching images');
-            message.error(errorMessage);
+            console.log(errorMessage);
         }
         setLoading(false);
     };
