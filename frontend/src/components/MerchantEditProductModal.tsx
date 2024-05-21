@@ -8,6 +8,7 @@ import TextArea from "antd/es/input/TextArea";
 import FormData from "form-data";
 import axios from "axios";
 import {LoadingOutlined, PlusOutlined} from "@ant-design/icons";
+import {baseURL} from "@/lib/const";
 
 type FileType = File;
 
@@ -91,7 +92,7 @@ export const MerchantEditProductModal: React.FC = () => {
                         customRequest={async ({file, onSuccess, onError}) => {
                             const data = new FormData();
                             data.append('image', file);
-                            const res = await axios.post('http://localhost:8081/api/v1/products/23/image', data, {
+                            const res = await axios.post(`${baseURL}/products/${product?.id}/image`, data, {
                                 headers: {
                                     'Authorization':`Bearer ${localStorage.getItem('accessToken')} `,
                                     'Content-Type': 'multipart/form-data'
