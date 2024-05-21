@@ -143,8 +143,6 @@ public class UserService {
         tokenService.addAll(validUserTokens);
     }
 
-
-
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
@@ -197,20 +195,21 @@ public class UserService {
 
         repository.save(newUser);
 
-        byte[] userImage = newUser.getProfilePicture();
-
-        if (userImage == null) return null;
-        try {
-            return ImageUtil.decompressImage(userImage);
-        } catch (DataFormatException | IOException e) {
-            throw new ImageProcessingException("change this....");
-        }
-
+        return getProfilePicture(newUser);
     }
 
     public byte[] downloadProfilePicture(Principal currentUser) {
         var user = userUtil.extractUser(currentUser);
+        return getProfilePicture(user);
+    }
 
+    public byte[] downloadProfilePictureById(String id) {
+        var user = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return getProfilePicture(user);
+    }
+
+    private byte[] getProfilePicture(User user) {
         byte[] userImage = user.getProfilePicture();
 
         if (userImage == null) return null;
@@ -221,7 +220,6 @@ public class UserService {
             throw new ImageProcessingException("change this....");
         }
     }
-
 
     protected void changeUserRole(User user, String role) {
         Role newRole = roleService.findByName(role)
@@ -421,4 +419,5 @@ public class UserService {
                 .map(UserDto::convert)
                 .toList();
     }
+
 }
