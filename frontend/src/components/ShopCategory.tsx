@@ -15,6 +15,7 @@ type ShopCategoryProps = {
 
 export default function ShopCategory({title, data, categoryName, full = false} :ShopCategoryProps){
     const [messageApi, contextHolder] = message.useMessage();
+    const [image, setImage] = React.useState<string>('');
     const router = useRouter();
 
     const stopPropagation = (e: React.MouseEvent) => {
@@ -23,6 +24,47 @@ export default function ShopCategory({title, data, categoryName, full = false} :
 
     const displayedData = full ? data : data.slice(0, 6);
     const categoryTargetLabel = `/shop?category=${categoryName}`
+
+    const getProfileImage = async () => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            if (!accessToken) {
+                throw new Error('Access token is missing');
+            }
+            const response = await fetch('http://localhost:8081/api/v1/products/23/picture', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`, // Include the access token in the "Authorization" header
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                console.log(error);
+                throw new Error('Failed to fetch profile Image');
+            }
+
+            const imageArrayBuffer = await response.arrayBuffer();
+            const imageData = new Uint8Array(imageArrayBuffer);
+            const imageBlob = new Blob([imageData], {type: 'image/png'});
+            const imageUrl = URL.createObjectURL(imageBlob);
+            setImage(imageUrl)
+        } catch (error) {
+            console.error('Error fetching images:', error);
+        }
+
+    }
+
+    const getImage = (index: number) => {
+        const imageBlob = new Blob([data[index].photo], {type: 'image/png'});
+        const imageUrl = URL.createObjectURL(imageBlob);
+        return imageUrl;
+    }
+
+    React.useEffect(() => {
+        getProfileImage()
+    }, []);
 
     return (
         <>
@@ -35,7 +77,7 @@ export default function ShopCategory({title, data, categoryName, full = false} :
             >
                 {data.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No products found."}/>}
                 <Row gutter={[16, 16]}>
-                    {displayedData.map(item => (
+                    {displayedData.map((item, index) => (
                         <Col key={item.id} xs={24} sm={12} md={8} lg={6} xl={4}>
                             <Card
                                 type={'inner'}
@@ -43,7 +85,7 @@ export default function ShopCategory({title, data, categoryName, full = false} :
                                 cover={
                                     <div onClick={stopPropagation}>
                                         <Image
-                                            src={'https://cdn.pixabay.com/photo/2023/08/25/10/33/apples-8212695_1280.jpg'}
+                                            src={getImage(index)}
                                             alt={item.name}
                                             style={{ padding: '10px' }}
                                             onClick={stopPropagation}
