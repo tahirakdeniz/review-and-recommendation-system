@@ -61,9 +61,14 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.submitReview(currentUser, productId, reviewSubmitRequest), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{reviewId}")
+    @PutMapping("/update/{reviewId}")
     public ResponseEntity<ReviewDto> updateReview(Principal currentUser, @PathVariable Long reviewId, @RequestBody ReviewSubmitRequest reviewSubmitRequest){
         return ResponseEntity.ok(reviewService.updateReview(currentUser,reviewId,reviewSubmitRequest));
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<String> deleteReview(Principal currentUser, @PathVariable Long reviewId) {
+        return ResponseEntity.ok(reviewService.deleteReview(currentUser,reviewId));
     }
 
 }

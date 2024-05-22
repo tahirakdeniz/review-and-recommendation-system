@@ -181,12 +181,12 @@ public class ReviewService {
         var user = userUtil.extractUser(currentUser);
 
         var review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new PermissionDeniedException("Not previously reviewed"));
+                .orElseThrow(() -> new ReviewNotFoundException("Review not found"));
 
         if(!Objects.equals(user.getId(), review.getUser().getId())) {
             throw new PermissionDeniedException("You are not allowed to do that.");
         }
-        
+
         Product product = review.getProduct();
 
         var newReview = reviewRepository.save(
@@ -223,5 +223,30 @@ public class ReviewService {
 
         return ReviewDto.convert(reviewWithFields);
 
+    }
+
+    public String deleteReview(Principal currentUser, Long reviewId) {
+        var user = userUtil.extractUser(currentUser);
+
+        var review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException("Review not found"));
+
+        if (!Objects.equals(user.getId(), review.getUser().getId())) {
+            throw new PermissionDeniedException("You are not allowed to do that.");
+        }
+
+        Product product = review.getProduct();
+
+        // Remove all associated field scores
+        fieldScoreRepository.deleteAllByReviewId(review.getId());
+
+        // Remove the review itself
+        reviewRepository.delete(review);
+
+        // Update the product's review list if necessary
+        product.getReviews().removeIf(r -> Objects.equals(r.getId(), reviewId));
+        productRepository.save(product);
+
+        return "Review deleted successfully";
     }
 }
