@@ -6,6 +6,8 @@ import {errorHandler} from "@/lib/utils";
 import {Avatar, Button, Card, Col, Row} from "antd";
 import {CloseCircleOutlined, UserOutlined} from "@ant-design/icons";
 import {Roles} from "@/lib/enums";
+import {useSelector} from "react-redux";
+import {RootState} from "@/lib/redux/store";
 
 export function ForumPost(props: {
     onClick: () => Promise<void>,
@@ -15,8 +17,9 @@ export function ForumPost(props: {
     const [image, setImage] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const user = useSelector((state: RootState) => state.user.user)
     const role = localStorage.getItem('role');
-    const username = localStorage.getItem('username');
+    const username = user?.username;
 
     const getImage = async () => {
         setLoading(true)
@@ -45,13 +48,12 @@ export function ForumPost(props: {
     }, []);
 
     return <Card style={{marginBottom: 12, minHeight: 60}}>
-        <Button
+        {((role === Roles.ADMIN || role === Roles.COMMUNITY_MODERATOR) || props.post.userDto.username === username) && <Button
             style={{position: "absolute", top: 8, right: 8, backgroundColor: "transparent", border: "none"}}
             icon={<CloseCircleOutlined style={{color: "red"}}/>}
             onClick={props.onClick}
             disabled={props.disabled}
-            hidden={!((role === Roles.ADMIN || role === Roles.COMMUNITY_MODERATOR) || props.post.userDto.username === username)}
-        />
+        />}
         <Row gutter={16}>
             <Col span={5}>
                 <Card style={{
