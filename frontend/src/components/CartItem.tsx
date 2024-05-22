@@ -3,21 +3,22 @@ import {DeleteOutlined, PlusOutlined} from '@ant-design/icons';
 import {useDispatch} from "@/lib/redux/store";
 import {addProductToCart, removeProduct} from "@/lib/redux/features/cart/cartSlice";
 import { useRouter } from 'next/navigation';
+import { useProductImage } from "@/lib/useProductImage";
 
 
 interface CartItemProps {
     name: string;
-    image: string;
     rating: number;
     price: number;
     count: number;
-    id?: string
+    id: number;
 }
 
-export default function CartItem({name, image, rating, price, count, id}: CartItemProps) {
+export default function CartItem({name, rating, price, count, id}: CartItemProps) {
     const dispatch = useDispatch();
     const [messageApi, contextHolder] = message.useMessage();
     const router = useRouter();
+    const {image, loading, error, noImage} = useProductImage(id);
 
     const stopPropagation = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -32,13 +33,14 @@ export default function CartItem({name, image, rating, price, count, id}: CartIt
                 onClick={() => router.push(`/shop/product/${id}`)}
                 style={{ width: '100%', textAlign: 'center' }}
                 cover={
-                    <img alt={name} src={image} style={{ padding: '10px' }} />
+                    loading ? <div>Loading...</div> :
+                        <img alt={name} src={image || noImage} style={{ padding: '10px' }} />
                 }
                 actions={[
                     <Button key='delete' type="primary" danger icon={<DeleteOutlined />} size="small" onClick={async (e) => {
                         stopPropagation(e);
                         if(id) {
-                            const res = await dispatch(removeProduct(Number(id)))
+                            const res = await dispatch(removeProduct(id))
                             if(res.meta.requestStatus == "fulfilled"){
                                 messageApi.success("Item Deleted Successfully");
                             }
