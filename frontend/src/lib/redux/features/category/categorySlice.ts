@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { baseURL } from '@/lib/const';
 import { ProductCategoryDto, ProductCategoryRequest } from '@/lib/dto';
+import {errorHandler} from "@/lib/utils";
 
 interface CategoryState {
     categories: ProductCategoryDto[];
@@ -63,7 +64,8 @@ export const deleteCategory = createAsyncThunk<number, number>('categories/delet
         });
         return id;
     } catch (error) {
-        return rejectWithValue(error.response?.data.message || 'Failed to delete category');
+        const errorMessage = errorHandler(error, 'Delete Category');
+        return rejectWithValue(errorMessage);
     }
 });
 
