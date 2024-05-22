@@ -33,6 +33,8 @@ import {addProductToWishlist} from "@/lib/redux/features/wishlist/wishlistSlice"
 import ProductImageView from "@/components/ProductImageView";
 import {useProductImage} from "@/lib/useProductImage";
 import {ProductReview} from "@/components/ProductReview";
+import {UpdateReviewModal} from "@/components/UpdateReviewModal";
+import {fetchProducts} from "@/lib/redux/features/productManagment/productManagmentSlice";
 
 const {Text, Title} = Typography;
 
@@ -223,7 +225,7 @@ const ProductPage: React.FC<ProductPageProps> = ({product, fetchProduct}) => {
                             productState.reviewDto.reviews.map((review, index) => (
                                 <ProductReview key={index} review={review} productState={productState}
                                                confirmDelete={confirmDelete} setSelectedReview={setSelectedReview}
-                                               setOpenReplyModal={setOpenReplyModal} isMerchant={isMerchant} isAdmin={isAdmin}/>
+                                               setOpenReplyModal={setOpenReplyModal} isMerchant={isMerchant} isAdmin={isAdmin} fetchProducts={fetchProduct}/>
                             ))
                         }
                     </Card>

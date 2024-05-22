@@ -6,6 +6,10 @@ import {errorHandler} from "@/lib/utils";
 import {Avatar, Card, Divider, Rate, Space, Typography} from "antd";
 import {UserOutlined} from "@ant-design/icons";
 import {ProductReviewReply} from "@/components/ProductReviewReply";
+import {useSelector} from "react-redux";
+import {RootState} from "@/lib/redux/store";
+import {UpdateReviewModal} from "@/components/UpdateReviewModal";
+import {fetchProducts} from "@/lib/redux/features/productManagment/productManagmentSlice";
 
 const {Text, Title} = Typography;
 type ProductReviewProps = {
@@ -16,6 +20,7 @@ type ProductReviewProps = {
     setOpenReplyModal: (open: boolean) => void;
     isMerchant: boolean;
     isAdmin: boolean;
+    fetchProducts: () => void;
 }
 
 export const ProductReview = ({
@@ -25,11 +30,14 @@ export const ProductReview = ({
                                   isAdmin,
                                   setSelectedReview,
                                   confirmDelete,
-                                  setOpenReplyModal
+                                  setOpenReplyModal, fetchProducts
                               }: ProductReviewProps) => {
     const [image, setImage] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const {user} = useSelector((state: RootState) => state.user)
+    const username = user?.username;
+    const [open, setOpen] = useState(false);
 
     const getImage = async () => {
         setLoading(true)
@@ -61,15 +69,19 @@ export const ProductReview = ({
         <Card style={{marginBottom: '10px'}}
               extra={
                   <Space>
-                      {isMerchant && productState.topicUserDto.username === localStorage.getItem('username') && (
+                      {isMerchant && productState.topicUserDto.username === username && (
                           <Typography.Link onClick={() => {
                               setSelectedReview(review);
                               setOpenReplyModal(true);
                           }}>Reply</Typography.Link>
                       )}
-                      {isAdmin && (
+                      {/*{isAdmin || username === review.userDto.username && (*/}
+                      {/*    <Typography.Link*/}
+                      {/*        onClick={() => confirmDelete(review)}>Delete</Typography.Link>*/}
+                      {/*)}*/}
+                      {username === review.userDto.username && (
                           <Typography.Link
-                              onClick={() => confirmDelete(review)}>Delete</Typography.Link>
+                              onClick={() => setOpen(true)}>Update</Typography.Link>
                       )}
                   </Space>
               }
@@ -99,6 +111,7 @@ export const ProductReview = ({
                                         reviewReplyDto={review.reviewReplyDto}/>
                 )}
             </Space>
+            <UpdateReviewModal open={open} onClose={() => setOpen(false)} product={productState} onSubmit={() => fetchProducts()} review={review}/>
         </Card>
     )
 }
