@@ -8,6 +8,7 @@ import productReducer from "@/lib/redux/features/productManagment/productManagme
 import {useDispatch as reduxUseDispatch} from "react-redux";
 import userReducer from "@/lib/redux/features/user/userSlice"
 import wishlistReducer from "@/lib/redux/features/wishlist/wishlistSlice";
+import categoryReducer from "@/lib/redux/features/category/categorySlice";
 
 
 export const store = configureStore({
@@ -18,7 +19,8 @@ export const store = configureStore({
         login: loginReducer,
         products: productReducer,
         user: userReducer,
-        wishlist: wishlistReducer
+        wishlist: wishlistReducer,
+        categories: categoryReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(cartApi.middleware),

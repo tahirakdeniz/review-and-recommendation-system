@@ -5,6 +5,7 @@ import {AdministrationReviewFormSection} from "@/components/AdministrationReview
 import {AdministrationBannedUsersSection} from "@/components/AdministrationBannedUsersSection";
 import {Roles} from "@/lib/enums";
 import Result403 from "@/components/Result403";
+import AdministrationCategorySection from "@/components/AdministrationCategorySection";
 import AdministrationInteractionWeightSection from "@/components/AdministrationInteractionWeightSection";
 
 export default function Administration() {
@@ -20,6 +21,7 @@ export default function Administration() {
                 <AdministrationMerchantRequestSection/>
                 <AdministrationReviewFormSection/>
                 <AdministrationBannedUsersSection/>
+                <AdministrationCategorySection/>
                 <AdministrationInteractionWeightSection/>
             </div>
         </div>
