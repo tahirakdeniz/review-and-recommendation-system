@@ -90,10 +90,15 @@ export const ProductReview = ({
         >
             <Space direction="vertical" style={{width: '100%'}}>
                 <Space>
-                    <Rate disabled
-                          allowHalf
-                          defaultValue={(review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length)/2}/>
-                    <span>{(review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length).toFixed(2)}</span>
+                    {review.fieldScoreDtos.length > 0 && (
+                        <>
+                            <Rate disabled
+                                  allowHalf
+                                  defaultValue={(review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length)/2}/>
+                            <span>{(review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length).toFixed(2)}</span>
+                        </>
+                    )
+                    }
                 </Space>
                 <Space direction="horizontal">
                     {review.fieldScoreDtos.map((field, index) => (
