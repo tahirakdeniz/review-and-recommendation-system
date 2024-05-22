@@ -15,22 +15,25 @@ export default function Product({ params: { productId } }: ProductProps) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const response = await axios.get(`${baseURL}/products/get/${productId}`);
-                if (response.status === 200) {
-                    setProduct(response.data);
-                } else {
-                    setError("Product not found");
-                }
-            } catch (error) {
-                console.error("Error fetching product:", error);
-                setError("Error fetching product");
-            } finally {
-                setLoading(false);
+    const fetchProduct = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${baseURL}/products/get/${productId}`);
+            if (response.status === 200) {
+                setProduct(response.data);
+            } else {
+                setError("Product not found");
             }
-        };
+        } catch (error) {
+            console.error("Error fetching product:", error);
+            setError("Error fetching product");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+
 
         fetchProduct();
     }, [productId]);
@@ -44,7 +47,7 @@ export default function Product({ params: { productId } }: ProductProps) {
     }
 
     if (product) {
-        return <ProductPage product={product} />;
+        return <ProductPage product={product} fetchProduct={fetchProduct}/>;
     }
 
     return null;
