@@ -179,6 +179,23 @@ export type ProductCategoryRequest = {
     name: string;
     description: string;
 }
+export interface InteractionWeightDto {
+    id: number;
+    type: InteractionWeightType;
+    weight: number;
+}
+
+export interface InteractionWeightRequest {
+    type: InteractionWeightType;
+    weight: number;
+}
+
+export enum InteractionWeightType {
+    PURCHASE = "PURCHASE",
+    REVIEW = "REVIEW"
+}
+
+
 
 
 
