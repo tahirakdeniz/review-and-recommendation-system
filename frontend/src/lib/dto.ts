@@ -175,6 +175,10 @@ export interface MerchantRequestAnswer {
     isApproved: boolean;
 }
 
+export type ProductCategoryRequest = {
+    name: string;
+    description: string;
+}
 
 
 

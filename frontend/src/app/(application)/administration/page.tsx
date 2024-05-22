@@ -5,6 +5,7 @@ import {AdministrationReviewFormSection} from "@/components/AdministrationReview
 import {AdministrationBannedUsersSection} from "@/components/AdministrationBannedUsersSection";
 import {Roles} from "@/lib/enums";
 import Result403 from "@/components/Result403";
+import AdministrationCategorySection from "@/components/AdministrationCategorySection";
 
 export default function Administration() {
     const role = localStorage.getItem('role');
@@ -19,6 +20,7 @@ export default function Administration() {
                 <AdministrationMerchantRequestSection/>
                 <AdministrationReviewFormSection/>
                 <AdministrationBannedUsersSection/>
+                <AdministrationCategorySection/>
             </div>
         </div>
     );
