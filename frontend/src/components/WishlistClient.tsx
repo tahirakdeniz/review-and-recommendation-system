@@ -7,6 +7,7 @@ import {RootState, useDispatch} from "@/lib/redux/store";
 import {fetchWishlist, removeProductFromWishlist} from "@/lib/redux/features/wishlist/wishlistSlice";
 import {WishListItemDto} from "@/lib/dto";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
+import WishlistItem from "@/components/WishlistItem";
 
 
 export function WishlistClient() {
@@ -67,19 +68,7 @@ export function WishlistClient() {
                                 <div style={{ height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center' }} />
                             </Spin>
                         ) : wishlistItems.length > 0 ? wishlistItems.map((wishlistItem, index) => (
-                            <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
-                                <Card
-                                    cover={<img alt={wishlistItem.productDto.name} src={'https://cdn.pixabay.com/photo/2016/03/30/21/59/coffee-beans-1291656_1280.jpg'} />}
-                                    actions={[
-                                        <Button key="Remove" type="link" danger onClick={() => confirmRemove(wishlistItem.productDto.id)}>Remove</Button>,
-                                    ]}
-                                >
-                                    <Card.Meta
-                                        title={wishlistItem.productDto.name}
-                                        description={`Price: ${wishlistItem.productDto.price}`}
-                                    />
-                                </Card>
-                            </Col>
+                            <WishlistItem key={index} index={index} wishlistItem={wishlistItem} confirmRemove={confirmRemove} />
                         )) : (
                             <div className={'mx-auto'}>
                                 <Empty description="No items in wishlist" />
