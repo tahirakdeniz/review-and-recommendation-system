@@ -8,6 +8,7 @@ import com.rrss.backend.repository.ConfirmationRepository;
 import com.rrss.backend.repository.UserRepository;
 import com.rrss.backend.util.EmailUtil;
 import jakarta.mail.MessagingException;
+import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -88,7 +89,7 @@ public class ConfirmationService {
 
     protected void delete(String email) {
         repository.delete(repository.findByEmail(email)
-                .orElseThrow(() -> new PermissionDeniedException("email cant found so deletion wont work"))
+                .orElseThrow(() -> new EmailNotFoundException("email cant found so deletion wont work"))
         );
     }
 }

@@ -150,6 +150,21 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(UserNotFoundException ex) {
         return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(EmailNotFoundException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(EmailNotFoundException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ProductAlreadyExistInWishlistException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(ProductAlreadyExistInWishlistException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RequestDeniedException.class)
+    public ResponseEntity<Map<String, List<ErrorResponse>>> handleNotFoundException(RequestDeniedException ex) {
+        return new ResponseEntity<>(getErrorsMap(getErrorList(ex)), new HttpHeaders(), HttpStatus.FORBIDDEN);
+    }
     /*
      * CUSTOM EXCEPTIONS
      * */
