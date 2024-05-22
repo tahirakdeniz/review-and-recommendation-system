@@ -67,9 +67,10 @@ public class ProductCategoryService {
             throw new ProductCategoryNotFoundException("Product category not found");
         }
 
-        if (repository.existsByName(productCategoryRequest.name()))
+        var prodCategory = repository.findByName(productCategoryRequest.name());
+        if (prodCategory.isPresent() && prodCategory.get().getId() != id) {
             throw new ProductCategoryAlreadyExistException("product category with this name already exists.");
-
+        }
 
         return ProductCategoryDto.convert(
                 repository.save(
