@@ -1,6 +1,6 @@
 'use client';
 
-import {Button, Card, Col, Empty, message, Modal, Row} from "antd";
+import {Button, Card, Col, Empty, message, Modal, Row, Badge} from "antd";
 import CartItem from "@/components/CartItem";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
 import {useEffect, useState} from "react";
@@ -8,7 +8,6 @@ import {RootState, useDispatch} from "@/lib/redux/store";
 import {buyProduct, fetchCart} from "@/lib/redux/features/cart/cartSlice";
 import {useSelector} from "react-redux";
 import {ICartItem} from "@/lib/entity/CartItem";
-
 
 export default function CartSection(){
     const [modal, contextHolder] = Modal.useModal();
@@ -54,9 +53,8 @@ export default function CartSection(){
                         {cartItems.length > 0 ? cartItems?.map((cartItem, index) => (
                             <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
                                 <CartItem name={cartItem.productDto.name}
-                                          id={cartItem.productDto.id}
+                                          id={cartItem.productDto.id ? Number(cartItem.productDto.id) : 0}
                                           count={cartItem.quantity}
-                                          image={'https://cdn.pixabay.com/photo/2016/03/30/21/59/coffee-beans-1291656_1280.jpg'}
                                           price={cartItem.productDto.price}
                                           rating={5} />
                             </Col>
