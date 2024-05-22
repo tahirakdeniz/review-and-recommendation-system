@@ -337,7 +337,7 @@ public class UserService {
 
     public String banUser(String userId) {
         var oldUser = repository.findById(userId)
-                        .orElseThrow(() -> new PermissionDeniedException("user not found"));
+                        .orElseThrow(() -> new UserNotFoundException("user not found"));
 
         repository.save(
                 new User(
@@ -377,7 +377,7 @@ public class UserService {
 
     public String unbanUser(String userId) {
         var oldUser = repository.findById(userId)
-                .orElseThrow(() -> new PermissionDeniedException("user not found"));
+                .orElseThrow(() -> new UserNotFoundException("user not found"));
 
         repository.save(
                 new User(

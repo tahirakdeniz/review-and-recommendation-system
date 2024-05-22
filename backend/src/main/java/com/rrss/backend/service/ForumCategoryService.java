@@ -72,7 +72,7 @@ public class ForumCategoryService {
         return ForumCategoryDto.convert(
                 repository.findById(id)
                         .orElseThrow(
-                                () -> new PermissionDeniedException("forum category not found")
+                                () -> new ForumCategoryNotFoundException("Forum category not found.")
                         )
         );
     }

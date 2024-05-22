@@ -3,9 +3,7 @@ package com.rrss.backend.service;
 import com.rrss.backend.dto.ProductCategoryDto;
 import com.rrss.backend.dto.ProductCategoryRequest;
 import com.rrss.backend.dto.ReviewFormRequest;
-import com.rrss.backend.exception.custom.PermissionDeniedException;
-import com.rrss.backend.exception.custom.ProductCategoryAlreadyExistException;
-import com.rrss.backend.exception.custom.ProductCategoryNotFoundException;
+import com.rrss.backend.exception.custom.*;
 import com.rrss.backend.model.ProductCategory;
 import com.rrss.backend.model.ReviewForm;
 import com.rrss.backend.repository.ProductCategoryRepository;
@@ -85,14 +83,14 @@ public class ProductCategoryService {
 
     public String deleteProductCategory(long id) {
         if (repository.existsWithAssignedProducts(id)) {
-            throw new PermissionDeniedException("You can't delete this product category because there is a product in it.");
+            throw new RequestDeniedException("You can't delete this product category because there is a product in it.");
         }
 
         ReviewForm reviewForm = reviewFormRepository.findByProductTypeName(
                 repository.findById(id)
-                        .orElseThrow(() -> new PermissionDeniedException("form cant found"))
+                        .orElseThrow(() -> new ProductCategoryNotFoundException("product category not found."))
                         .getName()
-        ).orElseThrow(() -> new ProductCategoryNotFoundException("product category not found."));
+        ).orElseThrow(() -> new ReviewFormNotFoundException("form not found"));
 
         if (reviewForm != null) {
             reviewFieldRepository.deleteAll(reviewForm.getFields());

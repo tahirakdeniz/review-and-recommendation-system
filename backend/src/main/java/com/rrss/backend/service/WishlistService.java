@@ -5,6 +5,7 @@ import com.rrss.backend.dto.RemoveProductFromWishlist;
 import com.rrss.backend.dto.WishListItemDto;
 import com.rrss.backend.dto.WishlistDto;
 import com.rrss.backend.exception.custom.PermissionDeniedException;
+import com.rrss.backend.exception.custom.ProductAlreadyExistInWishlistException;
 import com.rrss.backend.exception.custom.ProductNotFoundException;
 import com.rrss.backend.model.CartItem;
 import com.rrss.backend.model.User;
@@ -47,7 +48,7 @@ public class WishlistService {
 
         for(WishlistItem ele: wishlist.getItems()) {
             if (Objects.equals(ele.getProduct().getId(), addProductToWishlistRequest.productId()))
-                throw new PermissionDeniedException("Product already in wishlist");
+                throw new ProductAlreadyExistInWishlistException("Product already in wishlist");
         }
 
         WishlistItem wishlistItem = new WishlistItem(
