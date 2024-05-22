@@ -14,9 +14,10 @@ interface ReviewModalProps {
     onClose: () => void;
     product: ProductDto;
     onSubmit: (review: ProductReviewReviewDto) => void;
+    review: ProductReviewReviewDto;
 }
 
-export const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, product, onSubmit, }) => {
+export const UpdateReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, product, onSubmit, review}) => {
     const [reviewFieldScores, setReviewFieldScores] = useImmer<{reviewFieldDto: ReviewFieldDto, score: number}[]>([]);
     const [comment, setComment] = useState("");
     const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, product
                 setReviewFieldScores(draft => {
                     return res.data.reviewFieldDtos.map(reviewFieldDto => ({
                         reviewFieldDto: reviewFieldDto,
-                        score: 0,
+                        score: review.fieldScoreDtos.find(fieldScore => fieldScore.reviewFieldDto.id === reviewFieldDto.id)?.score || 0,
                     }));
                 });
             }
@@ -49,8 +50,11 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, product
 
     useEffect(() => {
         getReviewForm();
-        setComment('');
     }, [open]);
+
+    useEffect(() => {
+        setComment(review.comment);
+    }, [review]);
 
     const handleRateChange = (index: number, score: number) => {
         console.log('index', index)
@@ -97,13 +101,13 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, product
         }
 
         try {
-            const response = await axios.post(`http://localhost:8081/api/v1/reviews/${product.id}`, body, config);
-            if (response.status === 201) {
-                message.success("Review submitted successfully");
+            const response = await axios.put(`http://localhost:8081/api/v1/reviews/update/${review.id}`, body, config);
+            if (response.status === 200) {
+                message.success("Review updated successfully");
                 onSubmit(response.data as ProductReviewReviewDto);
 
             } else {
-                message.error("Failed to submit review");
+                message.error("Failed to updated review");
             }
 
         } catch (error) {
@@ -121,34 +125,34 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, product
     return (
         <Modal
             open={open}
-            title={<Title level={3}>Rate Product</Title>}
-            onCancel={onClose}
-            onOk={handleSubmit}
-            confirmLoading={loading}
-            okButtonProps={{ disabled: loading || reviewFormLoading}}
-        >
-            <Space direction={'vertical'} style={{width: '100%'}} size={32}>
-                <Space direction={'vertical'} size={1}>
-                    {reviewFormLoading ? <Spin /> : (
-                        reviewFieldScores?.map((reviewFieldScore, index) => (
-                            <div key={index}>
-                                <Title level={5}>{reviewFieldScore.reviewFieldDto.label}</Title>
-                                <Space direction={'horizontal'}>
-                                    <Rate allowHalf onChange={(value) => handleRateChange(index, value)} value={reviewFieldScore.score/2}/>
-                                    <Typography.Text>{reviewFieldScore.score}</Typography.Text>
-                                </Space>
-                            </div>
-                        ))
-                    )}
-                </Space>
+    title={<Title level={3}>Rate Product</Title>}
+    onCancel={onClose}
+    onOk={handleSubmit}
+    confirmLoading={loading}
+    okButtonProps={{ disabled: loading || reviewFormLoading}}
+>
+    <Space direction={'vertical'} style={{width: '100%'}} size={32}>
+    <Space direction={'vertical'} size={1}>
+        {reviewFormLoading ? <Spin /> : (
+                reviewFieldScores?.map((reviewFieldScore, index) => (
+                    <div key={index}>
+                    <Title level={5}>{reviewFieldScore.reviewFieldDto.label}</Title>
+                        <Space direction={'horizontal'}>
+            <Rate allowHalf onChange={(value) => handleRateChange(index, value)} value={reviewFieldScore.score/2}/>
+    <Typography.Text>{reviewFieldScore.score}</Typography.Text>
+    </Space>
+    </div>
+))
+)}
+    </Space>
 
-                <TextArea
-                    rows={4}
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Add your comment"
-                />
-            </Space>
+    <TextArea
+    rows={4}
+    value={comment}
+    onChange={(e) => setComment(e.target.value)}
+    placeholder="Add your comment"
+        />
+        </Space>
         </Modal>
-    );
+);
 };
