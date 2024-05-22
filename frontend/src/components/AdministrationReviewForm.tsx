@@ -10,9 +10,10 @@ interface AdminReviewFormProps {
     data: ReviewFormDto;
     onChange: (data: ReviewFormDto) => void;
     onDelete: (id: number) => void;
+    fetchReviewForms: () => void;
 }
 
-const AdministrationReviewForm = ({ data, onChange, onDelete }: AdminReviewFormProps) => {
+const AdministrationReviewForm = ({ data, onChange, onDelete, fetchReviewForms}: AdminReviewFormProps) => {
     const accessToken = localStorage.getItem("accessToken");
 
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -47,6 +48,7 @@ const AdministrationReviewForm = ({ data, onChange, onDelete }: AdminReviewFormP
                 reviewFieldDtos: [...data.reviewFieldDtos, response.data],
             });
             message.success('New field added successfully');
+            fetchReviewForms();
             setIsAddModalVisible(false);
         } catch (error) {
             message.error('Failed to add new field');
@@ -89,6 +91,7 @@ const AdministrationReviewForm = ({ data, onChange, onDelete }: AdminReviewFormP
                 ),
             });
             message.success('Field updated successfully');
+            fetchReviewForms();
             setIsEditModalVisible(false);
         } catch (error) {
             message.error('Failed to update field');
@@ -119,6 +122,7 @@ const AdministrationReviewForm = ({ data, onChange, onDelete }: AdminReviewFormP
                 reviewFieldDtos: data.reviewFieldDtos.filter(field => field.id !== id),
             });
             message.success('Field deleted successfully');
+            fetchReviewForms();
         } catch (error) {
             message.error('Failed to delete field');
         }
@@ -129,14 +133,15 @@ const AdministrationReviewForm = ({ data, onChange, onDelete }: AdminReviewFormP
             <Card type="inner" title={nameFormatter(data.productCategoryDto.name)}
                   extra={
                       <div>
-                          <Tooltip key="delete" title="Delete">
-                              <Button type="text" icon={<DeleteOutlined />} onClick={() => onDelete(data.id)}/>
-                          </Tooltip>
+                          {/*<Tooltip key="delete" title="Delete">*/}
+                          {/*    <Button type="text" icon={<DeleteOutlined />} onClick={() => onDelete(data.id)}/>*/}
+                          {/*</Tooltip>*/}
                           <Tooltip key="add" title="Add New Field">
                               <Button type="text" icon={<PlusCircleOutlined />} onClick={showAddModal}/>
                           </Tooltip>
                       </div>
                   }
+                  style={{height: '300px'}}
             >
                 <div className="scrollable-container">
                     <List

@@ -170,6 +170,13 @@ export type RemoveProductFromWishlistRequest = {
     id: number;
 }
 
+export interface MerchantRequestAnswer {
+    message: string;
+    isApproved: boolean;
+}
+
+
+
 
 
 

@@ -35,8 +35,8 @@ const Navbar = () => {
     const {user, error} = useSelector((state: RootState) => state.user);
     const router = useRouter();
     const [search, setSearch] = useState('');
+    const [accessToken, setAccessToken] = useState<string | undefined>();
 
-    const accessToken = localStorage.getItem('accessToken');
     const role = user?.role;
     const firstPath = pathname.split('/')[1];
     const hasLoggedIn = accessToken!==null && user!==null;
@@ -45,6 +45,13 @@ const Navbar = () => {
         dispatch(fetchUser())
         dispatch(fetchUserImage())
     }, [dispatch]);
+
+    useEffect(() => {
+        const token = localStorage.getItem('accessToken');
+        if(token) {
+            setAccessToken(token);
+        }
+    }, []);
 
     const logOut = () => {
         localStorage.removeItem('accessToken');
