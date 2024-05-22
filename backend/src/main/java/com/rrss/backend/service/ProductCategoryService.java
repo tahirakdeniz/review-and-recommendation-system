@@ -63,9 +63,8 @@ public class ProductCategoryService {
     }
 
     public ProductCategoryDto updateProductCategory(long id, ProductCategoryRequest productCategoryRequest) {
-        if (!repository.existsById(id)) {
-            throw new ProductCategoryNotFoundException("Product category not found");
-        }
+        var productCategory = repository.findById(id)
+                .orElseThrow(() -> new ProductCategoryNotFoundException("Product category not found"));
 
         var prodCategory = repository.findByName(productCategoryRequest.name());
         if (prodCategory.isPresent() && prodCategory.get().getId() != id) {
@@ -77,7 +76,8 @@ public class ProductCategoryService {
                         new ProductCategory(
                                 id,
                                 productCategoryRequest.name(),
-                                productCategoryRequest.description()
+                                productCategoryRequest.description(),
+                                productCategory.getProducts()
                         )
                 )
         );
