@@ -60,4 +60,10 @@ public class ReviewController {
     public ResponseEntity<ReviewDto> submitReview(Principal currentUser, @PathVariable Long productId, @RequestBody ReviewSubmitRequest reviewSubmitRequest) {
         return new ResponseEntity<>(reviewService.submitReview(currentUser, productId, reviewSubmitRequest), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<ReviewDto> updateReview(Principal currentUser, @PathVariable Long reviewId, @RequestBody ReviewSubmitRequest reviewSubmitRequest){
+        return ResponseEntity.ok(reviewService.updateReview(currentUser,reviewId,reviewSubmitRequest));
+    }
+
 }

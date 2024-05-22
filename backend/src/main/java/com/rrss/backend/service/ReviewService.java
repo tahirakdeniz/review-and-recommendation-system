@@ -177,4 +177,51 @@ public class ReviewService {
                 .toList();
     }
 
+    public ReviewDto updateReview(Principal currentUser, Long reviewId, ReviewSubmitRequest reviewSubmitRequest) {
+        var user = userUtil.extractUser(currentUser);
+
+        var review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new PermissionDeniedException("Not previously reviewed"));
+
+        if(!Objects.equals(user.getId(), review.getUser().getId())) {
+            throw new PermissionDeniedException("You are not allowed to do that.");
+        }
+        
+        Product product = review.getProduct();
+
+        var newReview = reviewRepository.save(
+                new Review(
+                        review.getId(),
+                        product,
+                        review.getUser(),
+                        reviewSubmitRequest.comment()
+                )
+        );
+
+        List<FieldScore> fieldScores = reviewSubmitRequest
+                .fieldScores()
+                .stream()
+                .map(scoreDto ->
+                        fieldScoreRepository.save(
+                                new FieldScore(
+                                        new FieldScoreId(0L, scoreDto.fieldId()),
+                                        newReview,
+                                        reviewFieldRepository.findById(scoreDto.fieldId())
+                                                .orElseThrow(() -> new ReviewFieldNotFoundException("Review field not found")),
+                                        scoreDto.score()
+                                )
+                        )
+                )
+                .toList();
+
+        newReview.getScores().addAll(fieldScores);
+
+        var reviewWithFields = reviewRepository.save(newReview);
+
+        product.getReviews().add(reviewWithFields);
+        productRepository.save(product);
+
+        return ReviewDto.convert(reviewWithFields);
+
+    }
 }
