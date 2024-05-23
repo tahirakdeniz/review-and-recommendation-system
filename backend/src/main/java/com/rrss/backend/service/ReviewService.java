@@ -132,11 +132,6 @@ public class ReviewService {
                 .anyMatch(purchase -> purchase.getItems().stream()
                         .anyMatch(item -> Objects.equals(item.getProduct().getId(), productId)));
 
-        boolean hasComment = reviewRepository.existsByUserId(user.getId());
-
-        if (hasComment) {
-            throw new PermissionDeniedException("You cant do that because you already submit review on it");
-        }
 
         if (!boughtProduct) {
             throw new PermissionDeniedException("User has not bought the product");
@@ -144,6 +139,13 @@ public class ReviewService {
 
         Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+
+        for (var review : product.getReviews()) {
+            if (Objects.equals(review.getUser().getId(), user.getId())) {
+                throw new PermissionDeniedException("You cant do that because you already submit review on it");
+            }
+        }
 
         var review = reviewRepository.save(
                 new Review(
