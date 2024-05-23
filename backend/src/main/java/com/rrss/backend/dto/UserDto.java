@@ -45,7 +45,7 @@ public record UserDto(
                         .stream()
                         .map(UserPurchaseDto::convert)
                         .toList(),
-                from.isAccountNonLocked()
+                !from.isAccountNonLocked()
         );
     }
 }

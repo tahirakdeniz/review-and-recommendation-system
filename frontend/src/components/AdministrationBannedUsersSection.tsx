@@ -163,7 +163,13 @@ export function AdministrationBannedUsersSection() {
                                 renderItem={user => (
                                     <List.Item
                                         actions={[
-                                            <Button type="link" onClick={() => banUser(user.id)}>Ban</Button>
+                                            <>
+                                                {user.banned ? (
+                                                    <Button type="link" onClick={() => unbanUser(user.id)}>Unban</Button>
+                                                ) : (
+                                                    <Button type="link" onClick={() => banUser(user.id)}>Ban</Button>
+                                                )}
+                                            </>
                                         ]}
                                     >
                                         <List.Item.Meta

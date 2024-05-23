@@ -27,6 +27,7 @@ export interface User {
         totalCost: number;
         purchaseDate: string;
     }[]
+    banned: boolean;
 }
 
 interface UserState {
