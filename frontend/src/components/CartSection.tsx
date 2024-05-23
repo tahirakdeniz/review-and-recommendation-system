@@ -9,6 +9,7 @@ import {buyProduct, fetchCart} from "@/lib/redux/features/cart/cartSlice";
 import {useSelector} from "react-redux";
 import {ICartItem} from "@/lib/entity/CartItem";
 import Result403 from "@/components/Result403";
+import {fetchUser} from "@/lib/redux/features/user/userSlice";
 
 export default function CartSection(){
     const [modal, contextHolder] = Modal.useModal();
@@ -80,6 +81,7 @@ export default function CartSection(){
                             const res = await dispatch(buyProduct(null))
                             if(res.meta.requestStatus === 'fulfilled'){
                                 messageApi.success('Products bought successfully');
+                                dispatch(fetchUser())
                             }
                             else {
                                 messageApi.error(`Failed to buy products: ${res.payload}`);
