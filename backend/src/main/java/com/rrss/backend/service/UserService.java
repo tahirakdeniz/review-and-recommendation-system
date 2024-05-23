@@ -339,6 +339,10 @@ public class UserService {
         var oldUser = repository.findById(userId)
                         .orElseThrow(() -> new UserNotFoundException("user not found"));
 
+        if (oldUser.getRole().getName().equals("ADMIN")) {
+            throw new PermissionDeniedException("admin cannot be banned");
+        }
+
         repository.save(
                 new User(
                         oldUser.getId(),
