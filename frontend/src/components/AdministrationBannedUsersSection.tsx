@@ -149,7 +149,7 @@ export function AdministrationBannedUsersSection() {
             </Card>
             <Card title={<Title level={3}>Search Users</Title>}>
                 <Search
-                    placeholder="Search users by username, email, or name"
+                    placeholder="Search users by username"
                     enterButton
                     onSearch={handleSearch}
                     loading={searchLoading}
