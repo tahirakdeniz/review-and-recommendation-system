@@ -95,12 +95,9 @@ export const AdministrationMerchantRequestTable = ({merchantRequests, fetchData}
                                         year: 'numeric'
                                     })}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <td className="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
                                     {merchantRequest.status === 'PENDING' && (
                                         <>
-                                            <span>
-                                                Pending:
-                                            </span>
                                             <a className="text-indigo-600 hover:text-indigo-900 ml-4"
                                                onClick={() => approveMerchantRequest(merchantRequest)}>Accept</a>
                                             <a className="ml-4 text-red-600 hover:text-red-900"
