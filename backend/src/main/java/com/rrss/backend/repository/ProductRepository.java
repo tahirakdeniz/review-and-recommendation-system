@@ -6,9 +6,12 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product>  findProductsByName (String categoryName);
+
+    Optional<Product> findByName (String name);
 
     List<Product> findByProductCategoryName(String categoryName);
 
