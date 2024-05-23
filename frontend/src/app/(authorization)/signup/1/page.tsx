@@ -11,7 +11,7 @@ import {useRouter} from "next/navigation";
 import {RootState} from "@/lib/redux/store";
 
 export default function Signup1() {
-    const [isMerchant, setIsMerchant] = useState<boolean>(true);
+    const [isMerchant, setIsMerchant] = useState<boolean>(false);
     const dispatch = useDispatch();
     const router = useRouter()
     const step = useSelector((state: RootState) => state.signup.step);
