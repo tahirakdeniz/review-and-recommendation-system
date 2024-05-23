@@ -17,8 +17,9 @@ export default function Product({ params: { productId } }: ProductProps) {
     const [product, setProduct] = useState<ProductDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const {hasLoggedIn} = useSelector((state: RootState) => state.user);
+    const {user} = useSelector((state: RootState) => state.user);
 
+    const hasLoggedIn = user !== null || localStorage.getItem('accessToken') !== null;
     const fetchProduct = async () => {
         setLoading(true);
         try {

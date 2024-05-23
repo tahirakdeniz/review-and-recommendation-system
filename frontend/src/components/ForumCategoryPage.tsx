@@ -124,12 +124,12 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [categoryTitle, setCategoryTitle] = useState<string>("");
-    const {hasLoggedIn, user} = useSelector((state: RootState) => state.user);
+    const {user} = useSelector((state: RootState) => state.user);
     const pageSize = 4;
 
     const role = user ? user.role : localStorage.getItem('role');
     const username = user ? user.username : localStorage.getItem('username');
-
+    const hasLoggedIn = user !== null || localStorage.getItem('accessToken') !== null;
     const isAdmin = role === Roles.ADMIN;
     const isCommunityModerator = role === Roles.COMMUNITY_MODERATOR;
 

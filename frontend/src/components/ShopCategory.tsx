@@ -28,7 +28,7 @@ export function ShopItem({item}: ShopItemProps){
     const [messageApi, contextHolder] = message.useMessage();
     const {image, loading, error, noImage} = useProductImage(item.id);
     const {loading: addToCartLoading, error: addToCartError} = useSelector((state: RootState) => state.cart);
-    const {hasLoggedIn} = useSelector((state: RootState) => state.user);
+    const {user} = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch();
 
     async function handleAddToCart(productId:number) {
@@ -40,6 +40,7 @@ export function ShopItem({item}: ShopItemProps){
             messageApi.error(`Failed to add product to cart: ${res.payload}`);
         }
     }
+    const hasLoggedIn = user !== null || localStorage.getItem('accessToken') !== null;
 
     const addToWishlist = async (e: React.MouseEvent, productId: number) => {
         e.stopPropagation();

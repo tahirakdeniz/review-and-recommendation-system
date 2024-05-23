@@ -3,6 +3,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import axios, {AxiosError} from 'axios';
 import {ErrorResponse} from "@/lib/types";
 import {Product} from "@/lib/redux/features/productManagment/productManagmentSlice";
+import {RootState} from "@/lib/redux/store";
 
 
 export interface User {
@@ -86,7 +87,7 @@ export const fetchUserImage = createAsyncThunk(
 
 export const fetchUser = createAsyncThunk(
     'user/fetchUser',
-    async (_, { rejectWithValue }) => {
+    async (_, { getState, rejectWithValue}) => {
         const token = localStorage.getItem('accessToken');
         if (!token) {
             return rejectWithValue('No access token found');
