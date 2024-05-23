@@ -1,7 +1,7 @@
 'use client'
 
 import {Avatar, Button, Card, Checkbox, Col, Form, Input, message, Modal, Pagination, Row, Spin} from "antd";
-import {CloseCircleOutlined, EditOutlined} from '@ant-design/icons';
+import {CloseCircleOutlined, EditOutlined, UserOutlined} from '@ant-design/icons';
 import Meta from "antd/es/card/Meta";
 import TextArea from "antd/es/input/TextArea";
 import {useEffect, useState} from "react";
@@ -13,6 +13,7 @@ import {Roles} from "@/lib/enums";
 import {RootState} from "@/lib/redux/store";
 import {useSelector} from "react-redux";
 import Result403 from "@/components/Result403";
+import {errorHandler} from "@/lib/utils";
 
 interface ForumCategoryPageProps {
     categoryId: string;
@@ -222,6 +223,36 @@ function TopicCard(props: {
     const username = user ? user.username : localStorage.getItem('username');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const userId = user?.id;
+    const [loading, setLoading] = useState(false);
+    const [image, setImage] = useState<string | undefined>(undefined);
+
+    const getImage = async () => {
+        setLoading(true)
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await axios.get(`${baseURL}/users/picture/${props.topic.userDto.id}`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                responseType: 'arraybuffer',
+            });
+
+            const imageBlob = new Blob([response.data], {type: 'image/png'});
+            const imageUrl = URL.createObjectURL(imageBlob);
+            setImage(imageUrl);
+        } catch (error) {
+            const errorMessage = errorHandler(error, 'Error fetching images');
+            console.log(errorMessage);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        getImage();
+    }, []);
+
+
     return <Card style={{marginBottom: 16}}>
         {((props.admin || props.communityModerator) || props.topic.userDto.username === username || props.topic.userDto.id === userId) && (
             <Button
@@ -254,7 +285,7 @@ function TopicCard(props: {
         <Row>
             <Col span={8}>
                 <Meta
-                    avatar={<Avatar src={`url-of-the-avatar-${props.topic.userDto.username}`} size={32}/>}
+                    avatar={<Avatar src={props.topic.isAnonymous ? undefined : image} size={32} icon={<UserOutlined/>}/>}
                     title={<strong>{props.topic.userDto.username}</strong>}
                     description={props.topic.postDtos[0]?.content.length > 50 ? props.topic.postDtos[0]?.content.substring(0, 50) + "..." : props.topic.postDtos[0]?.content}
                 />
