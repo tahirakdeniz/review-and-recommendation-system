@@ -17,7 +17,9 @@ export function WishlistClient() {
     const [wishlistItems, setWishlistItems] = useState<WishListItemDto[]>([]);
     const dispatch = useDispatch();
     const [messageApi, messageContextHolder] = message.useMessage();
-    const {hasLoggedIn} = useSelector((state: RootState) => state.user);
+    const {user} = useSelector((state: RootState) => state.user);
+
+    const hasLoggedIn = user !== null || localStorage.getItem('accessToken') !== null;
 
     useEffect(() => {
         dispatch(fetchWishlist())
