@@ -76,6 +76,22 @@ public class ProductService {
             throw new PermissionDeniedException("you are not the owner of this product");
         }
 
+
+        return ProductDto.convert(
+                new Product(
+                        product.getId(),
+                        product.getName(),
+                        product.getDescription(),
+                        product.getMerchant(),
+                        product.getProductCategory(),
+                        product.getPrice(),
+                        product.getPicture(),
+                        product.getReviews(),
+                        true
+                )
+        );
+
+        /*
         List<Product> products = merchant.getProducts();
 
         products.removeIf(e -> Objects.equals(e.getId(), productId));
@@ -88,7 +104,9 @@ public class ProductService {
         ));
 
         repository.delete(product);
-        return ProductDto.convert(product);
+         return ProductDto.convert(product);
+
+         */
     }
 
     public ProductDto getProduct(Long productId) {

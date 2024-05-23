@@ -12,7 +12,8 @@ public record ProductDto(
         String productCategoryName,
         BigDecimal price,
         byte[] photo,
-        ProductReviewDto reviewDto
+        ProductReviewDto reviewDto,
+        boolean disabled
 ) {
     public static ProductDto convert(Product from) {
         return new ProductDto(
@@ -23,7 +24,8 @@ public record ProductDto(
                 from.getProductCategory().getName(),
                 from.getPrice(),
                 from.getPicture(),
-                ProductReviewDto.convert(from.getReviews())
+                ProductReviewDto.convert(from.getReviews()),
+                from.getDisabled()
 
         );
     }

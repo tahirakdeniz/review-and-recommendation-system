@@ -9,7 +9,8 @@ public record ReviewProductDto(
         String name,
         String description,
         ProductCategoryDto productCategoryDto,
-        BigDecimal price
+        BigDecimal price,
+        boolean disabled
 ) {
     public static ReviewProductDto convert(Product from) {
         return new ReviewProductDto(
@@ -17,7 +18,8 @@ public record ReviewProductDto(
                 from.getName(),
                 from.getDescription(),
                 ProductCategoryDto.convert(from.getProductCategory()),
-                from.getPrice()
+                from.getPrice(),
+                from.getDisabled()
         );
     }
 }

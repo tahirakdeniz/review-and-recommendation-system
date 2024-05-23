@@ -31,8 +31,9 @@ data class Product @JvmOverloads constructor(
     val picture: ByteArray?,
 
     @OneToMany(mappedBy = "product", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    val reviews: List<Review> = mutableListOf()
+    val reviews: List<Review> = mutableListOf(),
 
+    val disabled: Boolean = false,
 ) {
 
 }

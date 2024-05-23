@@ -287,7 +287,7 @@ function TopicCard(props: {
                 <Meta
                     avatar={<Avatar src={props.topic.isAnonymous ? undefined : image} size={32} icon={<UserOutlined/>}/>}
                     title={<strong>{props.topic.userDto.username}</strong>}
-                    description={props.topic.postDtos[0]?.content.length > 50 ? props.topic.postDtos[0]?.content.substring(0, 50) + "..." : props.topic.postDtos[0]?.content}
+                    description={props.topic.postDtos[0]?.content.length > 30 ? props.topic.postDtos[0]?.content.substring(0, 30) + "..." : props.topic.postDtos[0]?.content}
                 />
             </Col>
             <Col span={8}>
