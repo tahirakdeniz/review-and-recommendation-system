@@ -10,8 +10,8 @@ export default function SignupFormHeader(){
             <Image src={Coffee.src} alt="Login" width={100} height={100}/>
             <Title>Signup</Title>
             <Text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus et nisl eleifend, dignissim quam vitae,
-                iaculis ex. Aenean nec nunc odio. Curabitur quis porttitor mauris, ut faucibus ante. Nulla tempor nec tellus
+            Sign up now to embark on your journey with us. Gain access to exclusive features, personalized recommendations,
+            and a community of like-minded individuals. It only takes a moment to join, and it's completely free!
             </Text>
         </div>
     );
