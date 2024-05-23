@@ -63,7 +63,6 @@ const UserProfilePage: React.FC = () => {
                         <div>
                             <strong>Balance:</strong> {user.accountBalance}
                             <br />
-                            <strong>Social Credit:</strong> $1
                         </div>
                         <Space direction="horizontal">
                             <Button icon={<EditOutlined />} onClick={() => setIsModalVisible(true)} style={{ marginTop: '10px' }}>
