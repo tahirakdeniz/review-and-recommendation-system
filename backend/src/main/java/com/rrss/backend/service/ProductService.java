@@ -78,16 +78,18 @@ public class ProductService {
 
 
         return ProductDto.convert(
-                new Product(
-                        product.getId(),
-                        product.getName(),
-                        product.getDescription(),
-                        product.getMerchant(),
-                        product.getProductCategory(),
-                        product.getPrice(),
-                        product.getPicture(),
-                        product.getReviews(),
-                        true
+                repository.save(
+                    new Product(
+                            product.getId(),
+                            product.getName(),
+                            product.getDescription(),
+                            product.getMerchant(),
+                            product.getProductCategory(),
+                            product.getPrice(),
+                            product.getPicture(),
+                            product.getReviews(),
+                            true
+                    )
                 )
         );
 
