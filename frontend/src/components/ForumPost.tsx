@@ -1,6 +1,6 @@
 import {PostDto} from "@/lib/dto";
 import {useEffect, useState} from "react";
-import axios, {post} from "axios";
+import axios from "axios";
 import {baseURL} from "@/lib/const";
 import {errorHandler} from "@/lib/utils";
 import {Avatar, Button, Card, Col, Row} from "antd";
