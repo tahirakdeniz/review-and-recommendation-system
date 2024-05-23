@@ -20,9 +20,9 @@ export default function Administration() {
             <div className="flex flex-col gap-4">
                 <AdministrationMerchantRequestSection/>
                 <AdministrationReviewFormSection/>
-                <AdministrationBannedUsersSection/>
                 <AdministrationCategorySection/>
                 <AdministrationInteractionWeightSection/>
+                <AdministrationBannedUsersSection/>
             </div>
         </div>
     );

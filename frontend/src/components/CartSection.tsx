@@ -51,7 +51,7 @@ export default function CartSection(){
                 <Card title="Shopping Cart">
                     <Row gutter={[16, 16]}>
                         {cartItems.length > 0 ? cartItems?.map((cartItem, index) => (
-                            <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
+                            <Col key={index} xs={24} sm={12} lg={8} xl={6}>
                                 <CartItem name={cartItem.productDto.name}
                                           id={cartItem.productDto.id ? Number(cartItem.productDto.id) : 0}
                                           count={cartItem.quantity}

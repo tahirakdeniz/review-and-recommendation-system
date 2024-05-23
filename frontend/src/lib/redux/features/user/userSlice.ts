@@ -24,6 +24,7 @@ export interface User {
             quantity: number;
         }[];
         totalCost: number;
+        purchaseDate: string;
     }[]
 }
 
