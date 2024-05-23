@@ -1,7 +1,7 @@
 'use client'
 
 import {Avatar, Button, Card, Checkbox, Col, Form, Input, message, Modal, Pagination, Row, Spin} from "antd";
-import {CloseCircleOutlined} from '@ant-design/icons';
+import {CloseCircleOutlined, EditOutlined} from '@ant-design/icons';
 import Meta from "antd/es/card/Meta";
 import TextArea from "antd/es/input/TextArea";
 import {useEffect, useState} from "react";
@@ -18,17 +18,110 @@ interface ForumCategoryPageProps {
     categoryId: string;
 }
 
+interface FormValues {
+    title: string;
+    post: string;
+    isAnonymous: boolean;
+}
+
+interface UpdateTopicModalProps {
+    isModalOpen: boolean;
+    setIsModalOpen: (open: boolean) => void;
+    refreshTopics: () => void;
+    topic: TopicDto;
+}
+
+const ForumCategoryPageUpdateTopicModal: React.FC<UpdateTopicModalProps> = ({
+                                                                                isModalOpen,
+                                                                                setIsModalOpen,
+                                                                                refreshTopics,
+                                                                                topic
+                                                                            }) => {
+    const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
+
+
+    useEffect(() => {
+        form.setFieldsValue({
+            title: topic.title,
+            isAnonymous: topic.userDto.username === 'Anonymous'
+        });
+    }, [topic]);
+
+
+    const handleOk = () => {
+        form.validateFields().then(updateTopic).catch(info => {
+            console.log('Validate Failed:', info);
+        });
+    };
+
+    const updateTopic = async (values: {isAnonymous: boolean, title: string}) => {
+        setLoading(true);
+        const accessToken = localStorage.getItem('accessToken');
+        try {
+            const response = await axios.put(`${baseURL}/topics/${topic.id}`, {
+                title: values.title,
+                isAnonymous: values.isAnonymous,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                messageApi.success('Topic updated successfully');
+                setIsModalOpen(false);
+                refreshTopics();
+                form.resetFields();
+            } else {
+                messageApi.error('Failed to update topic');
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                messageApi.error(`Axios error: ${error.response?.data.message || error.message}`);
+            } else {
+                messageApi.error(`Runtime error: ${error}`);
+            }
+            console.error('Error creating new topic:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        form.resetFields();
+    }
+
+    return (
+        <Modal title="Add New Topic" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}
+               confirmLoading={loading}>
+            {contextHolder}
+            <Form form={form} layout="vertical">
+                <Form.Item
+                    label="Topic Name"
+                    name="title"
+                    rules={[{required: true, message: 'Please input the topic title!'}]}
+                >
+                    <Input/>
+                </Form.Item>
+                <Form.Item
+                    name="isAnonymous"
+                    valuePropName="checked"
+                >
+                    <Checkbox>Post as Anonymous</Checkbox>
+                </Form.Item>
+            </Form>
+        </Modal>
+    );
+};
+
 interface AddNewTopicModalProps {
     isModalOpen: boolean;
     setIsModalOpen: (open: boolean) => void;
     categoryId: string;
     refreshTopics: () => void;
-}
-
-interface FormValues {
-    title: string;
-    post: string;
-    isAnonymous: boolean;
 }
 
 const ForumCategoryPageAddNewTopicModal: React.FC<AddNewTopicModalProps> = ({
@@ -116,6 +209,71 @@ const ForumCategoryPageAddNewTopicModal: React.FC<AddNewTopicModalProps> = ({
         </Modal>
     );
 };
+
+function TopicCard(props: {
+    admin: boolean,
+    communityModerator: boolean,
+    topic: TopicDto,
+    onDeleteClick: () => void,
+    disabled: boolean,
+    refreshTopics: () => Promise<void>
+}) {
+    const {user} = useSelector((state: RootState) => state.user);
+    const username = user ? user.username : localStorage.getItem('username');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    return <Card style={{marginBottom: 16}}>
+        {((props.admin || props.communityModerator) || props.topic.userDto.username === username) && (
+            <Button
+                style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    backgroundColor: "transparent",
+                    border: "none"
+                }}
+                icon={<CloseCircleOutlined style={{color: "red"}}/>}
+                onClick={props.onDeleteClick}
+                disabled={props.disabled}
+            />
+        )}
+        {(props.topic.userDto.username === username) && (
+            <Button
+                style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 36,
+                    backgroundColor: "transparent",
+                    border: "none"
+                }}
+                icon={<EditOutlined style={{color: "blue"}}/>}
+                onClick={() => setIsModalOpen(true)}
+                disabled={props.disabled}
+            />
+        )}
+        <Row>
+            <Col span={8}>
+                <Meta
+                    avatar={<Avatar src={`url-of-the-avatar-${props.topic.userDto.username}`} size={32}/>}
+                    title={<strong>{props.topic.userDto.username}</strong>}
+                    description={props.topic.postDtos[0]?.content.length > 50 ? props.topic.postDtos[0]?.content.substring(0, 50) + "..." : props.topic.postDtos[0]?.content}
+                />
+            </Col>
+            <Col span={8}>
+                <Link href={"/forum/topic/" + props.topic.id}><p>
+                    <strong>{props.topic.title}</strong></p></Link>
+            </Col>
+            <Col span={4}>
+                <p>Messages: {props.topic.messageCount}</p>
+            </Col>
+            <Col span={4}>
+                <p>{new Date(props.topic.creationDate).toLocaleDateString()}</p>
+            </Col>
+        </Row>
+        <ForumCategoryPageUpdateTopicModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}
+                                           refreshTopics={props.refreshTopics} topic={props.topic}/>
+    </Card>;
+}
 
 const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -249,41 +407,9 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
                     <div style={{color: 'red', textAlign: 'center', marginTop: 20}}>{error}</div>
                 ) : (
                     paginatedTopics.map((topic, index) => (
-                        <Card key={topic.id} style={{marginBottom: 16}}>
-                            {((isAdmin || isCommunityModerator) || topic.userDto.username === username) && (
-                                <Button
-                                    style={{
-                                        position: 'absolute',
-                                        top: 8,
-                                        right: 8,
-                                        backgroundColor: 'transparent',
-                                        border: 'none'
-                                    }}
-                                    icon={<CloseCircleOutlined style={{color: 'red'}}/>}
-                                    onClick={() => confirmDeleteTopic(topic.id)}
-                                    disabled={loading}
-                                />
-                            )}
-                            <Row>
-                                <Col span={8}>
-                                    <Meta
-                                        avatar={<Avatar src={`url-of-the-avatar-${topic.userDto.username}`} size={32}/>}
-                                        title={<strong>{topic.userDto.username}</strong>}
-                                        description={topic.postDtos[0]?.content.length > 50 ? topic.postDtos[0]?.content.substring(0, 50) + "..." : topic.postDtos[0]?.content}
-                                    />
-                                </Col>
-                                <Col span={8}>
-                                    <Link key={index} href={"/forum/topic/" + topic.id}><p>
-                                        <strong>{topic.title}</strong></p></Link>
-                                </Col>
-                                <Col span={4}>
-                                    <p>Messages: {topic.messageCount}</p>
-                                </Col>
-                                <Col span={4}>
-                                    <p>{new Date(topic.creationDate).toLocaleDateString()}</p>
-                                </Col>
-                            </Row>
-                        </Card>
+                        <TopicCard key={index} admin={isAdmin} communityModerator={isCommunityModerator} topic={topic}
+                                   onDeleteClick={() => confirmDeleteTopic(topic.id)} disabled={loading}
+                                   refreshTopics={fetchTopics}/>
                     ))
                 )}
                 <div style={{position: 'absolute', right: 32, bottom: 32}}>
