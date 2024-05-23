@@ -121,7 +121,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, product
     return (
         <Modal
             open={open}
-            title={<Title level={3}>Rate Product</Title>}
+            title={<Title level={3}>Review Product</Title>}
             onCancel={onClose}
             onOk={handleSubmit}
             confirmLoading={loading}
