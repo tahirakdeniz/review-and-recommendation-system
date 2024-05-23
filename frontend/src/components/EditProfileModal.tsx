@@ -9,6 +9,7 @@ import {LoadingOutlined, PlusOutlined} from "@ant-design/icons";
 import FormData from "form-data";
 import axios from "axios";
 import {baseURL} from "@/lib/const";
+import {errorHandler} from "@/lib/utils";
 
 type FileType = File;
 
@@ -128,21 +129,26 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                     className="avatar-uploader"
                     showUploadList={false}
                     customRequest={async ({file, onSuccess, onError}) => {
-                        const data = new FormData();
-                        data.append('image', file);
-                        const res = await axios.put(`${baseURL}/users/picture`, data, {
-                            headers: {
-                                'Authorization':`Bearer ${localStorage.getItem('accessToken')} `,
-                                'Content-Type': 'multipart/form-data'
+                        try {
+                            const data = new FormData();
+                            data.append('image', file);
+                            const res = await axios.put(`${baseURL}/users/picture`, data, {
+                                headers: {
+                                    'Authorization':`Bearer ${localStorage.getItem('accessToken')} `,
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            })
+                            if(res.status === 200 || res.status === 201){
+                                onSuccess('ok')
+                                messageApi.success('Image Uploaded Successfully')
+                                dispatch(fetchUserImage())
                             }
-                        })
-                        if(res.status === 200 || res.status === 201){
-                            onSuccess('ok')
-                            messageApi.success('Image Uploaded Successfully')
-                            dispatch(fetchUserImage())
-                        }
-                        else{
-                            messageApi.error('Error Uploading Image')
+                            else{
+                                messageApi.error('Error Uploading Image')
+                            }
+                        }catch (error) {
+                            const errorMessage = errorHandler(error, 'Uploading Image');
+                            messageApi.error(errorMessage);
                         }
                     }}
                     beforeUpload={beforeUpload}

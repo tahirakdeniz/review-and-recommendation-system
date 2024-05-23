@@ -9,6 +9,7 @@ import FormData from "form-data";
 import axios from "axios";
 import {LoadingOutlined, PlusOutlined} from "@ant-design/icons";
 import {baseURL} from "@/lib/const";
+import {errorHandler} from "@/lib/utils";
 
 type FileType = File;
 
@@ -90,23 +91,28 @@ export const MerchantEditProductModal: React.FC = () => {
                         className="avatar-uploader"
                         showUploadList={false}
                         customRequest={async ({file, onSuccess, onError}) => {
-                            const data = new FormData();
-                            data.append('image', file);
-                            const res = await axios.post(`${baseURL}/products/${product?.id}/image`, data, {
-                                headers: {
-                                    'Authorization':`Bearer ${localStorage.getItem('accessToken')} `,
-                                    'Content-Type': 'multipart/form-data'
+                            try {
+                                const data = new FormData();
+                                data.append('image', file);
+                                const res = await axios.post(`${baseURL}/products/${product?.id}/image`, data, {
+                                    headers: {
+                                        'Authorization':`Bearer ${localStorage.getItem('accessToken')} `,
+                                        'Content-Type': 'multipart/form-data'
+                                    }
+                                })
+                                if(res.status === 200){
+                                    onSuccess('ok')
+                                    messageApi.success('Image Uploaded Successfully')
                                 }
-                            })
-                            if(res.status === 200){
-                                onSuccess('ok')
-                                messageApi.success('Image Uploaded Successfully')
-                            }
 
-                            if(product) {
-                                dispatch(updateProduct(product))
+                                if(product) {
+                                    dispatch(updateProduct(product))
+                                }
                             }
-
+                            catch (error) {
+                                const errorMessage = errorHandler(error, 'Uploading Image');
+                                messageApi.error(errorMessage);
+                            }
                         }}
                         beforeUpload={beforeUpload}
                         onChange={handleChange}
