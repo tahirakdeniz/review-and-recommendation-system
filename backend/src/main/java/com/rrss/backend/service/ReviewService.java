@@ -21,8 +21,11 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
     private final FieldScoreRepository fieldScoreRepository;
+    private final ReviewReplyRepository reviewReplyRepository;
 
-    public ReviewService(ReviewFormRepository reviewFormRepository, ProductCategoryRepository productCategoryRepository, ReviewFieldRepository reviewFieldRepository, UserUtil userUtil, ReviewRepository reviewRepository, ProductRepository productRepository, FieldScoreRepository fieldScoreRepository) {
+    private final UserRepository userRepository;
+
+    public ReviewService(ReviewFormRepository reviewFormRepository, ProductCategoryRepository productCategoryRepository, ReviewFieldRepository reviewFieldRepository, UserUtil userUtil, ReviewRepository reviewRepository, ProductRepository productRepository, FieldScoreRepository fieldScoreRepository, ReviewReplyRepository reviewReplyRepository, UserRepository userRepository) {
         this.reviewFormRepository = reviewFormRepository;
         this.productCategoryRepository = productCategoryRepository;
         this.reviewFieldRepository = reviewFieldRepository;
@@ -30,6 +33,8 @@ public class ReviewService {
         this.reviewRepository = reviewRepository;
         this.productRepository = productRepository;
         this.fieldScoreRepository = fieldScoreRepository;
+        this.reviewReplyRepository = reviewReplyRepository;
+        this.userRepository = userRepository;
     }
 
     public ReviewFormDto createReviewForm(ReviewFormRequest reviewFormRequest) {
@@ -230,6 +235,7 @@ public class ReviewService {
 
     }
 
+    @Transactional
     public String deleteReview(Principal currentUser, Long reviewId) {
         var user = userUtil.extractUser(currentUser);
 
@@ -240,17 +246,19 @@ public class ReviewService {
             throw new PermissionDeniedException("You are not allowed to do that.");
         }
 
-        reviewRepository.deleteById(reviewId);
+        // Remove the review from the product's and user's review lists
+        var product = review.getProduct();
+        var userReviews = review.getUser().getReviews();
 
-        // Update the product's review list if necessary
-        Product product = review.getProduct();
         product.getReviews().removeIf(r -> Objects.equals(r.getId(), reviewId));
-        productRepository.save(product);
+        userReviews.removeIf(r -> Objects.equals(r.getId(), reviewId));
 
-        // Remove all associated field scores
-        fieldScoreRepository.deleteAllByReviewId(review.getId());
+        productRepository.save(product); // Save the product to persist the change
+        userRepository.save(review.getUser()); // Save the user to persist the change
 
-        // Remove the review itself
+        // Delete the review
+        reviewRepository.delete(review);
+
         return "Review deleted successfully";
     }
 }

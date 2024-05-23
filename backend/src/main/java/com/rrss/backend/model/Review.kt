@@ -21,11 +21,9 @@ data class Review @JvmOverloads constructor(
     @OneToMany(mappedBy = "review", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     val scores: List<FieldScore> = mutableListOf(),
 
-    @OneToOne
+    @OneToOne(mappedBy = "review", cascade = [CascadeType.ALL], orphanRemoval = true)
     val reply: ReviewReply? = null,
 
     val comment: String,
-
-    val isDeleted: Boolean = false
 )
 

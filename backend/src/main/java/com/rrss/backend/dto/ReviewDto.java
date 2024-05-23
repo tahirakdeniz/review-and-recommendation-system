@@ -10,8 +10,7 @@ public record ReviewDto(
         ReviewUserDto userDto,
         List<FieldScoreDto> fieldScoreDtos,
         ReviewReplyDto reviewReplyDto,
-        String comment,
-        boolean isDeleted
+        String comment
 ) {
     public static ReviewDto convert (Review from) {
         return new ReviewDto(
@@ -23,8 +22,7 @@ public record ReviewDto(
                         .map(FieldScoreDto::convert)
                         .toList(),
                 (from.getReply() == null) ? null : ReviewReplyDto.convert(from.getReply()),
-                from.getComment(),
-                from.isDeleted()
+                from.getComment()
         );
     }
 }
