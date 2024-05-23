@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {baseURL} from "@/lib/const";
 import {errorHandler} from "@/lib/utils";
-import {Avatar, Button, Card, Col, Row} from "antd";
+import {Avatar, Button, Card, Col, Row, Typography} from "antd";
 import {CloseCircleOutlined, EditOutlined, UserOutlined} from "@ant-design/icons";
 import {Roles} from "@/lib/enums";
 import {useSelector} from "react-redux";
@@ -83,7 +83,7 @@ export function ForumPost(props: {
                 </Card>
             </Col>
             <Col span={14}>
-                <p>{props.post.content}</p>
+                <Typography.Text>{props.post.content}</Typography.Text>
             </Col>
         </Row>
         <ForumTopicUpdateMessageModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} refreshPosts={props.refreshPosts} post={props.post}/>
