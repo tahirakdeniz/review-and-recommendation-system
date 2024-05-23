@@ -70,6 +70,7 @@ public class PostService {
                 post.getTopic(),
                 post.getCreatedBy(),
                 updatePostRequest.content(),
+                post.getCreationDate(),
                 updatePostRequest.isAnonymous()
         );
 

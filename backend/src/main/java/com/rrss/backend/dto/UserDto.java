@@ -20,7 +20,8 @@ public record UserDto(
         BigDecimal accountBalance,
         UserCartDto cartDto,
         BigDecimal socialCredit,
-        List<UserPurchaseDto> purchaseDtos
+        List<UserPurchaseDto> purchaseDtos,
+        boolean banned
 ) {
     public static UserDto convert(User from) {
         return new UserDto(
@@ -43,8 +44,8 @@ public record UserDto(
                 from.getPurchases()
                         .stream()
                         .map(UserPurchaseDto::convert)
-                        .toList()
-
+                        .toList(),
+                from.isAccountNonLocked()
         );
     }
 }
