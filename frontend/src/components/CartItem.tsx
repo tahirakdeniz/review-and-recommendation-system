@@ -31,11 +31,11 @@ const StyledButton = styled(Button)`
 `;
 
 const ImageContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-  overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    overflow: hidden;
 `;
 
 export default function CartItem({ name, rating, price, count, id }: CartItemProps) {
@@ -49,8 +49,6 @@ export default function CartItem({ name, rating, price, count, id }: CartItemPro
     };
 
     return (
-        <Badge count={count} offset={[-5, 5]}>
-            {contextHolder}
             <StyledCard
                 hoverable
                 onClick={() => router.push(`/shop/product/${id}`)}
@@ -90,7 +88,9 @@ export default function CartItem({ name, rating, price, count, id }: CartItemPro
                     title={<Tooltip title={name}><div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div></Tooltip>}
                     description={
                         <div>
-                            <Rate allowHalf defaultValue={rating} disabled style={{ fontSize: '18px' }} />
+                            <span>
+                                Count: {count}
+                            </span>
                             <div style={{ marginTop: '10px' }}>
                                 <span style={{ fontSize: '18px', fontWeight: 'bold' }}>${price.toFixed(2)}</span>
                             </div>
@@ -98,6 +98,5 @@ export default function CartItem({ name, rating, price, count, id }: CartItemPro
                     }
                 />
             </StyledCard>
-        </Badge>
     );
 }
