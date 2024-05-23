@@ -36,7 +36,7 @@ export default function MerchantProductTable() {
 
     useEffect(() => {
         if(error){
-            messageApi.error(error)
+            messageApi.error(`Error: ${error}`)
         }
     }, [messageApi, error]);
 
