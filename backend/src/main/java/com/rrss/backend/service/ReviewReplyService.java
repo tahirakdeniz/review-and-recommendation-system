@@ -109,6 +109,9 @@ public class ReviewReplyService {
             throw new PermissionDeniedException("reply does not belong to user");
         }
 
+        // delete review reply
+        repository.deleteById(reviewReplyId);
+
 
         // make reviewreply null from review and save
         var oldReviewReply = reviewReply.getReview();
@@ -122,10 +125,6 @@ public class ReviewReplyService {
                         oldReviewReply.getComment()
                 )
         );
-
-
-        // delete review reply
-        repository.deleteById(reviewReplyId);
 
         return "reply deleted successfully";
     }

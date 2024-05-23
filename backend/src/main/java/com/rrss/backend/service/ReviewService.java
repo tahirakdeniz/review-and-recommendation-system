@@ -246,6 +246,10 @@ public class ReviewService {
             throw new PermissionDeniedException("You are not allowed to do that.");
         }
 
+        if (review.getReply() != null) {
+            throw new PermissionDeniedException("It wont be good to delete review when it replied");
+        }
+
         // Remove the review from the product's and user's review lists
         var product = review.getProduct();
         var userReviews = review.getUser().getReviews();

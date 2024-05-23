@@ -9,7 +9,7 @@ public record ProductReviewReviewDto(
         ReviewUserDto userDto,
         List<FieldScoreDto> fieldScoreDtos,
         ReviewReplyDto reviewReplyDto,
-        String comment,
+        String comment
 ) {
         public static ProductReviewReviewDto convert(Review from) {
                 return new ProductReviewReviewDto(
