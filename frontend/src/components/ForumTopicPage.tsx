@@ -8,6 +8,7 @@ import {PostDto, TopicDto} from "@/lib/dto";
 import {Roles} from "@/lib/enums";
 import {ForumTopicAddNewMessageModal} from "@/components/ForumTopicAddNewMessageModal";
 import {ForumPost} from "@/components/ForumPost";
+import {ForumTopicUpdateMessageModal} from "@/components/ForumTopicUpdateMessageModal";
 
 interface ForumTopicPageProps {
     topicId: string;
@@ -106,6 +107,10 @@ const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
         setCurrentPage(page);
     };
 
+    const handleEditPost = (postId: number) => {
+
+    }
+
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedPosts = posts.slice(startIndex, endIndex);
@@ -122,7 +127,7 @@ const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
                 ) : (
                     paginatedPosts.map(post => (
                         <ForumPost key={post.id} onClick={() => handleDeletePost(post.id)} disabled={loading}
-                                   post={post} />
+                                   post={post} refreshPosts={fetchPosts}/>
                     ))
                 )}
                 <div style={{ position: 'relative', left: 16 }}>
