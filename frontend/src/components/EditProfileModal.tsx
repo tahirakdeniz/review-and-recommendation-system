@@ -86,20 +86,21 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
 
     const onSave = async (value: any) => {
-        if(editingUser){
-            const res = await dispatch(updateUser({
-                username: editingUser.username,
-                lastName: editingUser.lastName,
-                firstName: editingUser.firstName,
-                description: editingUser.description,
-                dateOfBirth: editingUser.dateOfBirth,
-            }))
-            if(res.meta.requestStatus == "fulfilled"){
-                messageApi.success("Saved Successfully.");
-                handleCancel()
+        form.validateFields().then(async () => {
+            if(editingUser){
+                const res = await dispatch(updateUser({
+                    username: editingUser.username,
+                    lastName: editingUser.lastName,
+                    firstName: editingUser.firstName,
+                    description: editingUser.description,
+                    dateOfBirth: editingUser.dateOfBirth,
+                }))
+                if(res.meta.requestStatus == "fulfilled"){
+                    messageApi.success("Saved Successfully.");
+                    handleCancel()
+                }
             }
-        }
-
+        });
     };
 
     if(!user){
