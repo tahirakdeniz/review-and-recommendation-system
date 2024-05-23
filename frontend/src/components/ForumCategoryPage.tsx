@@ -221,9 +221,9 @@ function TopicCard(props: {
     const {user} = useSelector((state: RootState) => state.user);
     const username = user ? user.username : localStorage.getItem('username');
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const userId = user?.id;
     return <Card style={{marginBottom: 16}}>
-        {((props.admin || props.communityModerator) || props.topic.userDto.username === username) && (
+        {((props.admin || props.communityModerator) || props.topic.userDto.username === username || props.topic.userDto.id === userId) && (
             <Button
                 style={{
                     position: "absolute",
@@ -237,7 +237,7 @@ function TopicCard(props: {
                 disabled={props.disabled}
             />
         )}
-        {(props.topic.userDto.username === username) && (
+        {(props.topic.userDto.username === username || props.topic.userDto.id === userId) && (
             <Button
                 style={{
                     position: "absolute",

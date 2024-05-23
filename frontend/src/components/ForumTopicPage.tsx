@@ -24,7 +24,6 @@ const ForumTopicPage: React.FC<ForumTopicPageProps> = ({ topicId }) => {
     const [topicTitle, setTopicTitle] = useState<string>("");
     const pageSize = 4;
     const role = localStorage.getItem('role');
-    const username = localStorage.getItem('username');
 
     const showModal = () => {
         setIsModalOpen(true);

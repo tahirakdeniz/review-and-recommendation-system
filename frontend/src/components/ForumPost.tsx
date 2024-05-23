@@ -24,6 +24,7 @@ export function ForumPost(props: {
     const role = localStorage.getItem('role');
     const username = user?.username;
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const userId = user?.id;
 
     const getImage = async () => {
         setLoading(true)
@@ -52,13 +53,13 @@ export function ForumPost(props: {
     }, []);
 
     return <Card style={{marginBottom: 12, minHeight: 60}}>
-        {((role === Roles.ADMIN || role === Roles.COMMUNITY_MODERATOR) || props.post.userDto.username === username) && <Button
+        {((role === Roles.ADMIN || role === Roles.COMMUNITY_MODERATOR) || props.post.userDto.username === username || props.post.userDto.id === userId) && <Button
             style={{position: "absolute", top: 8, right: 8, backgroundColor: "transparent", border: "none"}}
             icon={<CloseCircleOutlined style={{color: "red"}}/>}
             onClick={props.onClick}
             disabled={props.disabled}
         />}
-        {(props.post.userDto.username === username) && <Button
+        {(props.post.userDto.username === username || props.post.userDto.id === userId) && <Button
             style={{position: "absolute", top: 8, right: 36, backgroundColor: "transparent", border: "none"}}
             icon={<EditOutlined style={{color: "blue"}}/>}
             onClick={() => setIsModalOpen(true)}
