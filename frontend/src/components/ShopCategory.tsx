@@ -63,7 +63,7 @@ export function ShopItem({item}: ShopItemProps){
                 type={'inner'}
                 size={'small'}
                 cover={
-                    <div onClick={(e) => e.stopPropagation()} style={{overflow: "hidden", height: "150px"}}>
+                    <div style={{overflow: "hidden", height: "150px"}}>
                         {loading ? (<div className={`flex items-center justify-center w-full h-full`}>
                             <Spin indicator={<LoadingOutlined style={{fontSize: 24}} spin/>}/>
                         </div>) :
@@ -71,7 +71,6 @@ export function ShopItem({item}: ShopItemProps){
                             src={image || noImage}
                             alt={item.name}
                             style={{padding: '10px', height: "100%"}}
-                            onClick={(e) => e.stopPropagation()}
                             preview={false}
                             loading={'lazy'}
                         />)}
