@@ -1,25 +1,32 @@
 package com.rrss.backend;
 
+import com.rrss.backend.dto.AddProductRequest;
 import com.rrss.backend.dto.ProductCategoryRequest;
+import com.rrss.backend.dto.ProductDto;
 import com.rrss.backend.enums.ForumCategoryHeader;
 import com.rrss.backend.exception.custom.ForumCategoryNotFoundException;
 import com.rrss.backend.exception.custom.InsufficientBalanceException;
+import com.rrss.backend.exception.custom.ProductCategoryNotFoundException;
 import com.rrss.backend.exception.custom.ProductNotFoundException;
 import com.rrss.backend.model.*;
 import com.rrss.backend.repository.*;
 import com.rrss.backend.service.MerchantRequestService;
 import com.rrss.backend.service.ProductCategoryService;
+import com.rrss.backend.util.ImageUtil;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -74,9 +81,6 @@ public class Runner implements CommandLineRunner {
         createForumCategories();
         User user1 = createUser();
         createTopicsAndPosts(user1);
-        asdf(user1,1L,1);
-        asdf(user1,2L,1);
-        asdf2(user1);
     }
 
     private User getUser(String username, String password, String email, String firstName, String lastName, String role) {
@@ -150,91 +154,6 @@ public class Runner implements CommandLineRunner {
                         null
                 )
         );
-    }
-
-    private CartItem incrementQuantity(CartItem item, int additionalQuantity) {
-        return new CartItem(
-                item.getId(),
-                item.getCart(),
-                item.getProduct(),
-                item.getQuantity() + additionalQuantity
-        );
-    }
-
-    private CartItem createNewItem(Cart cart, Long id, int quantity) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
-        return new CartItem(null, cart, product, quantity);
-    }
-
-    private PurchaseItem processCartItem(CartItem item) {
-        Product product = item.getProduct();
-        PurchaseItem purchaseItem = new PurchaseItem(null, product, product.getPrice(), item.getQuantity());
-        purchaseItem = purchaseItemRepository.save(purchaseItem);
-
-        return purchaseItem;
-    }
-
-    private void asdf(User user1, Long productId, int quantity) {
-        Cart cart = user1.getCart();
-
-        CartItem newCartItem = cart.getItems()
-                .stream()
-                .filter(item -> Objects.equals(item.getProduct().getId(), productId))
-                .findFirst()
-                .map(item -> incrementQuantity(item, quantity))
-                .orElseGet(() -> createNewItem(cart, productId,quantity));
-
-        cartItemRepository.save(newCartItem);
-    }
-
-    private void asdf2(User user) {
-        Cart cart = user.getCart();
-
-        List<PurchaseItem> purchaseItems = cart.getItems()
-                .stream()
-                .map(this::processCartItem)
-                .collect(Collectors.toList());
-
-        cartItemRepository.deleteAll(cart.getItems());
-        cart.getItems().clear();
-        cartRepository.save(cart);
-
-        BigDecimal totalCost = purchaseItems.stream()
-                .map(purchaseItem -> purchaseItem.getProduct().getPrice().multiply(BigDecimal.valueOf(purchaseItem.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        if (user.getAccountBalance().compareTo(totalCost) < 0) {
-            throw new InsufficientBalanceException("Can't buy the product due to insufficient balance.");
-        }
-
-        BigDecimal newAccountBalance = user.getAccountBalance().subtract(totalCost);
-        userRepository.save(new User(
-                user.getId(),
-                user.getUsername(),
-                user.getPassword(),
-                user.getEmail(),
-                user.getDescription(),
-                user.isEnabled(),
-                user.isCredentialsNonExpired(),
-                user.isAccountNonExpired(),
-                user.isAccountNonLocked(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getProfilePicture(),
-                user.getRole(),
-                user.getDateOfBirth(),
-                user.getMerchant(),
-                user.getReviews(),
-                newAccountBalance,
-                user.getCart(),
-                user.getSocialCredit(),
-                user.getPurchases(),
-                user.getWishlist()
-        ));
-
-        Purchase purchase = new Purchase(null, user, purchaseItems, totalCost, LocalDateTime.now());
-        purchaseRepository.save(purchase);
     }
 
     private void createAuthorities() {
@@ -315,6 +234,20 @@ public class Runner implements CommandLineRunner {
         return userRepository.save(getUser("jon_user","securepass","example341@gmail.com","jon","doe","USER"));
     }
 
+    public void addProduct(String name, String description, Merchant merchant, String productCategoryName, BigDecimal price, MultipartFile file) throws IOException {
+        Product product = new Product(
+                name,
+                description,
+                merchant,
+                productCategoryRepository.findByName(productCategoryName)
+                        .orElseThrow(() -> new ProductCategoryNotFoundException("no such category")),
+                price,
+                ImageUtil.compressImage(file.getBytes())
+        );
+
+        productRepository.save(product);
+    }
+
     private void createMerchantWithRequest() {
         createMerchant("jon_merchant","securepass","example1@gmail.com","jon","doe","USER");
         createMerchant("jon_real_merchant","securepass","example2@gmail.com","jon","doe","USER");
@@ -326,30 +259,63 @@ public class Runner implements CommandLineRunner {
         Merchant merchant = userRepository.findByUsername("jon_real_merchant").get().getMerchant();
         Merchant merchant2 = userRepository.findByUsername("jon_real_merchant2").get().getMerchant();
 
-        getProduct("black tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        getProduct("green tea","very very good taste",merchant2,"tea",BigDecimal.valueOf(10));
-        getProduct("white tea","very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        getProduct("oolong tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        getProduct("panama","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("guetemala","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("black2 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        getProduct("green2 tea","very very good taste",merchant2,"tea",BigDecimal.valueOf(10));
-        getProduct("white2 tea","very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        getProduct("oolong2 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        getProduct("black3 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        getProduct("green3 tea","very very good taste",merchant2,"tea",BigDecimal.valueOf(10));
-        getProduct("white3 tea","very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        getProduct("oolong3 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10));
-        getProduct("etiyopya","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("brezilya","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("etiyopya2","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("brezilya2","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("kenya","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("kenya2","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("panama2","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("guetemala2","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("panama3","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10));
-        getProduct("guetemala3","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10));
+        String[] paths = {
+                "src/main/java/com/rrss/backend/image/blacktea.jpeg",
+                "src/main/java/com/rrss/backend/image/brezilyacoffee.jpeg",
+                "src/main/java/com/rrss/backend/image/etiyopyacoffee.jpeg",
+                "src/main/java/com/rrss/backend/image/greentea.jpeg",
+                "src/main/java/com/rrss/backend/image/guetemalacoffee.jpeg",
+                "src/main/java/com/rrss/backend/image/kenyacoffee.jpeg",
+                "src/main/java/com/rrss/backend/image/oolongtea.jpeg",
+                "src/main/java/com/rrss/backend/image/panamacoffee.jpeg",
+                "src/main/java/com/rrss/backend/image/whitetea.jpeg",
+        };
+
+        HashMap<String,MultipartFile> multipartFiles = new HashMap<>();
+
+
+        try {
+            for (String s: paths) {
+                File file = new File(s);
+                FileInputStream fileInputStream = new FileInputStream(file);
+
+                MultipartFile multipartFile = new MockMultipartFile(
+                        "file",
+                        file.getName(),
+                        "image/png",
+                        fileInputStream
+                );
+                multipartFiles.put(s,multipartFile);
+
+                fileInputStream.close();
+            }
+
+            addProduct("black tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/blacktea.jpeg"));
+            addProduct("green tea","very very good taste",merchant2,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/greentea.jpeg"));
+            addProduct("white tea","very good taste",merchant,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/whitetea.jpeg"));
+            addProduct("oolong tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/oolongtea.jpeg"));
+            addProduct("panama","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/panamacoffee.jpeg"));
+            addProduct("guetemala","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/guetemalacoffee.jpeg"));
+            addProduct("black2 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/blacktea.jpeg"));
+            addProduct("green2 tea","very very good taste",merchant2,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/greentea.jpeg"));
+            addProduct("white2 tea","very good taste",merchant,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/whitetea.jpeg"));
+            addProduct("oolong2 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/oolongtea.jpeg"));
+            addProduct("black3 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/blacktea.jpeg"));
+            addProduct("green3 tea","very very good taste",merchant2,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/greentea.jpeg"));
+            addProduct("white3 tea","very good taste",merchant,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/whitetea.jpeg"));
+            addProduct("oolong3 tea","very very good taste",merchant,"tea",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/oolongtea.jpeg"));
+            addProduct("etiyopya","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/etiyopyacoffee.jpeg"));
+            addProduct("brezilya","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/brezilyacoffee.jpeg"));
+            addProduct("etiyopya2","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/etiyopyacoffee.jpeg"));
+            addProduct("brezilya2","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/brezilyacoffee.jpeg"));
+            addProduct("kenya","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/kenyacoffee.jpeg"));
+            addProduct("kenya2","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/kenyacoffee.jpeg"));
+            addProduct("panama2","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/panamacoffee.jpeg"));
+            addProduct("guetemala2","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/guetemalacoffee.jpeg"));
+            addProduct("panama3","very good taste",merchant2,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/panamacoffee.jpeg"));
+            addProduct("guetemala3","very very good taste",merchant,"coffee bean",BigDecimal.valueOf(10),multipartFiles.get("src/main/java/com/rrss/backend/image/guetemalacoffee.jpeg"));
+        } catch (Exception e){}
+
     }
 
     private void createMerchant(String username, String password, String email, String firstName, String lastName, String role) {
