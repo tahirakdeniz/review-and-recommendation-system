@@ -71,10 +71,4 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.deleteReview(currentUser,reviewId));
     }
 
-    @DeleteMapping("/fields/{reviewId}")
-    public ResponseEntity<String> deleteReviewFields(Principal currentUser, @PathVariable Long reviewId) {
-        return ResponseEntity.ok(reviewService.deleteReviewFields(currentUser,reviewId));
-    }
-
-
 }
