@@ -18,12 +18,14 @@ data class Review @JvmOverloads constructor(
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 
-    @OneToMany(mappedBy = "review", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "review", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     val scores: List<FieldScore> = mutableListOf(),
 
     @OneToOne
     val reply: ReviewReply? = null,
 
-    val comment: String
+    val comment: String,
+
+    val isDeleted: Boolean = false
 )
 

@@ -15,10 +15,4 @@ data class ReviewField @JvmOverloads constructor(
     val minScore: Int = 1,
     val maxScore: Int = 10,
 
-    /*
-    @ManyToOne
-    @JoinColumn(name = "review_form_id")
-    val reviewForm: ReviewForm? = null
-
-     */
 )

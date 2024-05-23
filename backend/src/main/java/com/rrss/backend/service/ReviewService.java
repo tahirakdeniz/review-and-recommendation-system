@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class ReviewService {
@@ -128,6 +127,12 @@ public class ReviewService {
                 .anyMatch(purchase -> purchase.getItems().stream()
                         .anyMatch(item -> Objects.equals(item.getProduct().getId(), productId)));
 
+        boolean hasComment = reviewRepository.existsByUserId(user.getId());
+
+        if (hasComment) {
+            throw new PermissionDeniedException("You cant do that because you already submit review on it");
+        }
+
         if (!boughtProduct) {
             throw new PermissionDeniedException("User has not bought the product");
         }
@@ -235,18 +240,17 @@ public class ReviewService {
             throw new PermissionDeniedException("You are not allowed to do that.");
         }
 
+        reviewRepository.deleteById(reviewId);
+
+        // Update the product's review list if necessary
         Product product = review.getProduct();
+        product.getReviews().removeIf(r -> Objects.equals(r.getId(), reviewId));
+        productRepository.save(product);
 
         // Remove all associated field scores
         fieldScoreRepository.deleteAllByReviewId(review.getId());
 
         // Remove the review itself
-        reviewRepository.delete(review);
-
-        // Update the product's review list if necessary
-        product.getReviews().removeIf(r -> Objects.equals(r.getId(), reviewId));
-        productRepository.save(product);
-
         return "Review deleted successfully";
     }
 }

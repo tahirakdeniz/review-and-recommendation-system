@@ -7,7 +7,8 @@ public record UserReviewDto(
         long id,
         UserReviewProductDto userReviewProductDto,
         List<FieldScoreDto> fieldScoreDto,
-        ReviewReplyDto reviewReply
+        ReviewReplyDto reviewReply,
+        boolean isDeleted
 ) {
 
     public static UserReviewDto convert(Review from) {
@@ -18,7 +19,8 @@ public record UserReviewDto(
                         .stream()
                         .map(FieldScoreDto::convert)
                         .toList(),
-                (from.getReply() == null) ? null : ReviewReplyDto.convert(from.getReply())
+                (from.getReply() == null) ? null : ReviewReplyDto.convert(from.getReply()),
+                from.isDeleted()
 
 
         );

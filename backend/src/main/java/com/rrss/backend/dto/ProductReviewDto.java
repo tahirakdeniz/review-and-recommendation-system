@@ -22,7 +22,7 @@ public record ProductReviewDto(
 
                 fieldAverageScore.merge(label, score, Double::sum);
             });
-
+            //todo fix this
             fieldAverageScore.forEach((label, score) -> fieldAverageScore.put(label, score / reviewDtos.size()));
         });
 
