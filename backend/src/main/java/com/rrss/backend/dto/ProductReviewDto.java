@@ -12,18 +12,25 @@ public record ProductReviewDto(
         HashMap<String, Double> fieldAverageScore
 ) {
     public static ProductReviewDto convert(List<Review> reviews) {
-        HashMap<String, Double> fieldAverageScore = new HashMap<>();
+        HashMap<String, Double> fieldTotalScore = new HashMap<>();
+        HashMap<String, Integer> fieldScoreCount = new HashMap<>();
         List<ProductReviewReviewDto> reviewDtos = new ArrayList<>();
+
         reviews.forEach(review -> {
             reviewDtos.add(ProductReviewReviewDto.convert(review));
             review.getScores().forEach(reviewScore -> {
                 String label = reviewScore.getReviewField().getLabel();
                 double score = reviewScore.getScore();
 
-                fieldAverageScore.merge(label, score, Double::sum);
+                fieldTotalScore.merge(label, score, Double::sum);
+                fieldScoreCount.merge(label, 1, Integer::sum);
             });
-            //todo fix this
-            fieldAverageScore.forEach((label, score) -> fieldAverageScore.put(label, score / reviewDtos.size()));
+        });
+
+        HashMap<String, Double> fieldAverageScore = new HashMap<>();
+        fieldTotalScore.forEach((label, totalScore) -> {
+            int count = fieldScoreCount.getOrDefault(label, 1);
+            fieldAverageScore.put(label, totalScore / count);
         });
 
         return new ProductReviewDto(
@@ -37,3 +44,4 @@ public record ProductReviewDto(
         );
     }
 }
+
