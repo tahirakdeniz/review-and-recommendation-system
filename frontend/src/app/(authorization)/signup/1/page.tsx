@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from "react";
 import SignupFormHeader from "@/components/SignupFormHeader";
 import {Button, Checkbox, Form, Input} from "antd";
-import {LockOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
+import {EyeInvisibleOutlined, EyeTwoTone, LockOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import SignupStepper from "@/components/SignupStepper";
 import {useDispatch, useSelector} from "react-redux";
 import {setFields, setStep} from "@/lib/redux/features/signup/signupSlice";
@@ -59,10 +59,11 @@ export default function Signup1() {
                         }),
                     ]}
                 >
-                    <Input
+                    <Input.Password
                         prefix={<LockOutlined className="site-form-item-icon"/>}
                         type="password"
                         placeholder="Password"
+                        iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                     />
                 </Form.Item>
                 <Form.Item
@@ -81,10 +82,11 @@ export default function Signup1() {
                         }),
                     ]}
                 >
-                    <Input
+                    <Input.Password
                         prefix={<LockOutlined className="site-form-item-icon"/>}
                         type="password"
                         placeholder="Confirm Password"
+                        iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                     />
                 </Form.Item>
                 <Form.Item

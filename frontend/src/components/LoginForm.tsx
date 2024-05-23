@@ -1,12 +1,12 @@
 'use client';
 import {Button, Form, Input, message, Typography} from 'antd';
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
+import {EyeInvisibleOutlined, EyeTwoTone, LockOutlined, UserOutlined} from '@ant-design/icons';
 import Image from "next/image";
 import Coffee from "@/assets/images/coffee1.svg";
 import {useSelector} from 'react-redux';
 import {loginUser} from '@/lib/redux/features/login/loginSlice';
 import {RootState, useDispatch} from '@/lib/redux/store';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 
 const { Title, Text } = Typography;
@@ -29,6 +29,7 @@ const LoginForm: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const { loading, error, accessToken } = useSelector((state: RootState) => state.login);
     const router = useRouter();
+    const [passwordVisible, setPasswordVisible] = useState(false);
 
     useEffect(() => {
         if (error) {
@@ -70,16 +71,21 @@ const LoginForm: React.FC = () => {
                         name="username"
                         rules={[{ required: true, message: 'Please input your Username!' }]}
                     >
-                        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" disabled={loading} />
+                        <Input
+                            prefix={<UserOutlined className="site-form-item-icon" />}
+                            placeholder="Username"
+                            disabled={loading}
+                        />
                     </Form.Item>
                     <Form.Item
                         name="password"
                         rules={[{ required: true, message: 'Please input your Password!' }]}
                     >
-                        <Input
+                        <Input.Password
                             prefix={<LockOutlined className="site-form-item-icon" />}
-                            type="password"
+                            type={passwordVisible ? 'text' : 'password'}
                             placeholder="Password"
+                            iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                             disabled={loading}
                         />
                     </Form.Item>
@@ -89,7 +95,13 @@ const LoginForm: React.FC = () => {
                         </a>
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" className="login-form-button" block disabled={loading}>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            className="login-form-button"
+                            block
+                            disabled={loading}
+                        >
                             Log in
                         </Button>
                         Or <a href="/signup">register now!</a>
