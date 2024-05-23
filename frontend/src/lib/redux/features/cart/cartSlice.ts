@@ -127,9 +127,7 @@ export const cartSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchCart.fulfilled, (state, action: PayloadAction<Cart>) => {
-                console.log(action.payload)
                 state.cart = action.payload;
-                console.log(state.cart)
                 state.loading = false;
             })
             .addCase(fetchCart.rejected, (state, action) => {
@@ -164,15 +162,18 @@ export const cartSlice = createSlice({
             })
             .addCase(removeProduct.fulfilled, (state, action) => {
                 state.loading = false;
+                const id = action.payload;
                 if(state.cart){
-                    const index = state.cart.cartItemDtos.findIndex(cartItem => cartItem.productDto.id = action.payload )
-                    console.log(state.cart.cartItemDtos[index])
+                    const cartItem = state.cart.cartItemDtos.find(cartItem => cartItem.productDto.id == id);
+                    if(cartItem){
+                        if(cartItem.quantity > 1){
+                            cartItem.quantity -= 1;
+                        }
+                        else {
+                            state.cart.cartItemDtos = state.cart.cartItemDtos.filter(cartItem => cartItem.productDto.id != id);
+                        }
+                    }
                 }
-                // const index = state.cart?.cartItemDTOs.filter(cartItem => cartItem.product.id !== action.payload)//state.findIndex(p => p.id === action.payload.id);
-                // if (index !== -1) {
-                //     state.products[index] = action.payload;
-                // }
-                location.reload()
             })
             .addCase(removeProduct.rejected, (state, action) => {
                 state.loading = false;
@@ -184,8 +185,10 @@ export const cartSlice = createSlice({
             })
             .addCase(buyProduct.fulfilled, (state, action) => {
                 state.loading = false;
-                //state.products = state.products.filter(product => product.id !== action.payload);
-                location.reload()
+                if(state.cart){
+                    state.cart.cartItemDtos = [];
+                    state.cart.totalPrice = 0;
+                }
             })
             .addCase(buyProduct.rejected, (state, action) => {
                 state.loading = false;

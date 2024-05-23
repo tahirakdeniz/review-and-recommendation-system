@@ -27,11 +27,11 @@ export default function CartSection(){
         }
     }, [cart]);
 
-    useEffect(() => {
-        if(error){
-            messageApi.error(error)
-        }
-    }, [error]);
+    // useEffect(() => {
+    //     if(error){
+    //         messageApi.error(error)
+    //     }
+    // }, [error]);
 
     const confirm = () => {
         modal.confirm({
@@ -70,7 +70,13 @@ export default function CartSection(){
                 <Card
                     actions={[
                         <Button key="Buy" type="link" onClick={async () => {
-                            await dispatch(buyProduct(null))
+                            const res = await dispatch(buyProduct(null))
+                            if(res.meta.requestStatus === 'fulfilled'){
+                                messageApi.success('Products bought successfully');
+                            }
+                            else {
+                                messageApi.error(`Failed to buy products: ${res.payload}`);
+                            }
                         }}>Buy</Button>,
                     ]}
                 >
