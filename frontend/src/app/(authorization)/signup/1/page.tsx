@@ -27,7 +27,6 @@ export default function Signup1() {
             {field: 'email', value: email},
             {field: 'role', value: isMerchant ? 'MERCHANT' : 'USER'}
         ]));
-        alert(isMerchant)
         dispatch(setStep(1));
     };
 
