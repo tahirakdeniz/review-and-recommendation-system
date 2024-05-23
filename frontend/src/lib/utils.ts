@@ -16,13 +16,13 @@ export const errorHandler = (error: any, key:string) => {
         if (serverError && serverError.response) {
             const value = serverError.response.data
             const errorMessages = value.errors?.map((error) => messageFormatter(error.message)).join(", ")
-            errorMessage =  errorMessages || "Undefined Server Error";
+            errorMessage =  errorMessages || `An Error Occurred In ${key}: ${error}`;
         } else {
             errorMessage = `An unknown error occurred: ${error}`;
         }
     } else {
         errorMessage = `An error occurred: ${error}`;
     }
-    console.error(`An Error Occured In ${key}. Error: ${error}. Message: ${errorMessage}`)
+    console.error(`An Error Occurred In ${key}. Error: ${error}. Message: ${errorMessage}`)
     return errorMessage;
 }

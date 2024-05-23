@@ -19,7 +19,7 @@ import {
 } from "antd";
 import {HeartOutlined, LoadingOutlined, ShoppingCartOutlined, StarOutlined} from '@ant-design/icons';
 import React, {useEffect, useState} from "react";
-import {ProductDto, ProductReviewReviewDto} from "@/lib/dto";
+import {ProductDto, ProductReviewReviewDto, ReviewReplyDto} from "@/lib/dto";
 import {useRole} from "@/lib/useRole";
 import {useImmer} from "use-immer";
 import {baseURL} from "@/lib/const";
@@ -35,6 +35,7 @@ import {useProductImage} from "@/lib/useProductImage";
 import {ProductReview} from "@/components/ProductReview";
 import {UpdateReviewModal} from "@/components/UpdateReviewModal";
 import {fetchProducts} from "@/lib/redux/features/productManagment/productManagmentSlice";
+import {errorHandler} from "@/lib/utils";
 
 const {Text, Title} = Typography;
 
@@ -66,21 +67,24 @@ const ProductPage: React.FC<ProductPageProps> = ({product, fetchProduct}) => {
 
     const handleDelete = async (reviewId: number) => {
         try {
-            const response = await fetch(`${baseURL}/reviews/${reviewId}`, {
-                method: 'DELETE',
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await axios.delete(`${baseURL}/reviews/${reviewId}`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
             });
 
-            if (response.ok) {
+            if (response.status === 200) {
                 message.success('Review deleted successfully');
                 updateProduct(draft => {
                     draft.reviewDto.reviews = draft.reviewDto.reviews.filter(review => review.id !== reviewId);
                 });
             } else {
-                message.error('Failed to delete the review');
+                message.error(`Failed to delete the review ${response.data}`);
             }
         } catch (error) {
-            console.error("Error deleting review:", error);
-            message.error('An error occurred while deleting the review');
+            const errorMessage = errorHandler(error, "Error deleting review");
+            message.error(errorMessage);
         }
     };
 
@@ -95,13 +99,33 @@ const ProductPage: React.FC<ProductPageProps> = ({product, fetchProduct}) => {
 
     const handleReplySubmit = async (reply: string) => {
         if (selectedReview) {
-            // TODO: Send the reply to the backend
-            updateProduct(draft => {
-                const review = draft.reviewDto.reviews.find(r => r.id === selectedReview.id);
-                if (review) {
-                    review.reviewReplyDto = {id: review.id, content: reply};
+            const accessToken = localStorage.getItem('accessToken');
+            try {
+                const response = await axios.post<ReviewReplyDto>(
+                    `${baseURL}/review-reply/${selectedReview.id}`,
+                    { content: reply },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                        },
+                    }
+                );
+
+                if (response.status === 201) {
+                    message.success('Reply submitted successfully');
+                    updateProduct(draft => {
+                        const review = draft.reviewDto.reviews.find(r => r.id === selectedReview.id);
+                        if (review) {
+                            review.reviewReplyDto = response.data;
+                        }
+                    });
+                } else {
+                    message.error('Failed to submit reply');
                 }
-            });
+            } catch (error) {
+                const errorMessage = errorHandler(error, 'Error submitting reply');
+                message.error(errorMessage);
+            }
         }
     };
 
@@ -127,6 +151,68 @@ const ProductPage: React.FC<ProductPageProps> = ({product, fetchProduct}) => {
 
     function handleAddToWishlist(e : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         addToWishlist(e, product.id);
+    }
+
+    async function updateReviewReply(reviewReplyId: number, content: string) {
+        const accessToken = localStorage.getItem('accessToken');
+        try {
+            const response = await axios.put<ReviewReplyDto>(
+                `${baseURL}/review-reply/${reviewReplyId}`,
+                { content },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                message.success('Reply updated successfully');
+                // Update the UI or state here with the new reply content
+                updateProduct(draft => {
+                    const review = draft.reviewDto.reviews.find(r => r.reviewReplyDto?.id === reviewReplyId);
+                    if (review) {
+                        review.reviewReplyDto = response.data;
+                    }
+                });
+            } else {
+                message.error('Failed to update reply');
+            }
+        } catch (error) {
+            console.error("Error updating reply:", error);
+            message.error('An error occurred while updating the reply');
+        }
+    }
+
+    async function deleteReviewReply(reviewReplyId: number) {
+        const accessToken = localStorage.getItem('accessToken');
+        try {
+            const response = await axios.delete<string>(
+                `${baseURL}/review-reply/${reviewReplyId}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            if (response.status === 204) {
+                message.success('Reply deleted successfully');
+                // Update the UI or state here to remove the deleted reply
+                updateProduct(draft => {
+                    draft.reviewDto.reviews.forEach(review => {
+                        if (review.reviewReplyDto?.id === reviewReplyId) {
+                            review.reviewReplyDto = undefined;
+                        }
+                    });
+                });
+            } else {
+                message.error('Failed to delete reply');
+            }
+        } catch (error) {
+            console.error("Error deleting reply:", error);
+            message.error('An error occurred while deleting the reply');
+        }
     }
 
     return (
@@ -215,7 +301,7 @@ const ProductPage: React.FC<ProductPageProps> = ({product, fetchProduct}) => {
                                     loading={addToCartLoading} disabled={addToCartLoading}>Add to Cart</Button>
                             <Button type="default" icon={<HeartOutlined/>} onClick={handleAddToWishlist}>Add to Wishlist</Button>
                             <Button type="default" icon={<StarOutlined/>}
-                                    onClick={() => setOpenRateModal(true)}>Rate</Button>
+                                    onClick={() => setOpenRateModal(true)}>Review</Button>
                         </Space>
                     </Card>
                     <Card title={"Reviews"}>
@@ -225,7 +311,9 @@ const ProductPage: React.FC<ProductPageProps> = ({product, fetchProduct}) => {
                             productState.reviewDto.reviews.map((review, index) => (
                                 <ProductReview key={index} review={review} productState={productState}
                                                confirmDelete={confirmDelete} setSelectedReview={setSelectedReview}
-                                               setOpenReplyModal={setOpenReplyModal} isMerchant={isMerchant} isAdmin={isAdmin} fetchProducts={fetchProduct}/>
+                                               setOpenReplyModal={setOpenReplyModal} isMerchant={isMerchant} isAdmin={isAdmin} fetchProducts={fetchProduct}
+                                               updateReviewReply={updateReviewReply} deleteReviewReply={deleteReviewReply}
+                                />
                             ))
                         }
                     </Card>
