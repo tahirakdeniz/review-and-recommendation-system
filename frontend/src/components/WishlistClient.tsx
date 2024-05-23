@@ -8,6 +8,7 @@ import {fetchWishlist, removeProductFromWishlist} from "@/lib/redux/features/wis
 import {WishListItemDto} from "@/lib/dto";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
 import WishlistItem from "@/components/WishlistItem";
+import Result403 from "@/components/Result403";
 
 
 export function WishlistClient() {
@@ -16,6 +17,7 @@ export function WishlistClient() {
     const [wishlistItems, setWishlistItems] = useState<WishListItemDto[]>([]);
     const dispatch = useDispatch();
     const [messageApi, messageContextHolder] = message.useMessage();
+    const {hasLoggedIn} = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         dispatch(fetchWishlist())
@@ -56,6 +58,10 @@ export function WishlistClient() {
             messageApi.error(error.toString());
         }
     };
+
+    if (!hasLoggedIn) {
+        return (<Result403 />);
+    }
 
     return (
         <Row gutter={16} className={'w-full'}>

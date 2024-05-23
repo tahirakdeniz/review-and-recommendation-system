@@ -5,6 +5,9 @@ import {ProductDto} from "@/lib/dto";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {Spin} from "antd";
+import {RootState} from "@/lib/redux/store";
+import {useSelector} from "react-redux";
+import Result403 from "@/components/Result403";
 
 interface ProductProps {
     params: { productId: string };
@@ -14,6 +17,7 @@ export default function Product({ params: { productId } }: ProductProps) {
     const [product, setProduct] = useState<ProductDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const {hasLoggedIn} = useSelector((state: RootState) => state.user);
 
     const fetchProduct = async () => {
         setLoading(true);
@@ -37,6 +41,10 @@ export default function Product({ params: { productId } }: ProductProps) {
 
         fetchProduct();
     }, [productId]);
+
+    if (!hasLoggedIn) {
+        return <Result403/>;
+    }
 
     if (loading) {
         return <Spin fullscreen={true} />;
