@@ -77,7 +77,6 @@ export function ShopItem({item}: ShopItemProps){
                         <ShoppingCartOutlined
                             onClick={(e) => {
                                 e.stopPropagation()
-                                messageApi.success("Added to Cart Successfully");
                                 handleAddToCart(item.id)
                             }}
                         />

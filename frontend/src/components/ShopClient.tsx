@@ -29,7 +29,6 @@ const ShopClient: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [searchInput, setSearchInput] = useState<string >("");
-
     const router = useRouter();
     const search = searchParams.get('search');
     const category = searchParams.get('category');
@@ -122,7 +121,7 @@ const ShopClient: React.FC = () => {
                 </Space>
 
             </Card>
-            {(!search && !category) && <ShopCategoryRecommendedProducts/>}
+            {(!search && !category && localStorage.getItem('accessToken') != null) && <ShopCategoryRecommendedProducts/>}
             {data?.map(categoryItem => {
                 const showFull = !!((category && category === categoryItem.name) || (search));
                 const showCategory = !category || category === categoryItem.name;
