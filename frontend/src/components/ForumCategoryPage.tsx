@@ -261,7 +261,7 @@ function TopicCard(props: {
             </Col>
             <Col span={8}>
                 <Link href={"/forum/topic/" + props.topic.id}><p>
-                    <strong>{props.topic.title}</strong></p></Link>
+                    <strong>{props.topic.title.length > 30 ? props.topic.title.substring(0, 30) + "..." : props.topic.title}</strong></p></Link>
             </Col>
             <Col span={4}>
                 <p>Messages: {props.topic.messageCount}</p>
@@ -286,7 +286,6 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
     const pageSize = 4;
 
     const role = user ? user.role : localStorage.getItem('role');
-    const username = user ? user.username : localStorage.getItem('username');
     const hasLoggedIn = user !== null || localStorage.getItem('accessToken') !== null;
     const isAdmin = role === Roles.ADMIN;
     const isCommunityModerator = role === Roles.COMMUNITY_MODERATOR;
