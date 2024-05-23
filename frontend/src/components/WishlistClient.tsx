@@ -27,11 +27,11 @@ export function WishlistClient() {
         }
     }, [wishlist]);
 
-    useEffect(() => {
-        if (error) {
-            messageApi.error(error);
-        }
-    }, [error]);
+    // useEffect(() => {
+    //     if (error) {
+    //         messageApi.error(error);
+    //     }
+    // }, [error]);
 
     const confirmRemove = (productId: number) => {
         modal.confirm({
@@ -49,9 +49,10 @@ export function WishlistClient() {
             if(res.meta.requestStatus === 'fulfilled')
                 messageApi.success('Product removed from wishlist');
             else {
-                messageApi.error('Failed to remove product from wishlist');
+                messageApi.error(`Failed to remove product from wishlist: ${res.payload}`);
             }
         } catch (error) {
+            console.error(error);
             messageApi.error(error.toString());
         }
     };
