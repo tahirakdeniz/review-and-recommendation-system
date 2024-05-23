@@ -8,6 +8,7 @@ import {RootState, useDispatch} from "@/lib/redux/store";
 import {buyProduct, fetchCart} from "@/lib/redux/features/cart/cartSlice";
 import {useSelector} from "react-redux";
 import {ICartItem} from "@/lib/entity/CartItem";
+import Result403 from "@/components/Result403";
 
 export default function CartSection(){
     const [modal, contextHolder] = Modal.useModal();
@@ -15,6 +16,7 @@ export default function CartSection(){
     const [cartItems, setCartItems] = useState<ICartItem[]>([]);
     const dispatch = useDispatch();
     const [messageApi, messageContextHolder] = message.useMessage();
+    const {hasLoggedIn} = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         dispatch(fetchCart())
@@ -42,6 +44,10 @@ export default function CartSection(){
             cancelText: 'Cancel',
         });
     };
+
+    if(!hasLoggedIn){
+        return (<Result403/>)
+    }
 
     return (
         <Row gutter={16} className={'w-full'}>

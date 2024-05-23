@@ -8,6 +8,7 @@ import {loginUser} from '@/lib/redux/features/login/loginSlice';
 import {RootState, useDispatch} from '@/lib/redux/store';
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
+import {setHasLoggedIn} from "@/lib/redux/features/user/userSlice";
 
 const { Title, Text } = Typography;
 
@@ -52,6 +53,7 @@ const LoginForm: React.FC = () => {
         const res = await dispatch(loginUser(values));
         if(res.meta.requestStatus == "fulfilled"){
             messageApi.success("Logged In Successfully");
+            dispatch(setHasLoggedIn(true));
             router.push('/');
         }
     };

@@ -70,7 +70,10 @@ export const addProductToCart = createAsyncThunk<ICartItem, string | any>('cart/
     try {
         const token = localStorage.getItem('accessToken');
         if (!token) {
-            return rejectWithValue('No access token found');
+            setTimeout(() => {
+                location.href = '/login';
+            }, 2000);
+            return rejectWithValue('No access token found. You will be redirected to login page in 2 seconds.');
         }
 
         const response = await axios.put<ICartItem>('http://localhost:8081/api/v1/cart/add-product', {productId: id, quantity:1}, {

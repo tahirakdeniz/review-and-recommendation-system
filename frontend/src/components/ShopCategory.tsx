@@ -28,12 +28,16 @@ export function ShopItem({item}: ShopItemProps){
     const [messageApi, contextHolder] = message.useMessage();
     const {image, loading, error, noImage} = useProductImage(item.id);
     const {loading: addToCartLoading, error: addToCartError} = useSelector((state: RootState) => state.cart);
+    const {hasLoggedIn} = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch();
 
     async function handleAddToCart(productId:number) {
         const res = await dispatch(addProductToCart(productId));
         if (res.meta.requestStatus === 'fulfilled') {
-            message.success('Product added to cart successfully');
+            messageApi.success('Product added to cart successfully');
+        }
+        else {
+            messageApi.error(`Failed to add product to cart: ${res.payload}`);
         }
     }
 
@@ -79,6 +83,7 @@ export function ShopItem({item}: ShopItemProps){
                                 e.stopPropagation()
                                 handleAddToCart(item.id)
                             }}
+                            disabled={addToCartLoading || !hasLoggedIn}
                         />
                     </Tooltip>,
                     <Tooltip title="Add to Wishlist" key="wishlist">
