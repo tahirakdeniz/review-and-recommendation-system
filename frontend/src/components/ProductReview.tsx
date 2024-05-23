@@ -13,14 +13,16 @@ import {fetchProducts} from "@/lib/redux/features/productManagment/productManagm
 
 const {Text, Title} = Typography;
 type ProductReviewProps = {
-    review: ProductReviewReviewDto;
-    productState: ProductDto;
-    confirmDelete: (review: ProductReviewReviewDto) => void;
-    setSelectedReview: (review: ProductReviewReviewDto) => void;
-    setOpenReplyModal: (open: boolean) => void;
-    isMerchant: boolean;
-    isAdmin: boolean;
-    fetchProducts: () => void;
+    review: ProductReviewReviewDto,
+    productState: ProductDto,
+    confirmDelete: (review: ProductReviewReviewDto) => void,
+    setSelectedReview: (review: ProductReviewReviewDto) => void,
+    setOpenReplyModal: (open: boolean) => void,
+    isMerchant: boolean,
+    isAdmin: boolean,
+    fetchProducts: () => void,
+    updateReviewReply: (reviewReplyId: number, content: string) => Promise<void>,
+    deleteReviewReply: (reviewReplyId: number) => Promise<void>
 }
 
 export const ProductReview = ({
@@ -30,7 +32,10 @@ export const ProductReview = ({
                                   isAdmin,
                                   setSelectedReview,
                                   confirmDelete,
-                                  setOpenReplyModal, fetchProducts
+                                  setOpenReplyModal,
+                                  fetchProducts,
+                                  updateReviewReply,
+                                  deleteReviewReply
                               }: ProductReviewProps) => {
     const [image, setImage] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState(true);
@@ -75,10 +80,10 @@ export const ProductReview = ({
                               setOpenReplyModal(true);
                           }}>Reply</Typography.Link>
                       )}
-                      {/*{isAdmin || username === review.userDto.username && (*/}
-                      {/*    <Typography.Link*/}
-                      {/*        onClick={() => confirmDelete(review)}>Delete</Typography.Link>*/}
-                      {/*)}*/}
+                      {username === review.userDto.username && (
+                          <Typography.Link
+                              onClick={() => confirmDelete(review)}>Delete</Typography.Link>
+                      )}
                       {username === review.userDto.username && (
                           <Typography.Link
                               onClick={() => setOpen(true)}>Update</Typography.Link>
@@ -94,7 +99,7 @@ export const ProductReview = ({
                         <>
                             <Rate disabled
                                   allowHalf
-                                  defaultValue={(review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length)/2}/>
+                                  defaultValue={(review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length) / 2}/>
                             <span>{(review.fieldScoreDtos.reduce((acc, field) => acc + field.score, 0) / review.fieldScoreDtos.length).toFixed(2)}</span>
                         </>
                     )
@@ -113,10 +118,14 @@ export const ProductReview = ({
                 <Divider/>
                 {review.reviewReplyDto && (
                     <ProductReviewReply topicUserDto={productState.topicUserDto}
-                                        reviewReplyDto={review.reviewReplyDto}/>
+                                        reviewReplyDto={review.reviewReplyDto}
+                                        updateReviewReply={updateReviewReply}
+                                        deleteReviewReply={deleteReviewReply}
+                    />
                 )}
             </Space>
-            <UpdateReviewModal open={open} onClose={() => setOpen(false)} product={productState} onSubmit={() => fetchProducts()} review={review}/>
+            <UpdateReviewModal open={open} onClose={() => setOpen(false)} product={productState}
+                               onSubmit={() => fetchProducts()} review={review}/>
         </Card>
     )
 }

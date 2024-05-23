@@ -8,15 +8,16 @@ interface ReplyModalProps {
     open: boolean;
     onClose: () => void;
     onSubmit: (reply: string) => void;
-    review: ProductReviewReviewDto;
+    review?: ProductReviewReviewDto;
 }
 
-export const ReplyModal: React.FC<ReplyModalProps> = ({open, onClose, onSubmit, review}) => {
-    const [reply, setReply] = useState(review.reviewReplyDto?.content || "");
+export const ReplyModal: React.FC<ReplyModalProps> = ({open, onClose, onSubmit}) => {
+    const [reply, setReply] = useState( "");
 
     const handleSubmit = () => {
         onSubmit(reply);
         onClose();
+        setReply("");
     };
 
     return (

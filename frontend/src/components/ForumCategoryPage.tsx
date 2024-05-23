@@ -10,6 +10,9 @@ import axios from 'axios';
 import {baseURL} from "@/lib/const";
 import {TopicDto} from "@/lib/dto";
 import {Roles} from "@/lib/enums";
+import {RootState} from "@/lib/redux/store";
+import {useSelector} from "react-redux";
+import Result403 from "@/components/Result403";
 
 interface ForumCategoryPageProps {
     categoryId: string;
@@ -121,10 +124,11 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [categoryTitle, setCategoryTitle] = useState<string>("");
+    const {hasLoggedIn, user} = useSelector((state: RootState) => state.user);
     const pageSize = 4;
 
-    const role = localStorage.getItem('role');
-    const username = localStorage.getItem('username');
+    const role = user ? user.role : localStorage.getItem('role');
+    const username = user ? user.username : localStorage.getItem('username');
 
     const isAdmin = role === Roles.ADMIN;
     const isCommunityModerator = role === Roles.COMMUNITY_MODERATOR;
@@ -224,10 +228,19 @@ const ForumCategoryPage: React.FC<ForumCategoryPageProps> = ({categoryId}) => {
     const endIndex = startIndex + pageSize;
     const paginatedTopics = topics.slice(startIndex, endIndex);
 
+    if(!hasLoggedIn) {
+        return <Result403/>
+    }
+
     return (
         <div>
-            <Card title={categoryTitle} style={{height: 630}} extra={
-                <Button type="primary" onClick={showModal} disabled={loading}>Create New Topic</Button>}>
+            <Card
+                title={categoryTitle}
+                style={{height: 630}}
+                extra={
+                    <>{hasLoggedIn && <Button type="primary" onClick={showModal} disabled={loading}>Create New Topic</Button>}</>
+                }
+            >
                 {loading ? (
                     <Spin tip="Loading...">
                         <div style={{height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center'}}/>

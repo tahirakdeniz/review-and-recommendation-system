@@ -35,6 +35,7 @@ interface UserState {
     image: string | undefined;
     imageLoading: boolean;
     imageError: string | null;
+    hasLoggedIn: boolean;
 }
 
 const initialState: UserState = {
@@ -43,7 +44,8 @@ const initialState: UserState = {
     error: null,
     image: undefined,
     imageLoading: false,
-    imageError: null
+    imageError: null,
+    hasLoggedIn: false
 };
 
 const baseURL = 'http://localhost:8081/api/v1/users';
@@ -181,6 +183,16 @@ const userSlice = createSlice({
         setImage: (state, action) => {
             state.image = action.payload;
             console.log(state.image)
+        },
+        setHasLoggedIn: (state, action) => {
+            state.hasLoggedIn = action.payload;
+        },
+        logOutUser: (state) => {
+            state.user = null;
+            state.hasLoggedIn = false;
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('role');
+            location.reload()
         }
     },
     extraReducers: (builder) => {
@@ -246,5 +258,5 @@ const userSlice = createSlice({
             });
     }
 });
-export const { setImage } = userSlice.actions;
+export const { setImage, logOutUser, setHasLoggedIn } = userSlice.actions;
 export default userSlice.reducer;

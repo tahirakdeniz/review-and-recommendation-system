@@ -16,6 +16,7 @@ import {useRouter} from "next/navigation";
 import ProductImageView from "@/components/ProductImageView";
 import {MerchantAddNewProductModal} from "@/components/MerchantAddNewProductModal";
 import {MerchantEditProductModal} from "@/components/MerchantEditProductModal";
+import Result403 from "@/components/Result403";
 
 export default function MerchantProductTable() {
     const {products, loading, error} = useSelector((state: RootState) => state.products)
@@ -35,7 +36,7 @@ export default function MerchantProductTable() {
 
     useEffect(() => {
         if(error){
-            messageApi.error(error)
+            messageApi.error(`Error: ${error}`)
         }
     }, [messageApi, error]);
 
@@ -110,9 +111,7 @@ export default function MerchantProductTable() {
 
     if(role != "MERCHANT"){
         return (
-            <div>
-                Not Allowed
-            </div>
+            <Result403/>
         )
     }
 

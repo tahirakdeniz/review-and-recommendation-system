@@ -17,12 +17,18 @@ export const MerchantAddNewProductModal = () => {
             const res = await dispatch(addProduct(product))
             if (res.meta.requestStatus == "fulfilled") {
                 messageApi.success("Product Added Successfully");
+                dispatch(setNewModalOpen(false));
+                setProduct(undefined);
             }
+        }
+        else {
+            messageApi.error("Product data is invalid")
         }
     }
 
     const handleCancel = () => {
         dispatch(setNewModalOpen(false))
+        setProduct(undefined);
     }
 
     return (
@@ -35,7 +41,9 @@ export const MerchantAddNewProductModal = () => {
                     onChange={(e) => setProduct({...product!, name: e.target.value})}
                 />
                 <MerchantProductCategorySelect
-                    onChange={(value) => setProduct({...product!, productCategoryName: value})}/>
+                    onChange={(value) => setProduct({...product!, productCategoryName: value})}
+                    value={product?.productCategoryName}
+                />
                 <Input
                     prefix="$"
                     placeholder="Price"

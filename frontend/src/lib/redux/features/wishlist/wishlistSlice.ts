@@ -39,7 +39,10 @@ export const addProductToWishlist = createAsyncThunk<WishListItemDto, AddProduct
     try {
         const token = localStorage.getItem('accessToken');
         if (!token) {
-            return rejectWithValue('No access token found');
+            setTimeout(() => {
+                location.href = '/login';
+            }, 2000);
+            return rejectWithValue('No access token found. You will be redirected to login page in 2 seconds.');
         }
 
         const response = await axios.put<WishListItemDto>('http://localhost:8081/api/v1/wishlist/add-product', request, {
