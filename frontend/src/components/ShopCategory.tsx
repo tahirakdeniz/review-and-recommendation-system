@@ -1,7 +1,7 @@
 import {ProductDto} from "@/lib/dto";
 import {Card, Col, Empty, Image, message, Row, Tooltip, Spin} from "antd";
-import {HeartOutlined, ShoppingCartOutlined, LoadingOutlined} from "@ant-design/icons";
-import React from "react";
+import {HeartOutlined, ShoppingCartOutlined, LoadingOutlined, HeartFilled} from "@ant-design/icons";
+import React, {useEffect} from "react";
 import {nameFormatter} from "@/lib/utils";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
@@ -10,7 +10,11 @@ import {useProductImage} from "@/lib/useProductImage";
 import { RootState, useDispatch } from "@/lib/redux/store";
 import { useSelector } from "react-redux";
 import {addProductToCart} from "@/lib/redux/features/cart/cartSlice";
-import {addProductToWishlist} from "@/lib/redux/features/wishlist/wishlistSlice";
+import {
+    addProductToWishlist,
+    fetchWishlist,
+    removeProductFromWishlist
+} from "@/lib/redux/features/wishlist/wishlistSlice";
 
 type ShopCategoryProps = {
     title: string;
@@ -29,7 +33,20 @@ export function ShopItem({item}: ShopItemProps){
     const {image, loading, error, noImage} = useProductImage(item.id);
     const {loading: addToCartLoading, error: addToCartError} = useSelector((state: RootState) => state.cart);
     const {user} = useSelector((state: RootState) => state.user);
+    const {wishlist} = useSelector((state: RootState) => state.wishlist);
+    const [isOnWishlist, setIsOnWishlist] = React.useState<boolean>(false);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        const isOnWishlist = wishlist?.wishListItemDtoList.some(wishlistItemDto => wishlistItemDto.productDto.id === item.id) || false;
+        setIsOnWishlist(isOnWishlist);
+    }, [wishlist]);
+
+    useEffect(() => {
+        dispatch(fetchWishlist());
+    }, []);
+
+    //const isOnWishlist = useSelector((state: RootState) => state.wishlist.wishlist?.wishListItemDtoList.some(wishlistItemDto => wishlistItemDto.productDto.id === item.id));
 
     async function handleAddToCart(productId:number) {
         const res = await dispatch(addProductToCart(productId));
@@ -53,6 +70,20 @@ export function ShopItem({item}: ShopItemProps){
             }
         } catch (error) {
             messageApi.error("Failed to add to Wishlist");
+        }
+    }
+
+    const removeFromWishlist = async (e: React.MouseEvent, productId: number) => {
+        e.stopPropagation();
+        try {
+            const res = await dispatch(removeProductFromWishlist({id: productId}));
+            if (res.meta.requestStatus === 'fulfilled') {
+                messageApi.success("Removed from Wishlist Successfully");
+            } else {
+                messageApi.error(`Failed to remove from Wishlist: ${res.payload}`);
+            }
+        } catch (error) {
+            messageApi.error("Failed to remove from Wishlist");
         }
     }
 
@@ -86,11 +117,21 @@ export function ShopItem({item}: ShopItemProps){
                             disabled={addToCartLoading || !hasLoggedIn}
                         />
                     </Tooltip>,
-                    <Tooltip title="Add to Wishlist" key="wishlist">
-                        <HeartOutlined
-                            onClick={(e) => addToWishlist(e, item.id)}
-                        />
-                    </Tooltip>,
+                    <>
+                        {isOnWishlist ? (
+                            <Tooltip title="Remove from Wishlist" key='removewishlist'>
+                                <HeartFilled style={{color: 'red'}}
+                                             onClick={(e) => removeFromWishlist(e, item.id)}
+                                />
+                            </Tooltip>
+                        ) : (
+                            <Tooltip title="Add to Wishlist" key="wishlist">
+                                <HeartOutlined
+                                    onClick={(e) => addToWishlist(e, item.id)}
+                                />
+                            </Tooltip>
+                        )}
+                    </>,
                 ]}
                 hoverable
                 onClick={() => router.push(`/shop/product/${item.id}`)} // TODO if no child that has on click, run this.
