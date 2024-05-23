@@ -329,8 +329,33 @@ public class UserService {
     }
 
     public String deleteUser(Principal currentUser) {
+
         User user = userUtil.extractUser(currentUser);
-        repository.delete(user);
+        repository.save(
+                new User(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getPassword(),
+                        user.getEmail(),
+                        user.getDescription(),
+                        true,
+                        true,
+                        false,
+                        true,
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getProfilePicture(),
+                        user.getRole(),
+                        user.getDateOfBirth(),
+                        user.getMerchant(),
+                        user.getReviews(),
+                        user.getAccountBalance(),
+                        user.getCart(),
+                        user.getSocialCredit(),
+                        user.getPurchases(),
+                        user.getWishlist()
+                )
+        );
 
         return "user deleted successfully";
     }
