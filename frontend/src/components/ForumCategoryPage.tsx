@@ -261,7 +261,7 @@ function TopicCard(props: {
             </Col>
             <Col span={8}>
                 <Link href={"/forum/topic/" + props.topic.id}><p>
-                    <strong>{props.topic.title.length > 30 ? props.topic.title.substring(0, 30) + "..." : props.topic.title.length}</strong></p></Link>
+                    <strong>{props.topic.title.length > 30 ? props.topic.title.substring(0, 30) + "..." : props.topic.title}</strong></p></Link>
             </Col>
             <Col span={4}>
                 <p>Messages: {props.topic.messageCount}</p>
