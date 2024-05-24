@@ -110,7 +110,7 @@ export function ForumSection() {
     };
 
     const showModal = () => {
-        form.resetFields(); // Clear form fields when modal is opened
+        form.resetFields();
         setIsModalVisible(true);
     };
 

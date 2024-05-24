@@ -1,5 +1,5 @@
 'use client'
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Button, Card, Col, Form, Input, message, Modal, Row} from 'antd';
 import {CommentOutlined} from "@ant-design/icons";
 import Link from "next/link";
@@ -28,12 +28,15 @@ export default function ForumSectionCategory({ title, subcategories, refreshCate
     const isAdmin = localStorage.getItem('role') === Roles.ADMIN;
     const isCommunityModerator = localStorage.getItem('role') === Roles.COMMUNITY_MODERATOR;
 
+
     const showEditModal = (category: ForumCategoryDto) => {
         setCurrentCategory(category);
         form.setFieldsValue({
             categoryName: category.name,
             categoryDescription: category.description,
         });
+        setNewCategoryName(category.name);
+        setNewCategoryDescription(category.description);
         setIsEditModalVisible(true);
     };
 
