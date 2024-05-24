@@ -83,10 +83,41 @@ public class Runner implements CommandLineRunner {
         createTopicsAndPosts(user1);
     }
 
-    private User getUser(String username, String password, String email, String firstName, String lastName, String role) {
+        public User uploadProfilePicture(MultipartFile file, User user) {
+        try {
+            User newUser = new User(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getPassword(),
+                    user.getEmail(),
+                    user.getDescription(),
+                    user.isEnabled(),
+                    user.isCredentialsNonExpired(),
+                    user.isAccountNonLocked(),
+                    user.isAccountNonExpired(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    ImageUtil.compressImage(file.getBytes()),
+                    user.getRole(),
+                    user.getDateOfBirth(),
+                    user.getMerchant(),
+                    user.getReviews(),
+                    user.getAccountBalance(),
+                    user.getCart(),
+                    user.getSocialCredit(),
+                    user.getPurchases(),
+                    user.getWishlist()
+            );
+
+            return userRepository.save(newUser);
+        } catch (Exception e) {}
+        return null;
+    }
+
+    private User getUser(String username, String password, String email, String firstName, String lastName, String role, MultipartFile multipartFile) {
         Cart cart =  cartRepository.save(new Cart());
         Wishlist wishlist = wishlistRepository.save(new Wishlist());
-        return new User(
+        User user = new User(
                 username,
                 passwordEncoder.encode(password),
                 email,
@@ -97,8 +128,10 @@ public class Runner implements CommandLineRunner {
                 LocalDate.of(1995, 5, 5),
                 cart,
                 wishlist
-
         );
+
+        return uploadProfilePicture(multipartFile,user);
+
     }
 
     private ForumCategory getForumCategory(String name, String description, ForumCategoryHeader header) {
@@ -218,8 +251,27 @@ public class Runner implements CommandLineRunner {
         }
     }
 
+    private MultipartFile createMultiPartFile(String path) {
+        try {
+            File file = new File(path);
+            FileInputStream fileInputStream = new FileInputStream(file);
+
+            MultipartFile multipartFile = new MockMultipartFile(
+                    "file",
+                    file.getName(),
+                    "image/png",
+                    fileInputStream
+            );
+            fileInputStream.close();
+
+            return multipartFile;
+
+        } catch (Exception e) {}
+        return null;
+    }
+
     private void createCommunityModerator() {
-        User user = getUser("jon_moderator","securepass","example9@gmail.com","jon","doe","COMMUNITY_MODERATOR");
+        User user = getUser("jon_moderator","securepass","example9@gmail.com","jon","doe","COMMUNITY_MODERATOR",createMultiPartFile("src/main/java/com/rrss/backend/image/mustang1.jpeg"));
         userRepository.save(user);
     }
 
@@ -231,7 +283,7 @@ public class Runner implements CommandLineRunner {
     }
 
     private User createUser() {
-        return userRepository.save(getUser("jon_user","securepass","example341@gmail.com","jon","doe","USER"));
+        return userRepository.save(getUser("jon_user","securepass","example341@gmail.com","jon","doe","USER",createMultiPartFile("src/main/java/com/rrss/backend/image/mustang2.jpeg")));
     }
 
     public void addProduct(String name, String description, Merchant merchant, String productCategoryName, BigDecimal price, MultipartFile file) throws IOException {
@@ -249,9 +301,9 @@ public class Runner implements CommandLineRunner {
     }
 
     private void createMerchantWithRequest() {
-        createMerchant("jon_merchant","securepass","example1@gmail.com","jon","doe","USER");
-        createMerchant("jon_real_merchant","securepass","example2@gmail.com","jon","doe","USER");
-        createMerchant("jon_real_merchant2","securepass","example47@gmail.com","jon","doe","USER");
+        createMerchant("jon_merchant","securepass","example1@gmail.com","jon","doe","USER","src/main/java/com/rrss/backend/image/mustang3.jpeg");
+        createMerchant("jon_real_merchant","securepass","example2@gmail.com","jon","doe","USER","src/main/java/com/rrss/backend/image/mustang4.jpeg");
+        createMerchant("jon_real_merchant2","securepass","example47@gmail.com","jon","doe","USER","src/main/java/com/rrss/backend/image/mustang5.jpeg");
 
         merchantRequestService.answerRequest("jon_real_merchant", "added from runner", true);
         merchantRequestService.answerRequest("jon_real_merchant2", "added from runner", true);
@@ -318,13 +370,13 @@ public class Runner implements CommandLineRunner {
 
     }
 
-    private void createMerchant(String username, String password, String email, String firstName, String lastName, String role) {
-        User merchant = getUser(username,password,email,firstName,lastName,role);
+    private void createMerchant(String username, String password, String email, String firstName, String lastName, String role, String path) {
+        User merchant = getUser(username,password,email,firstName,lastName,role,createMultiPartFile(path));
         User newMerchant = userRepository.save(merchant);
         merchantRequestRepository.save(new MerchantRequest(newMerchant));
     }
 
     private User createAdmin() {
-        return userRepository.save(getUser("jon_admin","securepass","example3@gmail.com","jon","doe","ADMIN"));
+        return userRepository.save(getUser("jon_admin","securepass","example3@gmail.com","jon","doe","ADMIN",createMultiPartFile("src/main/java/com/rrss/backend/image/mustang1.jpeg")));
     }
 }
