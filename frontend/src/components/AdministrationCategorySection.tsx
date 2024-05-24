@@ -46,6 +46,7 @@ export default function AdministrationCategorySection() {
                 if (res.meta.requestStatus === 'fulfilled'){
                     messageApi.success('Category added successfully');
                     setIsAddModalVisible(false);
+                    location.reload();
                 }
             } catch (error) {
                 const errorMessage = errorHandler(error, 'Add Category');
@@ -65,6 +66,7 @@ export default function AdministrationCategorySection() {
                         messageApi.success('Category updated successfully');
                         setIsEditModalVisible(false);
                         setCurrentCategory(null);
+                        location.reload();
                     }
                 }
             } catch (error) {
@@ -85,6 +87,7 @@ export default function AdministrationCategorySection() {
                     const res = await dispatch(deleteCategory(id));
                     if (res.meta.requestStatus === 'fulfilled'){
                         messageApi.success('Category deleted successfully');
+                        location.reload();
                     }
                 } catch (error) {
                     const errorMessage = errorHandler(error, 'Delete Category');
@@ -108,7 +111,7 @@ export default function AdministrationCategorySection() {
             {contextHolder}
             <Card title={<Title level={3}>Administration Category Section</Title>} extra={<Button type="primary" onClick={showAddModal}><PlusOutlined /> Add Category</Button>}>
                 <Spin spinning={loading}>
-                    <Row gutter={[16, 16]}>
+                    <Row gutter={[16, 16]} >
                         {categories.map(category => (
                             <Col key={category.id} span={8}>
                                 <Card
