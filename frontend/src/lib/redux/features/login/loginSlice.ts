@@ -1,8 +1,9 @@
 'use client';
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import {baseURL} from "@/lib/const";
-import {errorHandler} from "@/lib/utils";
+import {errorHandler, messageFormatter} from "@/lib/utils";
+import {ErrorResponse} from "@/lib/types";
 
 interface LoginState {
     role: string;
@@ -32,7 +33,20 @@ export const loginUser = createAsyncThunk(
             localStorage.setItem("role", data.role)
             return response.data;
         } catch (error) {
-            const errorMessage = errorHandler(error, "Login User")
+            let errorMessage;
+            if (axios.isAxiosError(error)) {
+                const serverError = error as AxiosError<ErrorResponse>;
+                if (serverError && serverError.response) {
+                    const value = serverError.response.data
+                    const errorMessages = value.errors?.map((error) => messageFormatter(error.message)).join(", ")
+                    errorMessage =  errorMessages || `Invalid username or password`;
+                } else {
+                    errorMessage = `An unknown error occurred: ${error}`;
+                }
+            } else {
+                errorMessage = `An error occurred: ${error}`;
+            }
+            console.error(`An Error Occurred In Login. Error: ${error}. Message: ${errorMessage}`)
             return rejectWithValue(errorMessage)
         }
     }
