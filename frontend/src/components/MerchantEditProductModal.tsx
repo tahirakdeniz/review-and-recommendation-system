@@ -100,9 +100,10 @@ export const MerchantEditProductModal: React.FC = () => {
                                         'Content-Type': 'multipart/form-data'
                                     }
                                 })
-                                if(res.status === 200){
+                                if(res.status === 200 || res.status === 201){
                                     onSuccess('ok')
                                     messageApi.success('Image Uploaded Successfully')
+                                    location.reload()
                                 }
 
                                 if(product) {
