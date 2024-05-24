@@ -8,6 +8,7 @@ import Image from "next/image";
 import Coffee from "@/assets/images/coffee1.svg";
 import axios from "axios";
 import {baseURL} from "@/lib/const";
+import {errorHandler} from "@/lib/utils";
 
 const { Title, Text } = Typography;
 
@@ -46,20 +47,23 @@ export default function ForgotPassword() {
                 console.error('An error occurred:', response.data.message || response.statusText);
             }
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                messageApi.error(error.response?.data.message || error.message);
-                console.error('An error occurred:', error.response?.data.message || error.message);
-            }
-            else{
-                messageApi.error(`Failed to send password reset link.`);
-                console.error('An error occurred:', error);
-            }
+            // if (axios.isAxiosError(error)) {
+            //     messageApi.error(error.response?.data.message || error.message);
+            //     console.error('An error occurred:', error.response?.data.message || error.message);
+            // }
+            // else{
+            //     messageApi.error(`Failed to send password reset link.`);
+            //     console.error('An error occurred:', error);
+            // }\
+            const errorMessage = errorHandler(error, "OTP")
+            messageApi.error(errorMessage);
         }
         setLoading(false);
     };
 
     return (
         <div className="flex flex-wrap">
+            {contextHolder}
             <div className="w-full max-w-md">
                 <div className="text-center mb-8 my-4">
                     <Image src={Coffee.src} alt="Login" width={100} height={100}/>
