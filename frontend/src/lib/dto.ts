@@ -63,6 +63,7 @@ export type ProductDto = {
     price: number;
     photo: Uint8Array; // todo change this to THE RIGHT TYPE
     reviewDto: ProductReviewDto;
+    disabled: boolean;
 };
 
 export type ProductCategoryDto = {

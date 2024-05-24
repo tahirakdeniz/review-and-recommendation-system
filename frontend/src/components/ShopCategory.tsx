@@ -87,6 +87,10 @@ export function ShopItem({item}: ShopItemProps){
         }
     }
 
+    if(item.disabled){
+        return null;
+    }
+
     return (
         <Col key={item.id} xs={24} sm={12} md={8} lg={6} xl={4}>
             {contextHolder}

@@ -8,6 +8,7 @@ import {Spin} from "antd";
 import {RootState} from "@/lib/redux/store";
 import {useSelector} from "react-redux";
 import Result403 from "@/components/Result403";
+import ResultDeletedProduct from "@/components/ResultDeletedProduct";
 
 interface ProductProps {
     params: { productId: string };
@@ -53,6 +54,10 @@ export default function Product({ params: { productId } }: ProductProps) {
 
     if (error) {
         return <div>{error}</div>;
+    }
+
+    if(product?.disabled){
+        return <ResultDeletedProduct/>
     }
 
     if (product) {

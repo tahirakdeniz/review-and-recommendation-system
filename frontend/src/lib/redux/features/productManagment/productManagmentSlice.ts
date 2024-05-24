@@ -10,6 +10,7 @@ export interface Product {
     productCategoryName: string;
     price: number;
     image?: File;
+    disabled?: boolean;
 }
 
 interface ProductsState {

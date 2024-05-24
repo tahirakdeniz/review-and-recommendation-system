@@ -23,7 +23,7 @@ export default function MerchantProductTable() {
     const [messageApi, contextHolder] = message.useMessage();
     const router = useRouter()
     const dispatch = useDispatch();
-
+    const activeProducts = products.filter(product => !product.disabled);
     useEffect(() => {
         dispatch(fetchProducts())
     }, [dispatch]);
@@ -121,7 +121,7 @@ export default function MerchantProductTable() {
             <div className={'mb-2'}>
                 <Button icon={<PlusOutlined />} onClick={() => dispatch(setNewModalOpen(true))}>Add New Product</Button>
             </div>
-            <Table loading={loading} columns={columns} dataSource={products} pagination={{ pageSize: 5, position: ["bottomCenter"]}}/>
+            <Table loading={loading} columns={columns} dataSource={activeProducts} pagination={{ pageSize: 5, position: ["bottomCenter"]}}/>
             <MerchantAddNewProductModal/>
             <MerchantEditProductModal/>
         </>
