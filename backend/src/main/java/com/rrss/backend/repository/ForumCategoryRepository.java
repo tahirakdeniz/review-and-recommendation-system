@@ -11,4 +11,5 @@ public interface ForumCategoryRepository extends JpaRepository<ForumCategory, Lo
     Optional<ForumCategory> findByName(String name);
     List<ForumCategory> findAllByHeader(ForumCategoryHeader forumCategoryHeader);
 
+    boolean existsByName(String name);
 }

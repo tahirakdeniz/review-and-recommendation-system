@@ -15,13 +15,19 @@ import java.util.List;
 public class ForumCategoryService {
 
     private final ForumCategoryRepository repository;
+    private final ForumCategoryRepository forumCategoryRepository;
 
-    public ForumCategoryService(ForumCategoryRepository repository) {
+    public ForumCategoryService(ForumCategoryRepository repository, ForumCategoryRepository forumCategoryRepository) {
         this.repository = repository;
+        this.forumCategoryRepository = forumCategoryRepository;
     }
 
 
     public ForumCategoryDto addForumCategory(AddForumCategoryRequest addForumCategoryRequest) {
+
+        if (forumCategoryRepository.existsByName(addForumCategoryRequest.name())) {
+            throw new ForumCategoryNotFoundException("forum category with name " + addForumCategoryRequest.name() + " already exists");
+        }
 
         ForumCategory forumCategory = new ForumCategory(
                 addForumCategoryRequest.name(),
