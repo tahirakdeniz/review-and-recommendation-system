@@ -46,6 +46,11 @@ export const MerchantEditProductModal: React.FC = () => {
     }, [editingProduct]);
 
     const handleOk = async () => {
+        if(product?.description === "" || product?.name === "" || product?.price === 0 || product?.productCategoryName === ""){
+            messageApi.error("Please fill all the fields.")
+            return
+        }
+
         if (product) {
             const res = await dispatch(updateProduct(product));
             if (res.meta.requestStatus == "fulfilled") {
